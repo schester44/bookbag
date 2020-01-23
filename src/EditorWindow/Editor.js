@@ -32,7 +32,7 @@ const EditorWindow = ({ activeNote, onNoteChange, onNoteDelete }) => {
 
 			<div className="px-8 pt-4 overflow-auto flex-1">
 				<Editable
-					className="h-full"
+					className="h-full text-gray-800"
 					renderElement={renderElement}
 					renderLeaf={renderLeaf}
 					placeholder="Whats on your mind?"

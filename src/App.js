@@ -5,14 +5,8 @@ import isHotKey from 'is-hotkey'
 import Sidebar from './Sidebar'
 import EditorWindow from './EditorWindow/Editor'
 import api from './api'
-
-const hasText = body => {
-	const isEmpty =
-		body[0].type === 'paragraph' && body[0].children.length === 1 && body[0].children[0].text === ''
-
-	return body.length > 1 || !isEmpty
-}
-
+import { FaHashtag } from 'react-icons/fa'
+import TagList from './TagList'
 const initialBodyValue = [
 	{
 		type: 'paragraph',
@@ -27,20 +21,39 @@ function App() {
 	const titleRef = React.useRef()
 
 	const [state, setState] = React.useState({
+		tags: {
+			idMap: {},
+			ids: []
+		},
 		notesById: {},
 		noteIds: [],
+		activeNoteTags: [],
 		activeNote: defaultNote
 	})
 
 	React.useEffect(() => {
-		api.notes.getAll().then(({ notesById, noteIds }) => {
-			setState(prev => ({
-				...prev,
-				notesById,
-				noteIds,
-				activeNote: notesById[noteIds[0]] || defaultNote
-			}))
-		})
+		Promise.all([api.notes.getAll(), api.tags.getAll()]).then(
+			async ([{ notesById, noteIds }, tags]) => {
+				let activeNoteTags = []
+
+				const lastOpenedId = await api.notes.lastOpened.get()
+
+				const idOfNote = lastOpenedId || noteIds[0]
+
+				if (notesById[idOfNote]) {
+					activeNoteTags = await api.tags.getByNote(idOfNote)
+				}
+
+				setState(prev => ({
+					...prev,
+					tags,
+					notesById,
+					noteIds,
+					activeNoteTags,
+					activeNote: notesById[idOfNote] || defaultNote
+				}))
+			}
+		)
 
 		titleRef.current.focus()
 	}, [])
@@ -75,7 +88,7 @@ function App() {
 							notesById: { ...prev.notesById, [savedNote.id]: savedNote }
 						}
 
-						if (savedNote.id === prev.activeNote.id) {
+						if (!prev.activeNote.id || savedNote.id === prev.activeNote.id) {
 							newState.activeNote = savedNote
 						}
 
@@ -94,7 +107,11 @@ function App() {
 	const handleNoteSelection = activeNote => {
 		// save the new note before switching to a new one
 		debouncedSave(state.activeNote, { force: true })
-		setState(prev => ({ ...prev, activeNote }))
+
+		api.tags.getByNote(activeNote.id).then(activeNoteTags => {
+			api.notes.lastOpened.save(activeNote.id)
+			setState(prev => ({ ...prev, activeNote, activeNoteTags }))
+		})
 	}
 
 	const updateProperty = (key, value) => {
@@ -148,11 +165,73 @@ function App() {
 		)
 	}
 
+	const addNoteTagToState = tag => {
+		setState(prev => {
+			const idMap = {
+				...prev.tags.idMap,
+				[tag.id]: tag
+			}
+
+			return {
+				...prev,
+				activeNoteTags: prev.activeNoteTags.includes(tag.id)
+					? prev.activeNoteTags
+					: prev.activeNoteTags.concat(tag.id),
+				tags: {
+					ids: prev.tags.ids.concat(tag.id),
+					idMap
+				}
+			}
+		})
+	}
+
+	const handleNewTag = async name => {
+		// TODO: handle thsi in the save function
+
+		const existingTagId = state.tags.ids.find(id => {
+			const tag = state.tags.idMap[id]
+			return tag.name.toLowerCase() === name.toLowerCase().trim()
+		})
+
+		let tag
+
+		if (!existingTagId) {
+			tag = await api.tags.save(null, { name })
+		} else {
+			tag = state.tags.idMap[existingTagId]
+		}
+
+		// TODO: error
+		if (!tag) return
+
+		api.tags.addToNote(tag.id, state.activeNote.id)
+		addNoteTagToState(tag)
+	}
+
+	const handleRemoveTagFromNote = tag => {
+		setState(prev =>
+			produce(prev, draft => {
+				const index = prev.activeNoteTags.findIndex(id => id === tag.id)
+
+				console.log(tag.id, prev.activeNoteTags)
+				if (index > -1) {
+					draft.activeNoteTags.splice(index, 1)
+				}
+
+				api.tags.removeFromNote(tag.id, state.activeNote.id)
+			})
+		)
+	}
+
 	return (
 		<div onKeyDown={handleKeyDown} className="App flex w-full h-full">
 			<Sidebar
+				activeNote={state.activeNote}
+				tagsById={state.tags.idMap}
+				tagIds={state.tags.ids}
 				noteIds={state.noteIds}
 				notesById={state.notesById}
+				onTagSelect={console.log}
 				onNoteSelect={handleNoteSelection}
 			/>
 
@@ -164,7 +243,7 @@ function App() {
 					>
 						<input
 							ref={titleRef}
-							className={`border-0 px-3 pt-2 text-gray-800 placeholder-gray-300 outline-none text-3xl font-black bg-transparent mb-3 ${
+							className={`border-0 px-6 pt-3 text-gray-800 placeholder-gray-300 outline-none text-2xl font-black bg-transparent mb-3 ${
 								state.activeNote.title.length === 0 ? 'italic' : ''
 							} `}
 							placeholder="Untitled Note"
@@ -177,6 +256,12 @@ function App() {
 							onNoteChange={handleNoteBodyChange}
 							onTitleChange={handleNoteTitleChange}
 							activeNote={state.activeNote}
+						/>
+						<TagList
+							tagIds={state.activeNoteTags}
+							tagsById={state.tags.idMap}
+							onTagCreate={handleNewTag}
+							onRemoveTagFromNote={handleRemoveTagFromNote}
 						/>
 					</div>
 					<p className="text-gray-500 text-xs text-right mt-2">
