@@ -1,0 +1,17 @@
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+.toolbar-btn {
+  @apply p-2 cursor-pointer rounded;
+}
+
+.toolbar-btn.toolbar-btn--active {
+  @apply bg-gray-200;
+}
+
+.toolbar-btn:hover {
+  @apply bg-gray-200;
+}
