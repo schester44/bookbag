@@ -19,8 +19,6 @@ const Sidebar = ({ notesById, noteIds, onNoteSelect }) => {
 	return (
 		<div className="w-64 bg-gray-200 h-full flex flex-col p-2 border-r border-gray-200">
 			<div className="flex-1 overflow-auto">
-				{!hasNotes && <p className="italic text-gray-500">no saved notes</p>}
-
 				{hasNotes && (
 					<div className="my-2 w-full">
 						<Searchbar />

@@ -72,8 +72,11 @@ function App() {
 					setState(prev => {
 						const newState = {
 							...prev,
-							notesById: { ...prev.notesById, [savedNote.id]: savedNote },
-							activeNote: savedNote
+							notesById: { ...prev.notesById, [savedNote.id]: savedNote }
+						}
+
+						if (savedNote.id === prev.activeNote.id) {
+							newState.activeNote = savedNote
 						}
 
 						if (!prev.notesById[savedNote.id]) {

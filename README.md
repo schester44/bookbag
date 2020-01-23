@@ -4,7 +4,8 @@ Offline-first note taking app
 
 
 ### TODO
-- Tags
 - Search
+- Tags
+- Folders
 - Cloud Sync
 - Real-time Collab
