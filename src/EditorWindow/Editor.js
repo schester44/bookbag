@@ -11,7 +11,7 @@ import Leaf from './Leaf'
 import { toggleMark } from './utils'
 import { HOTKEYS } from './constants'
 
-const EditorWindow = ({ activeNote, onNoteChange }) => {
+const EditorWindow = ({ activeNote, onNoteChange, onNoteDelete }) => {
 	const renderElement = React.useCallback(props => <Element {...props} />, [])
 	const renderLeaf = React.useCallback(props => <Leaf {...props} />, [])
 	const editor = React.useMemo(() => withHistory(withReact(createEditor())), [])
@@ -28,10 +28,11 @@ const EditorWindow = ({ activeNote, onNoteChange }) => {
 
 	return (
 		<Slate editor={editor} value={activeNote.body} onChange={onNoteChange}>
-			<EditorToolbar />
+			<EditorToolbar activeNote={activeNote} onDelete={() => onNoteDelete(activeNote)} />
 
 			<div className="px-8 pt-4 overflow-auto flex-1">
 				<Editable
+					className="h-full"
 					renderElement={renderElement}
 					renderLeaf={renderLeaf}
 					placeholder="Whats on your mind?"

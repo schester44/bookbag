@@ -5,13 +5,10 @@
 @tailwind utilities;
 
 .toolbar-btn {
-  @apply p-2 cursor-pointer rounded;
+	@apply p-2 mx-1 text-gray-600 cursor-pointer rounded;
 }
 
+.toolbar-btn:hover,
 .toolbar-btn.toolbar-btn--active {
-  @apply bg-gray-200;
-}
-
-.toolbar-btn:hover {
-  @apply bg-gray-200;
+	@apply bg-gray-100 text-gray-800;
 }

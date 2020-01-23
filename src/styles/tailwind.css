@@ -8348,16 +8348,17 @@ video {
 
 .toolbar-btn {
   padding: 0.5rem;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+  color: #718096;
   cursor: pointer;
   border-radius: 0.25rem;
 }
 
+.toolbar-btn:hover,
 .toolbar-btn.toolbar-btn--active {
-  background-color: #edf2f7;
-}
-
-.toolbar-btn:hover {
-  background-color: #edf2f7;
+  background-color: #f7fafc;
+  color: #2d3748;
 }
 
 @media (min-width: 640px) {

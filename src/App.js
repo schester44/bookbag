@@ -1,9 +1,17 @@
 import React from 'react'
-
+import { produce } from 'immer'
+import { format } from 'date-fns'
+import isHotKey from 'is-hotkey'
 import Sidebar from './Sidebar'
 import EditorWindow from './EditorWindow/Editor'
 import api from './api'
-import { format } from 'date-fns'
+
+const hasText = body => {
+	const isEmpty =
+		body[0].type === 'paragraph' && body[0].children.length === 1 && body[0].children[0].text === ''
+
+	return body.length > 1 || !isEmpty
+}
 
 const initialBodyValue = [
 	{
@@ -19,16 +27,38 @@ function App() {
 	const titleRef = React.useRef()
 
 	const [state, setState] = React.useState({
-		notes: [],
+		notesById: {},
+		noteIds: [],
 		activeNote: defaultNote
 	})
 
 	React.useEffect(() => {
-		api.notes.getAll().then(notes => {
-			setState(prev => ({ ...prev, notes }))
+		api.notes.getAll().then(({ notesById, noteIds }) => {
+			setState(prev => ({
+				...prev,
+				notesById,
+				noteIds,
+				activeNote: notesById[noteIds[0]] || defaultNote
+			}))
 		})
 
 		titleRef.current.focus()
+	}, [])
+
+	React.useEffect(() => {
+		function hotKeyListener(event) {
+			// TODO: Why doesn't isHotKey work here
+			if (event.ctrlKey && event.key === 'n') {
+				setState(prev => ({
+					...prev,
+					activeNote: defaultNote
+				}))
+			}
+		}
+
+		document.addEventListener('keypress', hotKeyListener)
+
+		return () => document.removeEventListener('keypress', hotKeyListener)
 	}, [])
 
 	const debouncedSave = (note, { force = false } = {}) => {
@@ -40,17 +70,17 @@ function App() {
 			() => {
 				api.notes.save(note.id, note).then(savedNote => {
 					setState(prev => {
-						const activeNote = {
-							...prev.activeNote,
-							lastUpdate: savedNote.lastUpdate
+						const newState = {
+							...prev,
+							notesById: { ...prev.notesById, [savedNote.id]: savedNote },
+							activeNote: savedNote
 						}
 
-						if (!note.id) {
-							activeNote.id = savedNote.id
+						if (!prev.notesById[savedNote.id]) {
+							newState.noteIds = [savedNote.id, ...prev.noteIds]
 						}
 
-						console.log(activeNote)
-						return { ...prev, activeNote }
+						return newState
 					})
 				})
 			},
@@ -59,6 +89,7 @@ function App() {
 	}
 
 	const handleNoteSelection = activeNote => {
+		// save the new note before switching to a new one
 		debouncedSave(state.activeNote, { force: true })
 		setState(prev => ({ ...prev, activeNote }))
 	}
@@ -85,24 +116,61 @@ function App() {
 		updateProperty('body', value)
 	}
 
-	return (
-		<div className="App flex w-full h-full">
-			<Sidebar notes={state.notes} onNoteSelect={handleNoteSelection} />
-			<div className="flex-1 bg-gray-200 flex flex-col">
-				<div className="bg-white border-b border-gray-200 p-2 flex justify-end">
-					<input placeholder="Search" className=" px-2 py-2 border border-gray-200 rounded" />
-				</div>
-				<div className="flex-1 pt-4 px-8 pb-8 flex flex-col">
-					<input
-						ref={titleRef}
-						className="border-0 outline-none text-xl bg-transparent mb-3"
-						placeholder="Untitled Note"
-						value={state.activeNote.title}
-						onChange={({ target: { value } }) => handleNoteTitleChange(value)}
-					/>
+	const handleKeyDown = event => {
+		const shouldOpenNewTab = isHotKey('ctrl+n', event)
 
-					<div className="bg-white shadow flex-1 flex flex-col">
+		if (shouldOpenNewTab) {
+			setState(prev => ({
+				...prev,
+				activeNote: defaultNote
+			}))
+		}
+	}
+
+	const handleNoteDeletion = note => {
+		api.notes.delete(note.id)
+
+		setState(prev =>
+			produce(prev, draft => {
+				delete draft.notesById[note.id]
+				draft.noteIds.splice(
+					prev.noteIds.findIndex(id => id === note.id),
+					1
+				)
+
+				if (prev.activeNote.id === note.id) {
+					draft.activeNote = prev.notesById[prev.noteIds[1]] || defaultNote
+				}
+			})
+		)
+	}
+
+	return (
+		<div onKeyDown={handleKeyDown} className="App flex w-full h-full">
+			<Sidebar
+				noteIds={state.noteIds}
+				notesById={state.notesById}
+				onNoteSelect={handleNoteSelection}
+			/>
+
+			<div className="flex-1 bg-gray-200 flex flex-col">
+				<div className="flex-1 pt-4 pl-2 pr-4 pb-8 flex flex-col">
+					<div
+						className="bg-white rounded-lg shadow flex-1 flex flex-col"
+						style={{ maxHeight: 'calc(100vh - 80px)' }}
+					>
+						<input
+							ref={titleRef}
+							className={`border-0 px-3 pt-2 text-gray-800 placeholder-gray-300 outline-none text-3xl font-black bg-transparent mb-3 ${
+								state.activeNote.title.length === 0 ? 'italic' : ''
+							} `}
+							placeholder="Untitled Note"
+							value={state.activeNote.title}
+							onChange={({ target: { value } }) => handleNoteTitleChange(value)}
+						/>
+
 						<EditorWindow
+							onNoteDelete={handleNoteDeletion}
 							onNoteChange={handleNoteBodyChange}
 							onTitleChange={handleNoteTitleChange}
 							activeNote={state.activeNote}

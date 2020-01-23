@@ -1,3 +1,10 @@
-# Notes
+# Notes (WIP)
 
-React PWA note taking app.. WIP
+Offline-first note taking app
+
+
+### TODO
+- Tags
+- Search
+- Cloud Sync
+- Real-time Collab
