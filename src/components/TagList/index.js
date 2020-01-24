@@ -1,5 +1,4 @@
 import React from 'react'
-import { FaHashtag } from 'react-icons/fa'
 import { MdClose } from 'react-icons/md'
 
 const TagList = ({ tagIds, tagsById, onTagCreate, onRemoveTagFromNote }) => {
@@ -12,22 +11,14 @@ const TagList = ({ tagIds, tagsById, onTagCreate, onRemoveTagFromNote }) => {
 	}
 
 	return (
-		<div className="p-2 flex items-center">
-			<FaHashtag />
-			<input
-				onKeyPress={handleKeyPress}
-				type="text"
-				placeholder="New tag"
-				className="ml-1 text-xs bg-gray-200 outline-none border-gray-200 border rounded-full px-2"
-			/>
-
+		<div className="flex items-center">
 			<div className="tags mr-2 flex">
 				{tagIds.map(id => {
 					const tag = tagsById[id]
 
 					return (
 						<div
-							className="flex items-center mx-1 rounded-full bg-gray-200 px-2 text-xs font-medium"
+							className="flex items-center mx-1 rounded bg-gray-100 border-gray-200 border text-gray-700 px-2 text-sm font-medium"
 							key={id}
 						>
 							<span>{tag.name}</span>
@@ -39,6 +30,13 @@ const TagList = ({ tagIds, tagsById, onTagCreate, onRemoveTagFromNote }) => {
 					)
 				})}
 			</div>
+
+			<input
+				onKeyPress={handleKeyPress}
+				type="text"
+				placeholder="New tag"
+				className="outline-none mx-1 rounded border-gray-200 border text-gray-700 px-2 text-sm"
+			/>
 		</div>
 	)
 }

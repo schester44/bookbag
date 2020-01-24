@@ -16,7 +16,7 @@ import BlockButton from './BlockButton'
 
 const EditorToolbar = ({ activeNote, onDelete }) => {
 	return (
-		<div className="px-2 pb-2 mb-2 flex justify-between border-b border-gray-100">
+		<div className="px-2 pb-2 flex justify-between w-full">
 			<div className="flex">
 				<MarkButton format="bold" icon={<FiBold />} />
 				<MarkButton format="italic" icon={<FiItalic />} />

@@ -1,16 +1,17 @@
 import React from 'react'
 import { produce } from 'immer'
-import { format } from 'date-fns'
+
 import isHotKey from 'is-hotkey'
 import Sidebar from './Sidebar'
 import { useDispatch } from 'react-redux'
 import api from './api'
 
-import EditorWindow from './components/EditorWindow/Editor'
-import TagList from './components/TagList'
+import EditorWindow from './components/EditorWindow'
 
 import { tagsFetched } from './actions/tags'
 import { fetchNotes } from './actions/notes'
+import { GoNote } from 'react-icons/go'
+import { FiHash, FiSettings } from 'react-icons/fi'
 
 const initialBodyValue = [
 	{
@@ -25,7 +26,6 @@ function App() {
 	const dispatch = useDispatch()
 
 	const saveTimerRef = React.useRef()
-	const titleRef = React.useRef()
 
 	const [state, setState] = React.useState({
 		tags: {
@@ -65,9 +65,7 @@ function App() {
 				activeNote: idMap[idOfNote] || defaultNote
 			}))
 		})
-
-		titleRef.current.focus()
-	}, [])
+	}, [dispatch])
 
 	React.useEffect(() => {
 		function hotKeyListener(event) {
@@ -236,6 +234,20 @@ function App() {
 
 	return (
 		<div onKeyDown={handleKeyDown} className="App flex w-full h-full">
+			<div className="w-12 h-full bg-gray-900 text-gray-200 flex flex-col justify-between pb-4">
+				<div>
+					<div className="flex items-center w-full justify-center h-12 hover:text-white hover:bg-black cursor-pointer">
+						<GoNote />
+					</div>
+					<div className="flex items-center w-full justify-center h-12 hover:text-white hover:bg-black cursor-pointer">
+						<FiHash />
+					</div>
+				</div>
+
+				<div className="flex items-center w-full justify-center h-12 hover:text-white hover:bg-black cursor-pointer">
+					<FiSettings />
+				</div>
+			</div>
 			<Sidebar
 				activeNote={state.activeNote}
 				tagsById={state.tags.idMap}
@@ -245,45 +257,14 @@ function App() {
 				onTagSelect={console.log}
 				onNoteSelect={handleNoteSelection}
 			/>
-
-			<div className="flex-1 bg-gray-200 flex flex-col">
-				<div className="flex-1 pt-4 pl-2 pr-4 pb-8 flex flex-col">
-					<div
-						className="bg-white rounded-lg shadow flex-1 flex flex-col"
-						style={{ maxHeight: 'calc(100vh - 80px)' }}
-					>
-						<input
-							ref={titleRef}
-							className={`border-0 px-6 pt-3 text-gray-800 placeholder-gray-300 outline-none text-2xl font-black bg-transparent mb-3 ${
-								state.activeNote.title.length === 0 ? 'italic' : ''
-							} `}
-							placeholder="Untitled Note"
-							value={state.activeNote.title}
-							onChange={({ target: { value } }) => handleNoteTitleChange(value)}
-						/>
-
-						<EditorWindow
-							onNoteDelete={handleNoteDeletion}
-							onNoteChange={handleNoteBodyChange}
-							onTitleChange={handleNoteTitleChange}
-							activeNote={state.activeNote}
-						/>
-						<TagList
-							tagIds={state.activeNoteTags}
-							tagsById={state.tags.idMap}
-							onTagCreate={handleNewTag}
-							onRemoveTagFromNote={handleRemoveTagFromNote}
-						/>
-					</div>
-					<p className="text-gray-500 text-xs text-right mt-2">
-						{state.activeNote.lastUpdate ? (
-							<span>Last updated {format(state.activeNote.lastUpdate, 'M/dd h:mma')}</span>
-						) : (
-							<span>Unsaved</span>
-						)}
-					</p>
-				</div>
-			</div>
+			<EditorWindow
+				state={state}
+				onNoteTitleChange={handleNoteTitleChange}
+				onNoteDeletion={handleNoteDeletion}
+				onNoteBodyChange={handleNoteBodyChange}
+				handleNewTag={handleNewTag}
+				handleRemoveTagFromNote={handleRemoveTagFromNote}
+			/>
 		</div>
 	)
 }
