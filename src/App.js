@@ -3,10 +3,15 @@ import { produce } from 'immer'
 import { format } from 'date-fns'
 import isHotKey from 'is-hotkey'
 import Sidebar from './Sidebar'
-import EditorWindow from './EditorWindow/Editor'
+import { useDispatch } from 'react-redux'
 import api from './api'
-import { FaHashtag } from 'react-icons/fa'
-import TagList from './TagList'
+
+import EditorWindow from './components/EditorWindow/Editor'
+import TagList from './components/TagList'
+
+import { tagsFetched } from './actions/tags'
+import { fetchNotes } from './actions/notes'
+
 const initialBodyValue = [
 	{
 		type: 'paragraph',
@@ -17,6 +22,8 @@ const initialBodyValue = [
 const defaultNote = { title: '', id: undefined, body: initialBodyValue }
 
 function App() {
+	const dispatch = useDispatch()
+
 	const saveTimerRef = React.useRef()
 	const titleRef = React.useRef()
 
@@ -32,28 +39,32 @@ function App() {
 	})
 
 	React.useEffect(() => {
-		Promise.all([api.notes.getAll(), api.tags.getAll()]).then(
-			async ([{ notesById, noteIds }, tags]) => {
-				let activeNoteTags = []
+		dispatch(fetchNotes())
 
-				const lastOpenedId = await api.notes.lastOpened.get()
+		// TODO: Don't store `activeNoteTags` -- store all with easy look up by noteId
 
-				const idOfNote = lastOpenedId || noteIds[0]
+		Promise.all([api.notes.getAll(), api.tags.getAll()]).then(async ([{ idMap, ids }, tags]) => {
+			dispatch(tagsFetched({ tags }))
 
-				if (notesById[idOfNote]) {
-					activeNoteTags = await api.tags.getByNote(idOfNote)
-				}
+			let activeNoteTags = []
 
-				setState(prev => ({
-					...prev,
-					tags,
-					notesById,
-					noteIds,
-					activeNoteTags,
-					activeNote: notesById[idOfNote] || defaultNote
-				}))
+			const lastOpenedId = await api.notes.lastOpened.get()
+
+			const idOfNote = lastOpenedId || ids[0]
+
+			if (idMap[idOfNote]) {
+				activeNoteTags = await api.tags.getByNote(idOfNote)
 			}
-		)
+
+			setState(prev => ({
+				...prev,
+				tags,
+				notesById: idMap,
+				noteIds: ids,
+				activeNoteTags,
+				activeNote: idMap[idOfNote] || defaultNote
+			}))
+		})
 
 		titleRef.current.focus()
 	}, [])

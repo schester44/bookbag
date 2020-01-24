@@ -1,6 +1,8 @@
 import React from 'react'
 import { GoNote } from 'react-icons/go'
 import { FaHashtag } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 const Searchbar = ({ value, onSearch }) => {
 	return (
@@ -14,16 +16,13 @@ const Searchbar = ({ value, onSearch }) => {
 	)
 }
 
-const Sidebar = ({
-	activeNote,
-	notesById,
-	noteIds,
-	tagIds,
-	tagsById,
-	onTagSelect,
-	onNoteSelect
-}) => {
+const tagsSelector = state => state.tags
+
+const Sidebar = ({ activeNote, notesById, noteIds, onNoteSelect }) => {
 	const hasNotes = noteIds.length > 0
+	const tags = useSelector(tagsSelector)
+
+	console.log(tags);
 
 	return (
 		<div className="w-64 bg-gray-200 h-full flex flex-col p-2 border-r border-gray-200">
@@ -59,20 +58,22 @@ const Sidebar = ({
 
 				<p className="font-semibold mt-2 text-gray-700">All Tags</p>
 
-				{tagIds.map(id => {
-					const tag = tagsById[id]
+				{tags.ids.map(id => {
+					const tag = tags.idMap[id]
 
 					return (
-						<div onClick={() => onTagSelect(tag)} className={`px-2 py-2 flex`} key={tag.id}>
-							<div className="text-gray-400 mr-2">
-								<FaHashtag />
+						<Link key={id} to={`/tag/${id}`}>
+							<div className={`px-2 py-2 flex`}>
+								<div className="text-gray-400 mr-2">
+									<FaHashtag />
+								</div>
+								<div className="cursor-pointer">
+									<p className="leading-none">
+										{tag.name || <span className="text-gray-600 italic">Untitled Tag</span>}
+									</p>
+								</div>
 							</div>
-							<div className="cursor-pointer">
-								<p className="leading-none">
-									{tag.name || <span className="text-gray-600 italic">Untitled Tag</span>}
-								</p>
-							</div>
-						</div>
+						</Link>
 					)
 				})}
 

@@ -92,15 +92,15 @@ export default {
 
 			const notes = await Promise.all(noteIds.all.map(id => localforage.getItem(`note-${id}`)))
 
-			const notesById = notes.reduce((acc, note) => {
+			const idMap = notes.reduce((acc, note) => {
 				acc[note.id] = note
 				return acc
 			}, {})
 
 			return {
 				notes,
-				noteIds: noteIds.all.sort((a, b) => notesById[b].lastUpdate - notesById[a].lastUpdate),
-				notesById
+				ids: noteIds.all.sort((a, b) => idMap[b].lastUpdate - idMap[a].lastUpdate),
+				idMap
 			}
 		},
 		getById: id => {
