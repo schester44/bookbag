@@ -67,6 +67,7 @@ export const createNewNote = () => {
 	return {
 		id: nanoid(),
 		title: '',
+		snippet: '',
 		lastUpdate: new Date(),
 		body: [
 			{

@@ -12,6 +12,7 @@ import { debouncedSaveNote } from '../../actions/notes'
 
 import { activeNoteTagsSelector } from '../../reducers'
 import { useSelector, useDispatch } from 'react-redux'
+import { withLinks } from './plugins/withLinks'
 
 const activeNoteSelector = state => {
 	return {
@@ -25,7 +26,7 @@ const EditorWindow = () => {
 	const dispatch = useDispatch()
 	const activeNoteTags = useSelector(activeNoteTagsSelector(active.id))
 	const titleRef = React.useRef()
-	const editor = React.useMemo(() => withHistory(withReact(createEditor())), [])
+	const editor = React.useMemo(() => withLinks(withHistory(withReact(createEditor()))), [])
 
 	// TODO: Save the note before unmounting, only if the note hasn't been deleted
 	const [{ note, isLoaded }, setState] = React.useState({

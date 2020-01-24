@@ -24,10 +24,26 @@ const TodoItem = ({ attributes, children }) => {
 
 const Element = ({ onTodoCheck, attributes, children, element }) => {
 	switch (element.type) {
+		case 'link':
+			return (
+				<a className="underline text-indigo-400 cursor-pointer" {...attributes} href={element.url} target="new">
+					{children}
+				</a>
+			)
 		case 'block-quote':
 			return <blockquote {...attributes}>{children}</blockquote>
+		case 'numbered-list':
+			return (
+				<ul className="list-decimal list-inside" {...attributes}>
+					{children}
+				</ul>
+			)
 		case 'bulleted-list':
-			return <ul {...attributes}>{children}</ul>
+			return (
+				<ul className="list-disc list-inside" {...attributes}>
+					{children}
+				</ul>
+			)
 		case 'heading-one':
 			return (
 				<h1 className="text-2xl font-bold" {...attributes}>
@@ -43,14 +59,7 @@ const Element = ({ onTodoCheck, attributes, children, element }) => {
 		case 'todo-item':
 			return <TodoItem onTodoCheck={onTodoCheck} attributes={attributes} children={children} />
 		case 'list-item':
-			return (
-				<li {...attributes}>
-					<span style={{ userSelect: 'none' }} contentEditable={false}>
-						-{' '}
-					</span>
-					{children}
-				</li>
-			)
+			return <li {...attributes}>{children}</li>
 		case 'numbered-list':
 			return <ol {...attributes}>{children}</ol>
 		default:

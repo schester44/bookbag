@@ -8,7 +8,7 @@ const Tag = ({ id }) => {
 	const tag = useSelector(tagSelector(id))
 
 	return (
-		<div className={`flex`}>
+		<div className={"flex px-8 py-3"}>
 			<div className="text-gray-400 mr-2">
 				<FiHash />
 			</div>

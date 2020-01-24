@@ -1,5 +1,6 @@
 import React from 'react'
 import { MdClose } from 'react-icons/md'
+import { FiPlus } from 'react-icons/fi'
 import { useSelector } from 'react-redux'
 
 const tagMapSelector = state => state.tags.idMap
@@ -23,7 +24,7 @@ const TagList = ({ ids, onTagCreate, onRemoveTag }) => {
 
 					return (
 						<div
-							className="flex items-center mx-1 rounded bg-gray-100 border-gray-200 border text-gray-700 px-2 text-sm font-medium"
+							className="flex items-center mx-1 rounded-full bg-gray-100 border-gray-200 border text-gray-700 px-2 text-sm font-medium"
 							key={id}
 						>
 							<span>{tag.name}</span>
@@ -36,12 +37,15 @@ const TagList = ({ ids, onTagCreate, onRemoveTag }) => {
 				})}
 			</div>
 
-			<input
-				onKeyPress={handleKeyPress}
-				type="text"
-				placeholder="New tag"
-				className="outline-none mx-1 rounded border-gray-200 border text-gray-700 px-2 text-sm"
-			/>
+			<div className="relative">
+				<FiPlus className="absolute text-gray-400" style={{ top: 5, left: 6 }} />
+				<input
+					onKeyPress={handleKeyPress}
+					type="text"
+					placeholder="New tag"
+					className="outline-none mx-1 rounded-full border-gray-200 border bg-gray-100 text-gray-700 pl-5 pr-2 text-sm font-medium"
+				/>
+			</div>
 		</div>
 	)
 }

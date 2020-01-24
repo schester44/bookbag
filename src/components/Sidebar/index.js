@@ -55,11 +55,7 @@ const Sidebar = () => {
 					<p className="px-8 mt-2 mb-4 font-semibold text-gray-700">All Tags</p>
 
 					{tagIds.map(id => {
-						return (
-							<Link className="px-8 py-3" key={id} to={`/tag/${id}`}>
-								<Tag id={id} />
-							</Link>
-						)
+						return <Tag id={`t-${id}`} />
 					})}
 				</Route>
 			</Switch>
