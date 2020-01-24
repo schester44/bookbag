@@ -1,12 +1,15 @@
 import React from 'react'
 import { MdClose } from 'react-icons/md'
-import { FiPlus } from 'react-icons/fi'
+import { FiPlus, FiHash } from 'react-icons/fi'
 import { useSelector } from 'react-redux'
 
 const tagMapSelector = state => state.tags.idMap
 
 const TagList = ({ ids, onTagCreate, onRemoveTag }) => {
+	const [visible, setVisible] = React.useState(false)
+
 	const tags = useSelector(tagMapSelector)
+	const inputRef = React.useRef()
 
 	const handleKeyPress = event => {
 		if (event.key !== 'Enter' || event.target.value.trim().length === 0) return
@@ -16,9 +19,17 @@ const TagList = ({ ids, onTagCreate, onRemoveTag }) => {
 		event.target.value = ''
 	}
 
+	const handleToggle = () => {
+		inputRef.current.focus()
+
+		setVisible(prev => !prev)
+	}
+
 	return (
-		<div className="flex items-center">
-			<div className="tags mr-2 flex">
+		<div className="flex items-center" style={{ minHeight: 25 }}>
+			<FiHash className="cursor-pointer text-gray-400 hover:text-gray-900" onClick={handleToggle} />
+
+			<div className="tags ml-2 flex">
 				{ids.map(id => {
 					const tag = tags[id]
 
@@ -37,9 +48,10 @@ const TagList = ({ ids, onTagCreate, onRemoveTag }) => {
 				})}
 			</div>
 
-			<div className="relative">
+			<div className={`relative ${visible ? 'visible' : 'hidden'}`}>
 				<FiPlus className="absolute text-gray-400" style={{ top: 5, left: 6 }} />
 				<input
+					ref={inputRef}
 					onKeyPress={handleKeyPress}
 					type="text"
 					placeholder="New tag"

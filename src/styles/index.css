@@ -5,12 +5,21 @@
 @tailwind utilities;
 
 .toolbar-btn {
-	@apply p-2 mx-1 text-gray-600 cursor-pointer rounded;
+	@apply p-1 px-2 mx-1 text-gray-600 cursor-pointer rounded;
 }
 
 .toolbar-btn:hover,
 .toolbar-btn.toolbar-btn--active {
 	@apply bg-gray-100 text-gray-800;
+}
+
+.toolbar-btn--inverted {
+	@apply text-gray-400;
+}
+
+.toolbar-btn.toolbar-btn--inverted:hover,
+.toolbar-btn--inverted.toolbar-btn--active {
+	@apply bg-gray-700 text-white;
 }
 
 .app-nav-item {

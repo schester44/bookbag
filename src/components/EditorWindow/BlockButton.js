@@ -3,13 +3,13 @@ import { useSlate } from 'slate-react'
 
 import { isBlockActive, toggleBlock } from './utils'
 
-const BlockButton = ({ format, icon }) => {
+const BlockButton = ({ format, icon, inverted = false }) => {
 	const editor = useSlate()
 	const isActive = isBlockActive(editor, format)
 
 	return (
 		<div
-			className={`toolbar-btn ${isActive ? 'toolbar-btn--active' : ''}`}
+			className={`toolbar-btn ${isActive ? 'toolbar-btn--active' : ''} ${inverted ? 'toolbar-btn--inverted' : ''}`}
 			onMouseDown={event => {
 				event.preventDefault()
 				toggleBlock(editor, format)

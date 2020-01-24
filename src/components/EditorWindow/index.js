@@ -13,6 +13,8 @@ import { debouncedSaveNote } from '../../actions/notes'
 import { activeNoteTagsSelector } from '../../reducers'
 import { useSelector, useDispatch } from 'react-redux'
 import { withLinks } from './plugins/withLinks'
+import { withMarkdownShortcuts } from './plugins/withMarkdownShortcuts'
+import FloatingToolbar from './FloatingToolbar'
 
 const activeNoteSelector = state => {
 	return {
@@ -26,11 +28,14 @@ const EditorWindow = () => {
 	const dispatch = useDispatch()
 	const activeNoteTags = useSelector(activeNoteTagsSelector(active.id))
 	const titleRef = React.useRef()
-	const editor = React.useMemo(() => withLinks(withHistory(withReact(createEditor()))), [])
+	const editor = React.useMemo(
+		() => withMarkdownShortcuts(withLinks(withHistory(withReact(createEditor())))),
+		[]
+	)
 
-	// TODO: Save the note before unmounting, only if the note hasn't been deleted
 	const [{ note, isLoaded }, setState] = React.useState({
-		isLoaded: false
+		isLoaded: false,
+		note: undefined
 	})
 
 	React.useEffect(() => {
@@ -109,26 +114,33 @@ const EditorWindow = () => {
 
 	return (
 		<Slate editor={editor} value={note.body} onChange={handleNoteBodyChange}>
-			<div className="flex-1 shadow px-12 py-8 bg-white flex flex-col h-full">
-				<div className="flex justify-center border-b border-gray-200">
+			<FloatingToolbar />
+			<div className="flex-1 shadow pb-8 bg-white flex flex-col h-full">
+				<div className="flex justify-center p-2 border-b border-gray-200 mb-2 items-center">
 					<EditorToolbar activeNote={active.note} />
 				</div>
 
-				<input
-					ref={titleRef}
-					className={`border-0 text-gray-800 placeholder-gray-300 outline-none text-3xl font-semibold bg-transparent my-4 ${
-						note.title.length === 0 ? 'italic' : ''
-					} `}
-					placeholder="Untitled Note"
-					value={note.title}
-					onChange={({ target: { value } }) => handleNoteTitleChange(value)}
-				/>
+				<div className="px-8 pb-3">
+					<input
+						ref={titleRef}
+						className={`border-0 leading-none text-gray-800 placeholder-gray-300 outline-none text-3xl font-semibold bg-transparent my-4 ${
+							note.title.length === 0 ? 'italic' : ''
+						} `}
+						placeholder="Untitled Note"
+						value={note.title}
+						onChange={({ target: { value } }) => handleNoteTitleChange(value)}
+					/>
 
-				<div className="pt-2 py-4">
-					<TagList ids={activeNoteTags} onTagCreate={handleNewTag} onRemoveTag={handleRemoveTag} />
+					<div className="pb-4">
+						<TagList
+							ids={activeNoteTags}
+							onTagCreate={handleNewTag}
+							onRemoveTag={handleRemoveTag}
+						/>
+					</div>
+
+					<Editor editor={editor} />
 				</div>
-
-				<Editor editor={editor} />
 			</div>
 		</Slate>
 	)

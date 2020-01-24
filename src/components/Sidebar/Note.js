@@ -18,7 +18,7 @@ const Note = ({ id, isSelected, onSelect }) => {
 		>
 			<div className="flex items-center pb-2 justify-between">
 				<div className="text-gray-400 text-xl">
-					<GoNote />
+					<GoNote className={isSelected ? 'text-indigo-700' : ''} />
 				</div>
 
 				<p className="text-right leading-tight text-xs text-gray-400">
@@ -30,7 +30,7 @@ const Note = ({ id, isSelected, onSelect }) => {
 				{note.title.trim().length > 0 ? (
 					note.title
 				) : (
-					<span className="ml-6 text-gray-600 italic">Untitled Note</span>
+					<span className="text-gray-600 italic">Untitled Note</span>
 				)}
 			</p>
 

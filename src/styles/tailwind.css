@@ -8347,7 +8347,9 @@ video {
 }
 
 .toolbar-btn {
-  padding: 0.5rem;
+  padding: 0.25rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
   margin-left: 0.25rem;
   margin-right: 0.25rem;
   color: #718096;
@@ -8359,6 +8361,16 @@ video {
 .toolbar-btn.toolbar-btn--active {
   background-color: #f7fafc;
   color: #2d3748;
+}
+
+.toolbar-btn--inverted {
+  color: #cbd5e0;
+}
+
+.toolbar-btn.toolbar-btn--inverted:hover,
+.toolbar-btn--inverted.toolbar-btn--active {
+  background-color: #4a5568;
+  color: #fff;
 }
 
 .app-nav-item {

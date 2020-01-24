@@ -1,18 +1,8 @@
 import React from 'react'
-import {
-	FiBold,
-	FiItalic,
-	FiUnderline,
-	FiCode,
-	FiList,
-	FiTrash,
-	FiCheckSquare,
-	FiPlus
-} from 'react-icons/fi'
+import { FiList, FiTrash, FiCheckSquare, FiPlus } from 'react-icons/fi'
 import { MdFormatListNumbered } from 'react-icons/md'
-import { FaHeading, FaQuoteRight } from 'react-icons/fa'
+import { FaQuoteRight } from 'react-icons/fa'
 
-import MarkButton from './MarkButton'
 import BlockButton from './BlockButton'
 import { useDispatch } from 'react-redux'
 
@@ -31,14 +21,8 @@ const EditorToolbar = ({ activeNote }) => {
 	}
 
 	return (
-		<div className="px-2 pb-2 flex justify-between w-full">
+		<div className="flex justify-between items-center w-full">
 			<div className="flex">
-				<MarkButton format="bold" icon={<FiBold />} />
-				<MarkButton format="italic" icon={<FiItalic />} />
-				<MarkButton format="underline" icon={<FiUnderline />} />
-				<MarkButton format="code" icon={<FiCode />} />
-				<BlockButton format="heading-one" icon={<FaHeading />} />
-				<BlockButton format="heading-two" icon={<FaHeading />} />
 				<BlockButton format="block-quote" icon={<FaQuoteRight />} />
 				<BlockButton format="numbered-list" icon={<MdFormatListNumbered />} />
 				<BlockButton format="bulleted-list" icon={<FiList />} />
@@ -52,7 +36,7 @@ const EditorToolbar = ({ activeNote }) => {
 
 				<div
 					onClick={handleNew}
-					className="flex items-center ml-2 rounded bg-indigo-100 py-1 px-2 text-gray-800 text-xs font-bold cursor-pointer hover:bg-indigo-200"
+					className="flex items-center ml-2 rounded bg-gray-800 py-1 px-2 text-gray-100 text-xs font-bold cursor-pointer hover:bg-gray-900"
 				>
 					<FiPlus className="mr-1" /> New Note
 				</div>
