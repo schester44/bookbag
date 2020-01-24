@@ -1,4 +1,4 @@
-import { Transforms, Editor } from 'slate'
+import { Transforms, Editor, Node } from 'slate'
 import { LIST_TYPES } from './constants'
 
 export const toggleBlock = (editor, format) => {
@@ -41,4 +41,10 @@ export const isBlockActive = (editor, format) => {
 export const isMarkActive = (editor, format) => {
 	const marks = Editor.marks(editor)
 	return marks ? marks[format] === true : false
+}
+
+
+
+export const serializeToText = nodes => {
+	return nodes.map(n => Node.string(n)).join('\n')
 }

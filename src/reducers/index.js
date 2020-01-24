@@ -53,6 +53,11 @@ const notes = createReducer(
 		[noteTrashed]: (state, { payload }) => {
 			state.ids = state.ids.filter(id => id !== payload.note.id)
 			delete state.idMap[payload.note.id]
+
+			if (payload.newNote) {
+				state.ids.unshift(payload.newNote.id)
+				state.idMap[payload.newNote.id] = payload.newNote
+			}
 		},
 		[noteRestored]: (state, { payload }) => {
 			state.ids.unshift(payload.note.id)
@@ -121,7 +126,10 @@ const trash = createReducer(
 	},
 	{
 		[trashFetched]: (state, { payload }) => {
-			state.ids = payload.trash.ids
+			state.ids = payload.trash.ids.sort((a, b) => {
+				return payload.trash.idMap[b].trashedAt - payload.trash.idMap[a].trashedAt
+			})
+
 			state.idMap = payload.trash.idMap
 		},
 		[noteRestored]: (state, { payload }) => {

@@ -36,7 +36,7 @@ const Trash = () => {
 		)
 
 	return (
-		<div className="bg-gray-100 flex-1 px-2 pt-4 text-gray-900">
+		<div className="bg-gray-100 overflow-auto  flex-1 px-2 pt-8 pb-24 text-gray-900">
 			<div className=" container mx-auto">
 				<h1 className="text-3xl font-bold pb-1 mb-4">Trash</h1>
 

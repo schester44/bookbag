@@ -1,9 +1,10 @@
 import { createAction } from '@reduxjs/toolkit'
-import api from '../../api'
 import nanoid from 'nanoid'
-
-import { fetchNoteTags } from '../tags'
 import debounce from 'lodash/debounce'
+
+import { serializeToText } from '../../components/EditorWindow/utils'
+import api from '../../api'
+import { fetchNoteTags } from '../tags'
 
 export const notesFetched = createAction('FETCH_NOTES_SUCCESS')
 export const noteCreated = createAction('NOTE_CREATED')
@@ -50,7 +51,13 @@ export const debouncedSaveNote = debounce(({ note }, dispatch) => {
 
 export const saveNote = ({ note }) => {
 	return async dispatch => {
-		const savedNote = await api.notes.save(note.id, note)
+		let snippet = note.snippet
+
+		if (!snippet || snippet.length < 50) {
+			snippet = serializeToText(note.body).slice(0, 150)
+		}
+
+		const savedNote = await api.notes.save(note.id, { ...note, snippet })
 
 		dispatch(noteSaved({ note: savedNote }))
 	}

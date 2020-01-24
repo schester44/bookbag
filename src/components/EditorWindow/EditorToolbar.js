@@ -14,16 +14,13 @@ import { FaHeading, FaQuoteRight } from 'react-icons/fa'
 
 import MarkButton from './MarkButton'
 import BlockButton from './BlockButton'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
 import { sendToTrash } from '../../actions/trash'
 import { openNewNote } from '../../actions/notes'
 
-const totalNotesSelector = state => state.notes.ids.length
-
 const EditorToolbar = ({ activeNote }) => {
 	const dispatch = useDispatch()
-	const totalNotes = useSelector(totalNotesSelector)
 
 	const handleDelete = () => {
 		dispatch(sendToTrash({ noteId: activeNote.id }))
@@ -49,11 +46,9 @@ const EditorToolbar = ({ activeNote }) => {
 			</div>
 
 			<div className="settings flex items-center">
-				{totalNotes > 1 && (
-					<div className="toolbar-btn" onClick={handleDelete}>
-						<FiTrash />
-					</div>
-				)}
+				<div className="toolbar-btn" onClick={handleDelete}>
+					<FiTrash />
+				</div>
 
 				<div
 					onClick={handleNew}

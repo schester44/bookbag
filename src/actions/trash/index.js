@@ -1,6 +1,7 @@
 import { createAction } from '@reduxjs/toolkit'
 
 import api from '../../api'
+import { createNewNote } from '../notes'
 
 export const trashFetched = createAction('TRASH_FETCHED')
 export const noteRestored = createAction('TRASH_NOTE_RESTORED')
@@ -25,12 +26,18 @@ export const sendToTrash = ({ noteId }) => {
 
 		api.notes.sendToTrash({ note, trashedAt }).then(note => {
 			let activeNoteId
+			let newNote
 
 			if (editor.activeNoteId === note.id) {
 				activeNoteId = notes.ids.find(id => id !== note.id)
 			}
 
-			dispatch(noteTrashed({ note, trashedAt, activeNoteId }))
+			if (notes.ids.length === 1) {
+				newNote = createNewNote()
+				activeNoteId = newNote.id
+			}
+
+			dispatch(noteTrashed({ note, trashedAt, activeNoteId, newNote }))
 		})
 	}
 }

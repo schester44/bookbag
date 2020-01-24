@@ -47,21 +47,8 @@ async function deleteNote(noteId) {
 
 	noteIds.all = noteIds.all.filter(id => id !== noteId)
 
-	localforage
-		.setItem('noteIds', noteIds)
-		.then(ids => {
-			console.log('ids', ids)
-		})
-		.catch(e => {
-			console.log(e)
-		})
-
-	localforage
-		.removeItem(`note-${noteId}`)
-		.then(console.log)
-		.catch(e => {
-			console.log(e)
-		})
+	localforage.setItem('noteIds', noteIds)
+	localforage.removeItem(`note-${noteId}`)
 }
 
 export default {
@@ -232,7 +219,7 @@ export default {
 
 			trash.idMap[note.id] = trashedNote
 
-			await deleteNote(note.id)
+			deleteNote(note.id)
 			localforage.setItem('trash', trash)
 
 			return trashedNote
