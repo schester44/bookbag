@@ -1466,7 +1466,7 @@
 
 "@types/is-hotkey@^0.1.1":
   version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@types/is-hotkey/-/-0.1.1.tgz#802e294c2a02f26fbcbe8639c77ef05e38cfdc8c"
+  resolved "https://registry.yarnpkg.com/@types/is-hotkey/-/is-hotkey-0.1.1.tgz#802e294c2a02f26fbcbe8639c77ef05e38cfdc8c"
   integrity sha512-QzVKww91fJv/KzARJBS/Im5GS2A8iE64E1HxOed72EmYOvPLG4PBw77QCIUjFl7VwWB3G/SVrxsHedJD/wtn1A==
 
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0":
