@@ -1,7 +1,12 @@
 import React from 'react'
 import { MdClose } from 'react-icons/md'
+import { useSelector } from 'react-redux'
 
-const TagList = ({ tagIds, tagsById, onTagCreate, onRemoveTagFromNote }) => {
+const tagMapSelector = state => state.tags.idMap
+
+const TagList = ({ ids, onTagCreate, onRemoveTag }) => {
+	const tags = useSelector(tagMapSelector)
+
 	const handleKeyPress = event => {
 		if (event.key !== 'Enter' || event.target.value.trim().length === 0) return
 
@@ -13,8 +18,8 @@ const TagList = ({ tagIds, tagsById, onTagCreate, onRemoveTagFromNote }) => {
 	return (
 		<div className="flex items-center">
 			<div className="tags mr-2 flex">
-				{tagIds.map(id => {
-					const tag = tagsById[id]
+				{ids.map(id => {
+					const tag = tags[id]
 
 					return (
 						<div
@@ -24,7 +29,7 @@ const TagList = ({ tagIds, tagsById, onTagCreate, onRemoveTagFromNote }) => {
 							<span>{tag.name}</span>
 							<MdClose
 								className="ml-2 cursor-pointer text-gray-500 hover:text-gray-700"
-								onClick={() => onRemoveTagFromNote(tag)}
+								onClick={() => onRemoveTag(tag)}
 							/>
 						</div>
 					)

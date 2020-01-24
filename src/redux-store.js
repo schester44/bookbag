@@ -1,10 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 
-import { notes, tags } from './reducers'
+import { reducer } from './reducers'
 
 export const store = configureStore({
-	reducer: {
-		notes,
-		tags
-	}
+	reducer
 })

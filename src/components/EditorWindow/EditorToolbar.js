@@ -13,8 +13,20 @@ import { FaHeading, FaQuoteRight } from 'react-icons/fa'
 
 import MarkButton from './MarkButton'
 import BlockButton from './BlockButton'
+import { useDispatch, useSelector } from 'react-redux'
 
-const EditorToolbar = ({ activeNote, onDelete }) => {
+import { deleteNote } from '../../actions/notes'
+
+const totalNotesSelector = state => state.notes.ids.length
+
+const EditorToolbar = ({ activeNote }) => {
+	const dispatch = useDispatch()
+	const totalNotes = useSelector(totalNotesSelector)
+
+	const handleDelete = () => {
+		dispatch(deleteNote(activeNote.id))
+	}
+
 	return (
 		<div className="px-2 pb-2 flex justify-between w-full">
 			<div className="flex">
@@ -31,8 +43,8 @@ const EditorToolbar = ({ activeNote, onDelete }) => {
 			</div>
 
 			<div className="settings">
-				{activeNote.id && (
-					<div className="toolbar-btn" onClick={onDelete}>
+				{totalNotes > 1 && (
+					<div className="toolbar-btn" onClick={handleDelete}>
 						<FiTrash />
 					</div>
 				)}

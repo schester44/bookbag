@@ -1,6 +1,6 @@
 import React from 'react'
 import isHotkey from 'is-hotkey'
-import { Editable, Slate } from 'slate-react'
+import { Editable } from 'slate-react'
 
 import Element from './Element'
 import Leaf from './Leaf'
