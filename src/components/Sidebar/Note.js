@@ -21,7 +21,11 @@ const Note = ({ id, isSelected, onSelect }) => {
 			</div>
 			<div className="flex-1">
 				<p className={`${isSelected ? 'font-semibold' : ''} leading-none`}>
-					{note.title || <span className="text-gray-600 italic">Untitled Note</span>}
+					{note.title.trim().length > 0 ? (
+						note.title
+					) : (
+						<span className="text-gray-600 italic">Untitled Note</span>
+					)}
 				</p>
 
 				<p className="text-right leading-none text-xs text-gray-400">

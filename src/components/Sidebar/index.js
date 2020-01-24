@@ -16,7 +16,7 @@ const Sidebar = () => {
 	const { ids, activeNoteId } = useSelector(notesSelector)
 	const dispatch = useDispatch()
 
-	const hasNotes = ids.length > 0
+	const hasNotes = ids.length > 1
 
 	const handleNoteSelection = note => {
 		dispatch(selectNote(note))
@@ -32,7 +32,7 @@ const Sidebar = () => {
 
 			<Switch>
 				<Route exact path="/">
-					<p className="px-8 my-2 font-semibold text-gray-700">All Notes</p>
+					{ids.length > 1 && <p className="px-8 my-2 font-semibold text-gray-700">All Notes</p>}
 
 					{ids.length > 1 &&
 						ids.map(id => {

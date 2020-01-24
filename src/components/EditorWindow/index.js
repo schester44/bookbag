@@ -8,7 +8,7 @@ import EditorToolbar from './EditorToolbar'
 import TagList from '../TagList'
 
 import { createNoteTag, removeNoteTag } from '../../actions/tags'
-import { saveNote, debouncedSaveNote } from '../../actions/notes'
+import { debouncedSaveNote } from '../../actions/notes'
 
 import { activeNoteTagsSelector } from '../../reducers'
 import { useSelector, useDispatch } from 'react-redux'
@@ -27,15 +27,10 @@ const EditorWindow = () => {
 	const titleRef = React.useRef()
 	const editor = React.useMemo(() => withHistory(withReact(createEditor())), [])
 
+	// TODO: Save the note before unmounting, only if the note hasn't been deleted
 	const [{ note, isLoaded }, setState] = React.useState({
 		isLoaded: false
 	})
-
-	React.useEffect(() => {
-		if (note && active?.id && note.id !== active?.id) {
-			dispatch(saveNote({ note }))
-		}
-	}, [active, note, dispatch])
 
 	React.useEffect(() => {
 		if (!active.id) return

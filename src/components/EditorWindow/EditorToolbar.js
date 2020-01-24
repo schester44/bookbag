@@ -6,7 +6,8 @@ import {
 	FiCode,
 	FiList,
 	FiTrash,
-	FiCheckSquare
+	FiCheckSquare,
+	FiPlus
 } from 'react-icons/fi'
 import { MdFormatListNumbered } from 'react-icons/md'
 import { FaHeading, FaQuoteRight } from 'react-icons/fa'
@@ -15,7 +16,8 @@ import MarkButton from './MarkButton'
 import BlockButton from './BlockButton'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { deleteNote } from '../../actions/notes'
+import { sendToTrash } from '../../actions/trash'
+import { openNewNote } from '../../actions/notes'
 
 const totalNotesSelector = state => state.notes.ids.length
 
@@ -24,7 +26,11 @@ const EditorToolbar = ({ activeNote }) => {
 	const totalNotes = useSelector(totalNotesSelector)
 
 	const handleDelete = () => {
-		dispatch(deleteNote(activeNote.id))
+		dispatch(sendToTrash({ noteId: activeNote.id }))
+	}
+
+	const handleNew = () => {
+		dispatch(openNewNote())
 	}
 
 	return (
@@ -42,12 +48,19 @@ const EditorToolbar = ({ activeNote }) => {
 				<BlockButton format="todo-item" icon={<FiCheckSquare />} />
 			</div>
 
-			<div className="settings">
+			<div className="settings flex items-center">
 				{totalNotes > 1 && (
 					<div className="toolbar-btn" onClick={handleDelete}>
 						<FiTrash />
 					</div>
 				)}
+
+				<div
+					onClick={handleNew}
+					className="flex items-center ml-2 rounded bg-indigo-100 py-1 px-2 text-gray-800 text-xs font-bold cursor-pointer hover:bg-indigo-200"
+				>
+					<FiPlus className="mr-1" /> New Note
+				</div>
 			</div>
 		</div>
 	)

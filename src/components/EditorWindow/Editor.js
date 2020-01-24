@@ -7,12 +7,22 @@ import Leaf from './Leaf'
 
 import { toggleMark } from './utils'
 import { HOTKEYS } from './constants'
+import { openNewNote } from '../../actions/notes'
+import { useDispatch } from 'react-redux'
 
-const EditorWindow = ({ editor }) => {
+const Editor = ({ editor }) => {
+	const dispatch = useDispatch()
+
 	const renderElement = React.useCallback(props => <Element {...props} />, [])
 	const renderLeaf = React.useCallback(props => <Leaf {...props} />, [])
 
 	const handleKeyDown = event => {
+		const shouldOpenNewTab = isHotkey('ctrl+n', event)
+		if (shouldOpenNewTab) {
+			dispatch(openNewNote())
+			return
+		}
+
 		for (const hotkey in HOTKEYS) {
 			if (isHotkey(hotkey, event)) {
 				event.preventDefault()
@@ -37,4 +47,4 @@ const EditorWindow = ({ editor }) => {
 	)
 }
 
-export default EditorWindow
+export default Editor

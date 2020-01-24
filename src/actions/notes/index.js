@@ -31,12 +31,12 @@ export const initNotes = () => {
 					dispatch(fetchNoteTags(idOfNote))
 				}
 
-				const isNewNote = !idMap[idOfNote]
+				const isNewNote = !idMap[lastOpenedId] && !idMap[ids[0]]
 
 				dispatch(
 					notesInitialized({
 						isNewNote,
-						activeNote: idMap[idOfNote] || createNewNote()
+						activeNote: idMap[lastOpenedId] || idMap[ids[0]] || createNewNote()
 					})
 				)
 			}

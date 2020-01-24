@@ -1,6 +1,5 @@
 import React from 'react'
-
-import isHotKey from 'is-hotkey'
+import { Switch, Route } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
 import AppNav from './components/AppNav'
@@ -9,6 +8,8 @@ import EditorWindow from './components/EditorWindow'
 
 import { initNotes, openNewNote } from './actions/notes'
 import { fetchTags } from './actions/tags'
+
+const Trash = React.lazy(() => import('./views/Trash'))
 
 function App() {
 	const dispatch = useDispatch()
@@ -31,19 +32,22 @@ function App() {
 		return () => document.removeEventListener('keypress', hotKeyListener)
 	}, [dispatch])
 
-	const handleKeyDown = event => {
-		const shouldOpenNewTab = isHotKey('ctrl+n', event)
-
-		if (shouldOpenNewTab) {
-			dispatch(openNewNote())
-		}
-	}
-
 	return (
-		<div onKeyDown={handleKeyDown} className="App flex w-full h-full">
+		<div className="App flex w-full h-full">
 			<AppNav />
-			<Sidebar />
-			<EditorWindow />
+
+			<React.Suspense fallback={null}>
+				<Switch>
+					<Route exact path={['/', '/tags']}>
+						<Sidebar />
+						<EditorWindow />
+					</Route>
+
+					<Route path="/trash">
+						<Trash />
+					</Route>
+				</Switch>
+			</React.Suspense>
 		</div>
 	)
 }
