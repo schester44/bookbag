@@ -2,6 +2,7 @@
 	"name": "notes",
 	"version": "0.1.0",
 	"private": true,
+	"homepage": ".",
 	"dependencies": {
 		"@fullhuman/postcss-purgecss": "^2.0.5",
 		"@reduxjs/toolkit": "^1.2.3",
@@ -31,7 +32,7 @@
 		"start:app": "react-scripts start",
 		"start:all": "npm-run-all -p watch:style start:app",
 		"start": "npm-run-all -s build:style start:app",
-		"build": "react-scripts build",
+		"build": "npm run build:style && react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject"
 	},
