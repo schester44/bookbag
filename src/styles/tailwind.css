@@ -8361,6 +8361,43 @@ video {
   color: #2d3748;
 }
 
+.app-nav-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  height: 3rem;
+  cursor: pointer;
+}
+
+.app-nav-item .icon {
+  border-width: 2px;
+  border-radius: 0.25rem;
+  color: #cbd5e0;
+  border-color: transparent;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  width: 100%;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-nav-item:hover .icon {
+  color: #fff;
+}
+
+.app-nav-item.active .icon {
+  border-width: 2px;
+  border-color: #4c51bf;
+  background-color: #2d3748;
+  color: #fff;
+}
+
 @media (min-width: 640px) {
   .sm\:sr-only {
     position: absolute;

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Switch, Route } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { selectNote } from '../../actions/editor'
@@ -30,33 +30,39 @@ const Sidebar = () => {
 				</div>
 			)}
 
-			<p className="px-8 my-2 font-semibold text-gray-700">All Notes</p>
+			<Switch>
+				<Route exact path="/">
+					<p className="px-8 my-2 font-semibold text-gray-700">All Notes</p>
 
-			{ids.length > 1 &&
-				ids.map(id => {
-					return (
-						<Note
-							key={id}
-							id={id}
-							isSelected={activeNoteId === id}
-							onSelect={handleNoteSelection}
-						/>
-					)
-				})}
+					{ids.length > 1 &&
+						ids.map(id => {
+							return (
+								<Note
+									key={id}
+									id={id}
+									isSelected={activeNoteId === id}
+									onSelect={handleNoteSelection}
+								/>
+							)
+						})}
 
-			<p className="m-4 text-center text-sm text-gray-400">
-				<span className="font-bold">control + n</span> for a new note
-			</p>
+					<p className="m-4 text-center text-sm text-gray-400">
+						<span className="font-bold">control + n</span> for a new note
+					</p>
+				</Route>
 
-			<p className="px-8 mb-4 font-semibold text-gray-700">All Tags</p>
+				<Route path="/tags">
+					<p className="px-8 mt-2 mb-4 font-semibold text-gray-700">All Tags</p>
 
-			{tagIds.map(id => {
-				return (
-					<Link className="px-8 py-3" key={id} to={`/tag/${id}`}>
-						<Tag id={id} />
-					</Link>
-				)
-			})}
+					{tagIds.map(id => {
+						return (
+							<Link className="px-8 py-3" key={id} to={`/tag/${id}`}>
+								<Tag id={id} />
+							</Link>
+						)
+					})}
+				</Route>
+			</Switch>
 		</div>
 	)
 }

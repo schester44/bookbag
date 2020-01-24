@@ -114,7 +114,6 @@ export default {
 			noteIds.all = noteIds.all.filter(id => id !== noteId)
 
 			localforage.setItem('noteIds', noteIds)
-
 			localforage.removeItem(`note-${noteId}`)
 		},
 		save: async (noteId, note) => {
