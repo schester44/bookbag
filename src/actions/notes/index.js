@@ -24,7 +24,7 @@ export const fetchNotes = () => {
 
 export const initNotes = () => {
 	return dispatch => {
-		Promise.all([dispatch(fetchNotes()), api.notes.lastOpened.get()]).then(
+		return Promise.all([dispatch(fetchNotes()), api.notes.lastOpened.get()]).then(
 			async ([{ ids, idMap }, lastOpenedId]) => {
 				const idOfNote = lastOpenedId || ids[0]
 
@@ -40,6 +40,8 @@ export const initNotes = () => {
 						activeNote: idMap[lastOpenedId] || idMap[ids[0]] || createNewNote()
 					})
 				)
+
+				return { idMap, ids }
 			}
 		)
 	}
@@ -47,7 +49,7 @@ export const initNotes = () => {
 
 export const debouncedSaveNote = debounce(({ note }, dispatch) => {
 	dispatch(saveNote({ note }))
-}, 300)
+}, 150)
 
 export const saveNote = ({ note }) => {
 	return async dispatch => {

@@ -8,6 +8,9 @@ import EditorWindow from './components/EditorWindow'
 
 import { initNotes, openNewNote } from './actions/notes'
 import { fetchTags } from './actions/tags'
+import Settings from './views/Settings'
+
+import { createSearchIndex } from './services/search'
 
 const Trash = React.lazy(() => import('./views/Trash'))
 
@@ -16,7 +19,9 @@ function App() {
 
 	React.useEffect(() => {
 		dispatch(fetchTags())
-		dispatch(initNotes())
+		dispatch(initNotes()).then(notes => {
+			createSearchIndex({ notes: notes.ids.map(id => notes.idMap[id]) })
+		})
 	}, [dispatch])
 
 	React.useEffect(() => {
@@ -45,6 +50,10 @@ function App() {
 
 					<Route path="/trash">
 						<Trash />
+					</Route>
+
+					<Route path="/settings">
+						<Settings />
 					</Route>
 				</Switch>
 			</React.Suspense>

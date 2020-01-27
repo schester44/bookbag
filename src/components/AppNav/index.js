@@ -27,11 +27,11 @@ const AppNav = () => {
 					</div>
 				</NavLink>
 
-				<div className="app-nav-item">
+				<NavLink to="/settings" className="app-nav-item">
 					<div className="icon">
 						<FiSettings />
 					</div>
-				</div>
+				</NavLink>
 			</div>
 		</div>
 	)

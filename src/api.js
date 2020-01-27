@@ -51,7 +51,27 @@ async function deleteNote(noteId) {
 	localforage.removeItem(`note-${noteId}`)
 }
 
+const defaultSettings = {
+	syncMode: 'local'
+}
+
 export default {
+	settings: {
+		save: async settings => {
+			if (settings.syncMode === 'cloud') {
+				// TOOD: Sync with cloud
+			}
+
+			return localforage.setItem('settings', settings)
+		},
+		get: async () => {
+			const settings = await localforage.getItem('settings')
+
+			// TODO: if settings.syncMode == 'cloud', fetch cloud settings
+
+			return settings || defaultSettings
+		}
+	},
 	tags: {
 		getAll: getTags,
 		getByNote: tagsByNote,

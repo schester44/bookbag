@@ -8,11 +8,14 @@ import { useDispatch } from 'react-redux'
 
 import { sendToTrash } from '../../actions/trash'
 import { openNewNote } from '../../actions/notes'
+import { removeFromSearchIndex } from '../../services/search'
 
 const EditorToolbar = ({ activeNote }) => {
 	const dispatch = useDispatch()
 
 	const handleDelete = () => {
+		removeFromSearchIndex(activeNote)
+
 		dispatch(sendToTrash({ noteId: activeNote.id }))
 	}
 

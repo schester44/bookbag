@@ -8,13 +8,14 @@ const noteSelector = id => state => state.notes.idMap[id]
 const Note = ({ id, isSelected, onSelect }) => {
 	const note = useSelector(noteSelector(id))
 
+	if (!note) return null
+
 	return (
 		<div
 			onClick={() => onSelect(note)}
 			className={`cursor-pointer border-b border-gray-300 pt-3 px-4 pb-4 ${
 				isSelected ? 'bg-white' : ''
 			}`}
-			key={note.id}
 		>
 			<div className="flex items-center pb-2 justify-between">
 				<div className="text-gray-400 text-xl">

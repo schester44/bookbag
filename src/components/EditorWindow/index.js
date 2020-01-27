@@ -16,6 +16,15 @@ import { withLinks } from './plugins/withLinks'
 import { withMarkdownShortcuts } from './plugins/withMarkdownShortcuts'
 import FloatingToolbar from './FloatingToolbar'
 
+import { debounce } from '../../utils'
+import { updateSearchIndex } from '../../services/search'
+
+const updateIndexHandler = note => {
+	updateSearchIndex({ ...note, body: JSON.stringify(note.body) })
+}
+
+const debouncedUpdateSearchIndex = debounce(updateIndexHandler, 300)
+
 const activeNoteSelector = state => {
 	return {
 		id: state.editor.activeNoteId,
@@ -77,12 +86,16 @@ const EditorWindow = () => {
 			}
 		})
 
+		const updatedNote = {
+			...note,
+			title
+		}
+
+		debouncedUpdateSearchIndex(updatedNote)
+
 		debouncedSaveNote(
 			{
-				note: {
-					...note,
-					title
-				}
+				note: updatedNote
 			},
 			dispatch
 		)
@@ -98,6 +111,13 @@ const EditorWindow = () => {
 				}
 			}
 		})
+
+		const updatedNote = {
+			...note,
+			body
+		}
+
+		debouncedUpdateSearchIndex(updatedNote)
 
 		debouncedSaveNote(
 			{
