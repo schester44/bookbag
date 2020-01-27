@@ -14,7 +14,7 @@ import { searchIndex } from '../../services/search'
 import { debounce } from '../../utils'
 
 const searchHandler = searchTerm => {
-	return searchIndex.search(searchTerm).filter(item => item.score > 0.5)
+	return searchIndex.search(searchTerm).sort((a, b) => b.score - a.score)
 }
 
 const debouncedSearch = debounce(searchHandler, 300)
