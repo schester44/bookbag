@@ -8410,6 +8410,15 @@ video {
   color: #fff;
 }
 
+.sidebar-note:hover .delete-btn {
+  opacity: 1;
+}
+
+.folder-link.active {
+  color: #4c51bf;
+  background-color: #fff;
+}
+
 @media (min-width: 640px) {
   .sm\:sr-only {
     position: absolute;

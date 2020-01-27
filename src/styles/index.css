@@ -37,3 +37,12 @@
 .app-nav-item.active .icon {
 	@apply border-2 border-indigo-700 bg-gray-800 text-white;
 }
+
+.sidebar-note:hover .delete-btn {
+	@apply opacity-100;
+}
+
+
+.folder-link.active {
+	@apply text-indigo-700 bg-white;
+}

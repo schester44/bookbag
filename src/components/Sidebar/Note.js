@@ -1,19 +1,27 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { GoNote } from 'react-icons/go'
+import { FiTrash2 } from 'react-icons/fi'
 import { formatDistanceToNow } from 'date-fns'
+
+import { sendToTrash } from '../../actions/trash'
 
 const noteSelector = id => state => state.notes.idMap[id]
 
 const Note = ({ id, isSelected, onSelect }) => {
 	const note = useSelector(noteSelector(id))
+	const dispatch = useDispatch()
 
 	if (!note) return null
+
+	const handleDelete = () => {
+		dispatch(sendToTrash({ noteId: id }))
+	}
 
 	return (
 		<div
 			onClick={() => onSelect(note)}
-			className={`cursor-pointer border-b border-gray-300 pt-3 px-4 pb-4 ${
+			className={`sidebar-note cursor-pointer border-b border-gray-300 pt-3 px-4 pb-4 ${
 				isSelected ? 'bg-white' : ''
 			}`}
 		>
@@ -22,9 +30,18 @@ const Note = ({ id, isSelected, onSelect }) => {
 					<GoNote className={isSelected ? 'text-indigo-700' : ''} />
 				</div>
 
-				<p className="text-right leading-tight text-xs text-gray-400">
-					{formatDistanceToNow(note.lastUpdate)} ago
-				</p>
+				<div className="flex items-center">
+					<p className="text-right leading-none text-xs text-gray-400">
+						{formatDistanceToNow(note.lastUpdate)} ago
+					</p>
+
+					<div
+						className="text-gray-400 pl-2 text-xs hover:text-gray-900 opacity-0 delete-btn"
+						onClick={handleDelete}
+					>
+						<FiTrash2 />
+					</div>
+				</div>
 			</div>
 
 			<p className={`ml-6 ${isSelected ? 'font-semibold' : ''}`}>

@@ -1,12 +1,14 @@
 import React from 'react'
-import { Switch, Route } from 'react-router-dom'
+import { NavLink, Switch, Route } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-
+import { GoNote } from 'react-icons/go'
+import { TiArrowUnsorted } from 'react-icons/ti'
 import { selectNote } from '../../actions/editor'
 
 import SearchBar from './SearchBar'
 import Note from './Note'
 import Tag from './Tag'
+import Folders from './Folders'
 
 import { searchIndex } from '../../services/search'
 import { debounce } from '../../utils'
@@ -52,49 +54,55 @@ const Sidebar = () => {
 	const noteIds = state.isSearching ? state.notes : ids
 
 	return (
-		<div className="sm:w-2/6 xl:w-1/5 bg-gray-100 h-full overflow-auto flex flex-col py-2">
-			{hasNotes && (
-				<div className="mt-2 mb-4 px-8 w-full">
-					<SearchBar onSearch={handleSearch} />
-				</div>
-			)}
+		<div className="flex sm:w-3/6 xl:w-2/6">
+			<Folders />
 
-			<Switch>
-				<Route exact path="/">
-					{state.isSearching && (
-						<p className="px-8 my-2 font-semibold text-gray-700">
-							Search Results ({state.notes.length})
+			<div className="w-3/5 bg-gray-100 h-full overflow-auto flex flex-col py-2">
+				{hasNotes && (
+					<div className="mt-2 mb-4 px-8 w-full">
+						<SearchBar onSearch={handleSearch} />
+					</div>
+				)}
+
+				<Switch>
+					<Route exact path="/">
+						{state.isSearching && (
+							<p className="px-8 my-2 font-semibold text-gray-700">
+								Search Results ({state.notes.length})
+							</p>
+						)}
+						{!state.isSearching && ids.length > 1 && (
+							<p className="px-4 my-2 font-semibold text-gray-700">All Notes</p>
+						)}
+
+						{noteIds.length > (state.isSearching ? 0 : 1) &&
+							noteIds.map(id => {
+								return (
+									<Note
+										key={id}
+										id={id}
+										isSelected={activeNoteId === id}
+										onSelect={handleNoteSelection}
+									/>
+								)
+							})}
+
+						<p className="m-4 text-center text-sm text-gray-400">
+							<span className="font-bold">control + n</span> for a new note
 						</p>
-					)}
-					{!state.isSearching && ids.length > 1 && (
-						<p className="px-8 my-2 font-semibold text-gray-700">All Notes</p>
-					)}
+					</Route>
 
-					{noteIds.length > (state.isSearching ? 0 : 1) &&
-						noteIds.map(id => {
-							return (
-								<Note
-									key={id}
-									id={id}
-									isSelected={activeNoteId === id}
-									onSelect={handleNoteSelection}
-								/>
-							)
+					<Route path="/tags">
+						<div>
+							<p className="px-8 mt-2 mb-4 font-semibold text-gray-700">All Tags</p>
+						</div>
+
+						{tagIds.map(id => {
+							return <Tag key={`t-${id}`} id={id} />
 						})}
-
-					<p className="m-4 text-center text-sm text-gray-400">
-						<span className="font-bold">control + n</span> for a new note
-					</p>
-				</Route>
-
-				<Route path="/tags">
-					<p className="px-8 mt-2 mb-4 font-semibold text-gray-700">All Tags</p>
-
-					{tagIds.map(id => {
-						return <Tag key={id} id={`t-${id}`} />
-					})}
-				</Route>
-			</Switch>
+					</Route>
+				</Switch>
+			</div>
 		</div>
 	)
 }
