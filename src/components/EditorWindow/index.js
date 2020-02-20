@@ -19,6 +19,7 @@ import FloatingToolbar from './FloatingToolbar'
 
 import { debounce } from '../../utils'
 import { updateSearchIndex } from '../../services/search'
+import NoteTitle from './NoteTitle'
 
 const updateIndexHandler = note => {
 	updateSearchIndex({ ...note, body: JSON.stringify(note.body) })
@@ -37,7 +38,6 @@ const EditorWindow = () => {
 	const active = useSelector(activeNoteSelector)
 	const dispatch = useDispatch()
 	const activeNoteTags = useSelector(activeNoteTagsSelector(active.id))
-	const titleRef = React.useRef()
 	const editor = React.useMemo(
 		() => withMarkdownShortcuts(withLinks(withHistory(withReact(createEditor())))),
 		[]
@@ -61,12 +61,6 @@ const EditorWindow = () => {
 			}
 		})
 	}, [active])
-
-	React.useEffect(() => {
-		if (!titleRef.current) return
-
-		titleRef.current.focus()
-	}, [])
 
 	const handleNewTag = name => {
 		dispatch(createNoteTag(active.id, name))
@@ -142,15 +136,7 @@ const EditorWindow = () => {
 				</div>
 
 				<div className="px-8 pb-3">
-					<input
-						ref={titleRef}
-						className={`border-0 leading-none text-gray-800 placeholder-gray-300 outline-none text-3xl font-semibold bg-transparent my-4 ${
-							note.title.length === 0 ? 'italic' : ''
-						} `}
-						placeholder="Untitled Note"
-						value={note.title}
-						onChange={({ target: { value } }) => handleNoteTitleChange(value)}
-					/>
+					<NoteTitle title={note.title} onChange={handleNoteTitleChange} />
 
 					<div className="pb-4">
 						<TagList

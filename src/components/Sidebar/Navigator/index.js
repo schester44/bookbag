@@ -5,7 +5,7 @@ import Notebooks from './Notebooks'
 
 const Navigator = () => {
 	return (
-		<div className="w-2/5 bg-gray-900 border-r border-gray-300 pt-8">
+		<>
 			<NavLink exact to="/" className="navigator-link">
 				<IoIosPaper />
 				<span className="ml-3">All Notes</span>
@@ -17,7 +17,7 @@ const Navigator = () => {
 				<IoMdPricetag />
 				<span className="ml-3">Tags</span>
 			</div>
-		</div>
+		</>
 	)
 }
 

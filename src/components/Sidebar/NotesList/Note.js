@@ -44,7 +44,15 @@ const Note = ({ id, isSelected, onSelect }) => {
 				</div>
 			</div>
 
-			<p className={`ml-6 ${isSelected ? 'font-semibold' : ''}`}>
+			<p
+				className={`ml-6 ${isSelected ? 'font-semibold' : ''}`}
+				style={{
+					overflow: 'hidden',
+					display: '-webkit-box',
+					WebkitLineClamp: 3,
+					WebkitBoxOrient: 'vertical'
+				}}
+			>
 				{note.title.trim().length > 0 ? (
 					note.title
 				) : (
@@ -56,7 +64,11 @@ const Note = ({ id, isSelected, onSelect }) => {
 				className="pl-6 text-sm text-gray-500 whitespace-no-wrap overflow-hidden w-full"
 				style={{ textOverflow: 'ellipsis' }}
 			>
-				{note.snippet?.trim().length > 0 ? note.snippet : <span className="italic">empty note</span>}
+				{note.snippet?.trim().length > 0 ? (
+					note.snippet
+				) : (
+					<span className="italic">empty note</span>
+				)}
 			</p>
 		</div>
 	)
