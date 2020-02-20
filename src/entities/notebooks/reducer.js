@@ -1,7 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit'
 
 import { booksFetched, bookCreated, bookUpdated, bookDeleted } from './actions'
-import { noteSaved } from '../notes/actions'
+import { noteSaved, notesFetched } from '../notes/actions'
 
 // TODO: When restoring a note from the trash, it needs to go back into its original folder, if the folder exists.
 
@@ -27,6 +27,17 @@ export default createReducer(
 			state.ids = state.ids.filter(id => id !== payload.id)
 
 			delete state.idMap[payload.id]
+		},
+		[notesFetched]: (state, { payload }) => {
+			payload.notes.ids.forEach(id => {
+				const { notebookId } = payload.notes.idMap[id]
+
+				if (!state.noteIdMapByBookId[notebookId]) {
+					state.noteIdMapByBookId[notebookId] = {}
+				}
+
+				state.noteIdMapByBookId[notebookId][id] = true
+			})
 		},
 		[noteSaved]: (state, { payload }) => {
 			// This note doesn't belong to a notebook so theres no reason to update any books
