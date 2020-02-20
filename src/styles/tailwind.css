@@ -8414,9 +8414,35 @@ video {
   opacity: 1;
 }
 
-.folder-link.active {
-  color: #4c51bf;
-  background-color: #fff;
+.navigator-navitem {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  color: #cbd5e0;
+}
+
+.navigator-link {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  color: #cbd5e0;
+  cursor: pointer;
+}
+
+.navigator-link:hover {
+  background-color: #2d3748;
+}
+
+.navigator-link.active {
+  color: #fff;
+  background-color: #2d3748;
+  cursor: default;
 }
 
 @media (min-width: 640px) {

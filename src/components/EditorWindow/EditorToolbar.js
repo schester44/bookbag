@@ -6,12 +6,14 @@ import { FaQuoteRight } from 'react-icons/fa'
 import BlockButton from './BlockButton'
 import { useDispatch } from 'react-redux'
 
-import { sendToTrash } from '../../actions/trash'
-import { openNewNote } from '../../actions/notes'
+import { sendToTrash } from '../../entities/trash/actions'
+import { openNewNote } from '../../entities/notes/actions'
 import { removeFromSearchIndex } from '../../services/search'
+import { useParams } from 'react-router-dom'
 
 const EditorToolbar = ({ activeNote }) => {
 	const dispatch = useDispatch()
+	const { notebookId } = useParams()
 
 	const handleDelete = () => {
 		removeFromSearchIndex(activeNote)
@@ -20,7 +22,7 @@ const EditorToolbar = ({ activeNote }) => {
 	}
 
 	const handleNew = () => {
-		dispatch(openNewNote())
+		dispatch(openNewNote({ notebookId }))
 	}
 
 	return (

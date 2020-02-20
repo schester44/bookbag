@@ -13,6 +13,8 @@ export const fetchTags = () => {
 		const tags = await api.tags.getAll()
 
 		dispatch(tagsFetched({ tags }))
+
+		return tags
 	}
 }
 

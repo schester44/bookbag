@@ -2,15 +2,15 @@ import React from 'react'
 import { Switch, Route } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
-import AppNav from './components/AppNav'
 import Sidebar from './components/Sidebar'
 import EditorWindow from './components/EditorWindow'
 
-import { initNotes, openNewNote } from './actions/notes'
-import { fetchTags } from './actions/tags'
+import { initNotes, openNewNote } from './entities/notes/actions'
+import { fetchTags } from './entities/tags/actions'
 import Settings from './views/Settings'
 
-import { createSearchIndex } from './services/search'
+import { createSearchIndex, createTagSearchIndex } from './services/search'
+import { fetchNotebooks } from './entities/notebooks/actions'
 
 const Trash = React.lazy(() => import('./views/Trash'))
 
@@ -18,7 +18,12 @@ function App() {
 	const dispatch = useDispatch()
 
 	React.useEffect(() => {
-		dispatch(fetchTags())
+		dispatch(fetchNotebooks())
+
+		dispatch(fetchTags()).then(tags => {
+			createTagSearchIndex({ tags: tags.ids.map(id => tags.idMap[id]) })
+		})
+
 		dispatch(initNotes()).then(notes => {
 			createSearchIndex({ notes: notes.ids.map(id => notes.idMap[id]) })
 		})
@@ -39,11 +44,9 @@ function App() {
 
 	return (
 		<div className="App flex w-full h-full">
-			<AppNav />
-
 			<React.Suspense fallback={null}>
 				<Switch>
-					<Route exact path={['/', '/tags']}>
+					<Route exact path={['/', '/notebook/:notebookId', '/tags']}>
 						<Sidebar />
 						<EditorWindow />
 					</Route>

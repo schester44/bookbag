@@ -3,9 +3,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { GoNote } from 'react-icons/go'
 import { MdSettingsBackupRestore } from 'react-icons/md'
 import { FiTrash2 } from 'react-icons/fi'
-
-import { fetchTrash, restoreFromTrash, deleteTrashedNote } from '../../actions/trash'
 import { formatDistanceToNow } from 'date-fns/esm'
+
+import { fetchTrash, restoreFromTrash, deleteTrashedNote } from '../../entities/trash/actions'
 
 const trashSelector = state => state.trash
 

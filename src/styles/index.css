@@ -42,7 +42,19 @@
 	@apply opacity-100;
 }
 
+.navigator-navitem {
+	@apply px-4 py-2 flex items-center text-gray-400;
+}
 
-.folder-link.active {
-	@apply text-indigo-700 bg-white;
+.navigator-link {
+	@apply px-4 py-2 flex items-center text-gray-400 cursor-pointer;
+}
+
+.navigator-link:hover {
+	@apply bg-gray-800;
+}
+
+.navigator-link.active {
+	@apply text-white bg-gray-800 cursor-default;
+	;
 }

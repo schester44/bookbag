@@ -1,7 +1,7 @@
 import { createAction } from '@reduxjs/toolkit'
 
 import api from '../../api'
-import { createNewNote } from '../notes'
+import { createNewNote } from '../notes/actions'
 
 export const trashFetched = createAction('TRASH_FETCHED')
 export const noteRestored = createAction('TRASH_NOTE_RESTORED')

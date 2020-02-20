@@ -1,7 +1,7 @@
 import { createAction } from '@reduxjs/toolkit'
 import api from '../../api'
 
-import { fetchNoteTags } from '../tags'
+import { fetchNoteTags } from '../tags/actions'
 
 export const activeNoteChanged = createAction('ACTIVE_NOTE_CHANGED')
 

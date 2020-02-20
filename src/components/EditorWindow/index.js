@@ -7,10 +7,11 @@ import Editor from './Editor'
 import EditorToolbar from './EditorToolbar'
 import TagList from '../TagList'
 
-import { createNoteTag, removeNoteTag } from '../../actions/tags'
-import { debouncedSaveNote } from '../../actions/notes'
+import { createNoteTag, removeNoteTag } from '../../entities/tags/actions'
+import { debouncedSaveNote } from '../../entities/notes/actions'
 
-import { activeNoteTagsSelector } from '../../reducers'
+import { activeNoteTagsSelector } from '../../entities/tags/reducer'
+
 import { useSelector, useDispatch } from 'react-redux'
 import { withLinks } from './plugins/withLinks'
 import { withMarkdownShortcuts } from './plugins/withMarkdownShortcuts'

@@ -1,14 +1,14 @@
 import React from 'react'
 import isHotkey from 'is-hotkey'
 import { Editable } from 'slate-react'
+import { useDispatch } from 'react-redux'
 
 import Element from './Element'
 import Leaf from './Leaf'
 
 import { toggleMark } from './utils'
 import { HOTKEYS } from './constants'
-import { openNewNote } from '../../actions/notes'
-import { useDispatch } from 'react-redux'
+import { openNewNote } from '../../entities/notes/actions'
 
 const Editor = ({ editor }) => {
 	const dispatch = useDispatch()

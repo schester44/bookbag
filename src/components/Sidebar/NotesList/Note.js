@@ -4,7 +4,7 @@ import { GoNote } from 'react-icons/go'
 import { FiTrash2 } from 'react-icons/fi'
 import { formatDistanceToNow } from 'date-fns'
 
-import { sendToTrash } from '../../actions/trash'
+import { sendToTrash } from '../../../entities/trash/actions'
 
 const noteSelector = id => state => state.notes.idMap[id]
 
@@ -56,7 +56,7 @@ const Note = ({ id, isSelected, onSelect }) => {
 				className="pl-6 text-sm text-gray-500 whitespace-no-wrap overflow-hidden w-full"
 				style={{ textOverflow: 'ellipsis' }}
 			>
-				{note.snippet.trim().length > 0 ? note.snippet : <span className="italic">empty note</span>}
+				{note.snippet?.trim().length > 0 ? note.snippet : <span className="italic">empty note</span>}
 			</p>
 		</div>
 	)

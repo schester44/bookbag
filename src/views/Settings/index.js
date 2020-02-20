@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { fetchSettings, saveSettings } from '../../actions/settings'
+import { fetchSettings, saveSettings } from '../../services/settings'
 
 const Settings = () => {
 	const [state, setState] = React.useState({

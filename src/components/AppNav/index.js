@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { GoNote } from 'react-icons/go'
-import { FiHash, FiSettings, FiTrash2 } from 'react-icons/fi'
+import { FiSettings, FiTrash2 } from 'react-icons/fi'
 
 const AppNav = () => {
 	return (
@@ -12,15 +12,6 @@ const AppNav = () => {
 						<GoNote />
 					</div>
 				</NavLink>
-
-				<NavLink to="/tags" className="app-nav-item">
-					<div className="icon">
-						<FiHash />
-					</div>
-				</NavLink>
-			</div>
-
-			<div>
 				<NavLink to="/trash" className="app-nav-item">
 					<div className="icon">
 						<FiTrash2 />

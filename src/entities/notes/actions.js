@@ -4,7 +4,7 @@ import debounce from 'lodash/debounce'
 
 import { serializeToText } from '../../components/EditorWindow/utils'
 import api from '../../api'
-import { fetchNoteTags } from '../tags'
+import { fetchNoteTags } from '../tags/actions'
 
 export const notesFetched = createAction('FETCH_NOTES_SUCCESS')
 export const noteCreated = createAction('NOTE_CREATED')
@@ -65,12 +65,13 @@ export const saveNote = ({ note }) => {
 	}
 }
 
-export const createNewNote = () => {
+export const createNewNote = ({ notebookId } = {}) => {
 	return {
 		id: nanoid(),
 		title: '',
 		snippet: '',
 		lastUpdate: new Date(),
+		notebookId,
 		body: [
 			{
 				type: 'paragraph',
@@ -96,9 +97,9 @@ export const deleteNote = noteId => {
 	}
 }
 
-export const openNewNote = () => {
+export const openNewNote = ({ notebookId }) => {
 	return dispatch => {
-		const note = createNewNote()
+		const note = createNewNote({ notebookId })
 
 		dispatch(noteCreated({ note }))
 
