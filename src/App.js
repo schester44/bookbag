@@ -1,5 +1,5 @@
 import React from 'react'
-import { Switch, Route, useParams } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
 import Sidebar from './components/Sidebar'
@@ -14,7 +14,6 @@ import { fetchNotebooks } from './entities/notebooks/actions'
 
 function App() {
 	const dispatch = useDispatch()
-	const { notebookId } = useParams()
 
 	React.useEffect(() => {
 		dispatch(fetchNotebooks())
@@ -32,20 +31,23 @@ function App() {
 		function hotKeyListener(event) {
 			// TODO: Why doesn't isHotKey work here
 			if (event.ctrlKey && event.key === 'n') {
-				dispatch(openNewNote({ notebookId }))
+				dispatch(openNewNote())
 			}
 		}
 
 		document.addEventListener('keypress', hotKeyListener)
 
 		return () => document.removeEventListener('keypress', hotKeyListener)
-	}, [dispatch, notebookId])
+	}, [dispatch])
 
 	return (
 		<div className="App flex w-full h-full">
 			<React.Suspense fallback={null}>
 				<Switch>
-					<Route exact path={['/', '/trash', '/notebook/:notebookId', '/tags']}>
+					<Route
+						exact
+						path={['/', '/note/:noteId', '/trash', '/notebook/:notebookId/:noteId?', '/tags']}
+					>
 						<Sidebar />
 						<EditorWindow />
 					</Route>

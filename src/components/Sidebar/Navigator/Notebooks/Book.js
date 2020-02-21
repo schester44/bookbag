@@ -99,9 +99,9 @@ const Book = ({ book }) => {
 				}`}
 				to={`/notebook/${book.id}`}
 			>
-				<span className="ml-8">{rename.name}</span>
+				<div className="ml-8 flex-1 truncate">{rename.name}</div>
 				{book.notes.length > 0 && (
-					<span className="text-xs font-bold text-gray-600">{book.notes.length}</span>
+					<span className="text-xs font-bold ml-1 text-gray-600">{book.notes.length}</span>
 				)}
 			</NavLink>
 		</ContextMenu>

@@ -6,7 +6,7 @@ import Note from './Note'
 
 import { searchIndex } from '../../../services/search'
 import { selectNote } from '../../../entities/editor/actions'
-import { useParams } from 'react-router-dom'
+import { useParams, useHistory, useRouteMatch, generatePath } from 'react-router-dom'
 
 const searchHandler = searchTerm => {
 	return searchIndex.search(searchTerm, {}).sort((a, b) => b.score - a.score)
@@ -25,7 +25,8 @@ const NotesList = () => {
 	const { ids, notebooks, activeNoteId } = useSelector(notesSelector)
 	const dispatch = useDispatch()
 	const params = useParams()
-
+	const history = useHistory()
+	const match = useRouteMatch()
 	const notebook = useSelector(notebookSelector(params.notebookId))
 
 	const [state, setState] = React.useState({
@@ -74,6 +75,19 @@ const NotesList = () => {
 
 	const handleNoteSelection = note => {
 		dispatch(selectNote(note))
+
+		let pathname = `/note/${note.id}`
+
+		if (match.params.notebookId) {
+			pathname = generatePath(match.path, { ...match.params, noteId: note.id })
+		}
+
+		history.push({
+			pathname,
+			state: {
+				from: history.location
+			}
+		})
 	}
 
 	const handleSearch = async value => {

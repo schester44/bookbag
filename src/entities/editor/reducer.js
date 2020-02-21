@@ -8,7 +8,7 @@ export default createReducer(
 	{ activeNoteId: undefined },
 	{
 		[activeNoteChanged]: (state, { payload }) => {
-			state.activeNoteId = payload.note.id
+			state.activeNoteId = payload.noteId
 		},
 		[notesInitialized]: (state, { payload }) => {
 			state.activeNoteId = payload.activeNote.id

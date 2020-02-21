@@ -2,6 +2,8 @@ import React from 'react'
 import { withReact, Slate } from 'slate-react'
 import { createEditor } from 'slate'
 import { withHistory } from 'slate-history'
+import { useSelector, useDispatch } from 'react-redux'
+import { useParams } from 'react-router-dom'
 
 import Editor from './Editor'
 import EditorToolbar from './EditorToolbar'
@@ -9,14 +11,13 @@ import TagList from '../TagList'
 
 import { createNoteTag, removeNoteTag } from '../../entities/tags/actions'
 import { debouncedSaveNote } from '../../entities/notes/actions'
-
+import { activeNoteChanged } from '../../entities/editor/actions'
 import { activeNoteTagsSelector } from '../../entities/tags/reducer'
 
-import { useSelector, useDispatch } from 'react-redux'
 import { withLinks } from './plugins/withLinks'
 import { withMarkdownShortcuts } from './plugins/withMarkdownShortcuts'
-import FloatingToolbar from './FloatingToolbar'
 
+import FloatingToolbar from './FloatingToolbar'
 import { debounce } from '../../utils'
 import { updateSearchIndex } from '../../services/search'
 import NoteTitle from './NoteTitle'
@@ -43,10 +44,19 @@ const EditorWindow = () => {
 		[]
 	)
 
+	const { noteId } = useParams()
+
 	const [{ note, isLoaded }, setState] = React.useState({
 		isLoaded: false,
 		note: undefined
 	})
+
+	// This is here until a parent component is created that holds the sidebar and editor
+	React.useEffect(() => {
+		if (active?.id !== noteId) {
+			dispatch(activeNoteChanged({ noteId }))
+		}
+	}, [noteId, active, dispatch])
 
 	React.useEffect(() => {
 		if (!active.id) return

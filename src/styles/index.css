@@ -56,5 +56,10 @@
 
 .navigator-link.active {
 	@apply text-white bg-gray-800 cursor-default;
-	;
+}
+
+.truncate {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }

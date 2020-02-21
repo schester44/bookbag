@@ -10,6 +10,6 @@ export const selectNote = note => {
 		dispatch(fetchNoteTags(note.id))
 
 		api.notes.lastOpened.save(note.id)
-		dispatch(activeNoteChanged({ note }))
+		dispatch(activeNoteChanged({ noteId: note.id }))
 	}
 }
