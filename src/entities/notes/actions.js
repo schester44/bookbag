@@ -97,7 +97,7 @@ export const deleteNote = noteId => {
 	}
 }
 
-export const openNewNote = ({ notebookId }) => {
+export const openNewNote = ({ notebookId } = {}) => {
 	return dispatch => {
 		const note = createNewNote({ notebookId })
 

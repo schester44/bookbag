@@ -4,9 +4,11 @@ import { GoPlus } from 'react-icons/go'
 import { useDispatch } from 'react-redux'
 
 import { createNotebook } from '../../../../entities/notebooks/actions'
+import { useHistory } from 'react-router-dom'
 
 const Heading = () => {
 	const dispatch = useDispatch()
+	const history = useHistory()
 
 	const [state, setState] = React.useState({
 		newBookInputVisible: false,
@@ -23,7 +25,10 @@ const Heading = () => {
 
 		const name = state.newBookName
 
-		dispatch(createNotebook({ name }))
+		dispatch(createNotebook({ name })).then(notebook => {
+			history.push(`/notebook/${notebook.id}`)
+		})
+
 		setState(prev => ({ ...prev, newBookInputVisible: false, newBookName: '' }))
 	}
 

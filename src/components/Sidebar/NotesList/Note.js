@@ -3,14 +3,23 @@ import { useSelector, useDispatch } from 'react-redux'
 import { GoNote } from 'react-icons/go'
 import { FiTrash2 } from 'react-icons/fi'
 import { formatDistanceToNow } from 'date-fns'
+import { useDrag } from 'react-dnd'
 
 import { sendToTrash } from '../../../entities/trash/actions'
+import { ItemTypes } from '../constants'
 
 const noteSelector = id => state => state.notes.idMap[id]
 
 const Note = ({ id, isSelected, onSelect }) => {
 	const note = useSelector(noteSelector(id))
 	const dispatch = useDispatch()
+
+	const [{ isDragging }, dragRef] = useDrag({
+		item: { type: ItemTypes.NOTE, note },
+		collect: monitor => ({
+			isDragging: monitor.isDragging()
+		})
+	})
 
 	if (!note) return null
 
@@ -20,10 +29,12 @@ const Note = ({ id, isSelected, onSelect }) => {
 
 	return (
 		<div
+			ref={dragRef}
+			style={{ opacity: isDragging ? 0.2 : 1 }}
 			onClick={() => onSelect(note)}
 			className={`sidebar-note cursor-pointer border-b border-gray-300 pt-3 px-4 pb-4 ${
 				isSelected ? 'bg-white' : ''
-			}`}
+			} ${isDragging ? 'text-white bg-indigo-900' : ''}`}
 		>
 			<div className="flex items-center pb-2 justify-between">
 				<div className="text-gray-400 text-xl">

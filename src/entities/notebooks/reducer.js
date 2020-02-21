@@ -1,10 +1,17 @@
 import { createReducer } from '@reduxjs/toolkit'
 
-import { booksFetched, bookCreated, bookUpdated, bookDeleted } from './actions'
+import {
+	booksFetched,
+	bookCreated,
+	bookUpdated,
+	bookDeleted,
+	noteRemovedFromNotebook
+} from './actions'
+
 import { noteSaved, notesFetched } from '../notes/actions'
+import { noteTrashed } from '../trash/actions'
 
 // TODO: When restoring a note from the trash, it needs to go back into its original folder, if the folder exists.
-
 export default createReducer(
 	{
 		noteIdMapByBookId: {},
@@ -57,6 +64,33 @@ export default createReducer(
 
 				state.idMap[note.notebookId].notes.push(note.id)
 			}
+		},
+		[noteTrashed]: (state, { payload }) => {
+			const { note } = payload
+
+			const {
+				id,
+				note: { notebookId }
+			} = note
+
+			if (!notebookId) return
+
+			if (state.noteIdMapByBookId[notebookId]) {
+				delete state.noteIdMapByBookId[notebookId][id]
+			}
+
+			if (state.idMap[notebookId]) {
+				state.idMap[notebookId].notes = state.idMap[notebookId].notes.filter(
+					noteId => id !== noteId
+				)
+			}
+		},
+		[noteRemovedFromNotebook]: (state, { payload }) => {
+			state.idMap[payload.notebookId].notes = state.idMap[payload.notebookId].notes.filter(
+				id => id !== payload.noteId
+			)
+
+			delete state.noteIdMapByBookId[payload.notebookId][payload.noteId]
 		}
 	}
 )

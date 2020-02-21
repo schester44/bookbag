@@ -1,5 +1,5 @@
 import React from 'react'
-import { Switch, Route } from 'react-router-dom'
+import { Switch, Route, useParams } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
 import Sidebar from './components/Sidebar'
@@ -16,6 +16,7 @@ const Trash = React.lazy(() => import('./views/Trash'))
 
 function App() {
 	const dispatch = useDispatch()
+	const { notebookId } = useParams()
 
 	React.useEffect(() => {
 		dispatch(fetchNotebooks())
@@ -33,14 +34,14 @@ function App() {
 		function hotKeyListener(event) {
 			// TODO: Why doesn't isHotKey work here
 			if (event.ctrlKey && event.key === 'n') {
-				dispatch(openNewNote())
+				dispatch(openNewNote({ notebookId }))
 			}
 		}
 
 		document.addEventListener('keypress', hotKeyListener)
 
 		return () => document.removeEventListener('keypress', hotKeyListener)
-	}, [dispatch])
+	}, [dispatch, notebookId])
 
 	return (
 		<div className="App flex w-full h-full">

@@ -1,5 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit'
 
+import { noteRemovedFromNotebook } from '../notebooks/actions'
 import { notesFetched, noteSaved, noteCreated, notesInitialized } from '../notes/actions'
 import { noteTrashed, noteRestored } from '../trash/actions'
 
@@ -41,6 +42,9 @@ export default createReducer(
 		[noteCreated]: (state, { payload }) => {
 			state.ids.unshift(payload.note.id)
 			state.idMap[payload.note.id] = payload.note
+		},
+		[noteRemovedFromNotebook]: (state, { payload }) => {
+			state.idMap[payload.noteId].notebookId = undefined
 		}
 	}
 )

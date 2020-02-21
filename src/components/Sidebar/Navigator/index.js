@@ -1,15 +1,13 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
-import { IoIosPaper, IoMdPricetag } from 'react-icons/io'
+import { IoMdPricetag } from 'react-icons/io'
 import Notebooks from './Notebooks'
+
+import AllNotes from './AllNotesLink'
 
 const Navigator = () => {
 	return (
 		<>
-			<NavLink exact to="/" className="navigator-link">
-				<IoIosPaper />
-				<span className="ml-3">All Notes</span>
-			</NavLink>
+			<AllNotes />
 
 			<Notebooks />
 

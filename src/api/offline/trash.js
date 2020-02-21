@@ -20,15 +20,6 @@ function saveTags(tags) {
 	return localforage.setItem('tags', tags)
 }
 
-async function getNoteTags() {
-	return (
-		(await localforage.getItem('noteTags')) || {
-			byTag: {},
-			byNote: {}
-		}
-	)
-}
-
 export default {
 	getAll: getTrash,
 	deleteNote: async ({ noteId }) => {

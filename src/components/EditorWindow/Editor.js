@@ -9,9 +9,11 @@ import Leaf from './Leaf'
 import { toggleMark } from './utils'
 import { HOTKEYS } from './constants'
 import { openNewNote } from '../../entities/notes/actions'
+import { useParams } from 'react-router-dom'
 
 const Editor = ({ editor }) => {
 	const dispatch = useDispatch()
+	const { notebookId } = useParams()
 
 	const renderElement = React.useCallback(props => <Element {...props} />, [])
 	const renderLeaf = React.useCallback(props => <Leaf {...props} />, [])
@@ -19,7 +21,7 @@ const Editor = ({ editor }) => {
 	const handleKeyDown = event => {
 		const shouldOpenNewTab = isHotkey('ctrl+n', event)
 		if (shouldOpenNewTab) {
-			dispatch(openNewNote())
+			dispatch(openNewNote({ notebookId }))
 			return
 		}
 

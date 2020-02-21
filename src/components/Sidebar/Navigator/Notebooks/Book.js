@@ -1,18 +1,44 @@
 import React from 'react'
-import ContextMenu, { Menu, MenuItem } from '../../../../components/ContextMenu'
 import { FiDelete, FiPlus } from 'react-icons/fi'
-import { updateNotebook, deleteNotebook } from '../../../../entities/notebooks/actions'
 
+import { NavLink, useParams, useHistory } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { Link, NavLink } from 'react-router-dom'
+import { useDrop } from 'react-dnd'
+
+import { addNoteToNotebook } from '../../../../entities/notebooks/actions'
+import ContextMenu, { Menu, MenuItem } from '../../../../components/ContextMenu'
+import { updateNotebook, deleteNotebook } from '../../../../entities/notebooks/actions'
+import { ItemTypes } from '../../constants'
 
 const Book = ({ book }) => {
+	const { notebookId } = useParams()
+	const history = useHistory()
+	const dispatch = useDispatch()
+
 	const [rename, setRename] = React.useState({ visible: false, name: book.name })
 
-	const dispatch = useDispatch()
+	const [dropProps, dropRef] = useDrop({
+		accept: ItemTypes.NOTE,
+
+		canDrop: item => {
+			return item.note.notebookId !== book.id
+		},
+		drop: ({ note }) => {
+			dispatch(addNoteToNotebook(book.id, note.id))
+		},
+		collect: monitor => {
+			return {
+				isOver: monitor.isOver() && monitor.canDrop()
+			}
+		}
+	})
 
 	const handleDelete = () => {
 		dispatch(deleteNotebook(book.id))
+
+		if (notebookId === book.id) {
+			history.push('/')
+		}
 	}
 
 	const handleRename = () => {
@@ -67,7 +93,10 @@ const Book = ({ book }) => {
 			}
 		>
 			<NavLink
-				className="navigator-link flex items-center justify-between relative"
+				ref={dropRef}
+				className={`navigator-link flex items-center justify-between relative ${
+					dropProps.isOver ? 'bg-indigo-900' : ''
+				}`}
 				to={`/notebook/${book.id}`}
 			>
 				<span className="ml-8">{book.name}</span>
