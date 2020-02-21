@@ -12,8 +12,6 @@ import Settings from './views/Settings'
 import { createSearchIndex, createTagSearchIndex } from './services/search'
 import { fetchNotebooks } from './entities/notebooks/actions'
 
-const Trash = React.lazy(() => import('./views/Trash'))
-
 function App() {
 	const dispatch = useDispatch()
 	const { notebookId } = useParams()
@@ -47,13 +45,9 @@ function App() {
 		<div className="App flex w-full h-full">
 			<React.Suspense fallback={null}>
 				<Switch>
-					<Route exact path={['/', '/notebook/:notebookId', '/tags']}>
+					<Route exact path={['/', '/trash', '/notebook/:notebookId', '/tags']}>
 						<Sidebar />
 						<EditorWindow />
-					</Route>
-
-					<Route path="/trash">
-						<Trash />
 					</Route>
 
 					<Route path="/settings">

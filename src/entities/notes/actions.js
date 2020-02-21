@@ -5,6 +5,7 @@ import debounce from 'lodash/debounce'
 import { serializeToText } from '../../components/EditorWindow/utils'
 import api from '../../api'
 import { fetchNoteTags } from '../tags/actions'
+import { removeNoteFromNotebook } from '../notebooks/actions'
 
 export const notesFetched = createAction('FETCH_NOTES_SUCCESS')
 export const noteCreated = createAction('NOTE_CREATED')
@@ -85,9 +86,17 @@ export const deleteNote = noteId => {
 	return (dispatch, getState) => {
 		const { editor, notes } = getState()
 
+		const note = notes.idMap[noteId]
+
 		api.notes.delete(noteId)
 
 		let activeNoteId
+
+		console.log(note);
+
+		if (note.notebookId) {
+			dispatch(removeNoteFromNotebook(note))
+		}
 
 		if (editor.activeNoteId === noteId) {
 			activeNoteId = notes.ids.find(id => id !== noteId)

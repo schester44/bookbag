@@ -8,8 +8,8 @@ import {
 	noteRemovedFromNotebook
 } from './actions'
 
-import { noteSaved, notesFetched } from '../notes/actions'
-import { noteTrashed } from '../trash/actions'
+import { noteSaved, notesFetched, noteDeleted } from '../notes/actions'
+import { noteTrashed, noteRestored } from '../trash/actions'
 
 // TODO: When restoring a note from the trash, it needs to go back into its original folder, if the folder exists.
 export default createReducer(
@@ -84,6 +84,23 @@ export default createReducer(
 					noteId => id !== noteId
 				)
 			}
+		},
+		[noteRestored]: (state, { payload }) => {
+			const { notebookId, id } = payload.note
+			console.log(state.idMap[notebookId], state.noteIdMapByBookId[notebookId])
+
+			// didnt belong to a notebook
+			if (!notebookId) return
+
+			if (state.idMap[notebookId]) {
+				state.idMap[notebookId].notes.push(id)
+			}
+
+			if (!state.noteIdMapByBookId[notebookId]) {
+				state.noteIdMapByBookId[notebookId] = {}
+			}
+
+			state.noteIdMapByBookId[notebookId][id] = true
 		},
 		[noteRemovedFromNotebook]: (state, { payload }) => {
 			state.idMap[payload.notebookId].notes = state.idMap[payload.notebookId].notes.filter(

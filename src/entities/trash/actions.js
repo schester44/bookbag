@@ -2,6 +2,7 @@ import { createAction } from '@reduxjs/toolkit'
 
 import api from '../../api'
 import { createNewNote } from '../notes/actions'
+import { removeNoteFromNotebook } from '../notebooks/actions'
 
 export const trashFetched = createAction('TRASH_FETCHED')
 export const noteRestored = createAction('TRASH_NOTE_RESTORED')
@@ -23,6 +24,10 @@ export const sendToTrash = ({ noteId }) => {
 		const note = { ...notes.idMap[noteId] }
 
 		const trashedAt = new Date()
+
+		if (note.notebookId) {
+			dispatch(removeNoteFromNotebook(note))
+		}
 
 		api.notes.sendToTrash({ note, trashedAt }).then(note => {
 			let activeNoteId
@@ -50,6 +55,7 @@ export const deleteTrashedNote = ({ noteId }) => {
 }
 
 export const restoreFromTrash = ({ noteId }) => {
+	// TODO: Add the note back to the notebook storage & redux
 	return dispatch => {
 		api.trash.restore({ noteId }).then(note => {
 			dispatch(noteRestored({ note }))

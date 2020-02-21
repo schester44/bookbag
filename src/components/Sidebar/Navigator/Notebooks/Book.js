@@ -94,12 +94,12 @@ const Book = ({ book }) => {
 		>
 			<NavLink
 				ref={dropRef}
-				className={`navigator-link flex items-center justify-between relative ${
+				className={`navigator-link flex items-center justify-between ${
 					dropProps.isOver ? 'bg-indigo-900' : ''
 				}`}
 				to={`/notebook/${book.id}`}
 			>
-				<span className="ml-8">{book.name}</span>
+				<span className="ml-8">{rename.name}</span>
 				{book.notes.length > 0 && (
 					<span className="text-xs font-bold text-gray-600">{book.notes.length}</span>
 				)}

@@ -53,6 +53,11 @@ export default {
 
 		delete trash.idMap[note.id]
 
+		
+		// re-add the id to the list of note ids
+		noteIds.all.push(noteId)
+		noteIds.idMap[noteId] = true
+
 		await Promise.all([
 			localforage.setItem(`note-${noteId}`, note),
 			localforage.setItem('noteIds', noteIds)

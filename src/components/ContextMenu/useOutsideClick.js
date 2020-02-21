@@ -7,7 +7,7 @@ function useOutsideClick(ref, handler, when = true) {
 		if (ref && ref.current && !ref.current.contains(e.target)) {
 			savedHandler.current(e)
 		}
-	}, [])
+	}, [ref])
 
 	useEffect(() => {
 		savedHandler.current = handler
@@ -24,7 +24,7 @@ function useOutsideClick(ref, handler, when = true) {
 				document.removeEventListener('ontouchstart', memoizedCallback)
 			}
 		}
-	}, [ref, handler, when])
+	}, [ref, handler, when, memoizedCallback])
 }
 
 export { useOutsideClick }

@@ -51,8 +51,6 @@ const NotesList = () => {
 		setState(prev => ({ ...prev, notes: notebook.notes }))
 	}, [params.notebookId, notebooks, ids])
 
-	const hasNotes = ids.length > 1
-
 	const handleNoteSelection = note => {
 		dispatch(selectNote(note))
 	}
@@ -69,21 +67,20 @@ const NotesList = () => {
 	}
 
 	const noteIds = state.isSearching || params.notebookId ? state.notes : ids
+	const canDelete = (!state.isSearching && noteIds.length > 1) || !!params.notebookId
 
 	return (
 		<div>
-			{hasNotes && (
-				<div className="mb-2 px-2 w-full pb-2 pt-1">
-					<SearchBar value={state.searchTerm} onSearch={handleSearch} />
-				</div>
-			)}
+			<div className="mb-2 px-2 w-full pb-2 pt-1">
+				<SearchBar value={state.searchTerm} onSearch={handleSearch} />
+			</div>
 
 			{state.isSearching && (
 				<p className="px-8 mb-2 font-semibold text-gray-700">
 					Search Results ({state.notes.length})
 				</p>
 			)}
-			{!state.isSearching && ids.length > 1 && (
+			{!state.isSearching && (
 				<p className="px-4 mb-2 font-semibold text-gray-700">
 					{notebook ? notebook.name : 'All Notes'}
 				</p>
@@ -91,7 +88,13 @@ const NotesList = () => {
 
 			{noteIds.map(id => {
 				return (
-					<Note key={id} id={id} isSelected={activeNoteId === id} onSelect={handleNoteSelection} />
+					<Note
+						canDelete={canDelete}
+						key={id}
+						id={id}
+						isSelected={activeNoteId === id}
+						onSelect={handleNoteSelection}
+					/>
 				)
 			})}
 

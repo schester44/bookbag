@@ -2,13 +2,17 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { IoIosPaper } from 'react-icons/io'
 import { useDrop } from 'react-dnd'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { removeNoteFromNotebook } from '../../../entities/notebooks/actions'
 
 import { ItemTypes } from '../constants'
 
+const noteIdsSelector = state => state.notes.ids
+
 const AllNotesLink = () => {
 	const dispatch = useDispatch()
+	const noteIds = useSelector(noteIdsSelector)
+
 	const [dropProps, dropRef] = useDrop({
 		accept: ItemTypes.NOTE,
 
@@ -29,10 +33,16 @@ const AllNotesLink = () => {
 			ref={dropRef}
 			exact
 			to="/"
-			className={`navigator-link ${dropProps.isOver ? 'bg-indigo-900' : ''}`}
+			className={`navigator-link flex items-center justify-between ${dropProps.isOver ? 'bg-indigo-900' : ''}`}
 		>
-			<IoIosPaper />
-			<span className="ml-3">All Notes</span>
+			<div className="flex items-center">
+				<IoIosPaper />
+				<span className="ml-3">All Notes</span>
+			</div>
+
+			{noteIds.length > 0 && (
+				<span className="text-xs font-bold text-gray-600">{noteIds.length}</span>
+			)}
 		</NavLink>
 	)
 }

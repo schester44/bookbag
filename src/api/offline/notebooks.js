@@ -35,5 +35,4 @@ export default {
 
 		return true
 	}
-	// TODO: `addNoteToBook`
 }

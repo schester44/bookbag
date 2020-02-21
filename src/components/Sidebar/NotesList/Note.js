@@ -7,10 +7,11 @@ import { useDrag } from 'react-dnd'
 
 import { sendToTrash } from '../../../entities/trash/actions'
 import { ItemTypes } from '../constants'
+import { deleteNote } from '../../../entities/notes/actions'
 
 const noteSelector = id => state => state.notes.idMap[id]
 
-const Note = ({ id, isSelected, onSelect }) => {
+const Note = ({ id, isSelected, canDelete = true, onSelect }) => {
 	const note = useSelector(noteSelector(id))
 	const dispatch = useDispatch()
 
@@ -24,6 +25,11 @@ const Note = ({ id, isSelected, onSelect }) => {
 	if (!note) return null
 
 	const handleDelete = () => {
+		// just delete any empty notes, dont send them to the trash
+		if (note.snippet.trim().length === 0 && note.title.trim().length === 0) {
+			return dispatch(deleteNote(note.id))
+		}
+
 		dispatch(sendToTrash({ noteId: id }))
 	}
 
@@ -46,12 +52,14 @@ const Note = ({ id, isSelected, onSelect }) => {
 						{formatDistanceToNow(note.lastUpdate)} ago
 					</p>
 
-					<div
-						className="text-gray-400 pl-2 text-xs hover:text-gray-900 opacity-0 delete-btn"
-						onClick={handleDelete}
-					>
-						<FiTrash2 />
-					</div>
+					{canDelete && (
+						<div
+							className="text-gray-400 pl-2 text-xs hover:text-gray-900 opacity-0 delete-btn"
+							onClick={handleDelete}
+						>
+							<FiTrash2 />
+						</div>
+					)}
 				</div>
 			</div>
 

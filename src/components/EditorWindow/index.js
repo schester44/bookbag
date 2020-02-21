@@ -125,7 +125,7 @@ const EditorWindow = () => {
 		)
 	}
 
-	if (!isLoaded) return null
+	if (!isLoaded || !note) return null
 
 	return (
 		<Slate editor={editor} value={note.body} onChange={handleNoteBodyChange}>

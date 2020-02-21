@@ -51,10 +51,10 @@ const Heading = () => {
 			</div>
 
 			{state.newBookInputVisible && (
-				<div className="pl-6 pr-2">
+				<div className="pl-12 bg-gray-800 py-2 pr-2 mb-2">
 					<input
 						autoFocus
-						className="bg-transparent text-white border-b border-gray-700 outline-none"
+						className="bg-transparent text-white outline-none"
 						type="text"
 						value={state.newBookName}
 						onKeyDown={handleNewBookInputKeyDown}
