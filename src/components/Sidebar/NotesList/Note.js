@@ -13,9 +13,10 @@ const noteSelector = id => state => state.notes.idMap[id]
 const bookSelector = id => state => state.notebooks.idMap[id]
 
 const Note = ({ id, isSelected, canDelete = true, onSelect }) => {
+	const dispatch = useDispatch()
+
 	const note = useSelector(noteSelector(id))
 	const book = useSelector(bookSelector(note.notebookId))
-	const dispatch = useDispatch()
 
 	const [{ isDragging }, dragRef] = useDrag({
 		item: { type: ItemTypes.NOTE, note },
@@ -29,10 +30,11 @@ const Note = ({ id, isSelected, canDelete = true, onSelect }) => {
 	const handleDelete = () => {
 		// just delete any empty notes, dont send them to the trash
 		if (note.snippet.trim().length === 0 && note.title.trim().length === 0) {
-			return dispatch(deleteNote(note.id))
+			dispatch(deleteNote(note.id))
+		} else {
+			dispatch(sendToTrash({ noteId: id }))
 		}
 
-		dispatch(sendToTrash({ noteId: id }))
 	}
 
 	return (

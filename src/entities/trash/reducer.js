@@ -1,5 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit'
 
+import { bookBagInitialized } from '../bookbag/actions'
 import { noteTrashed, noteRestored, trashFetched, noteDeleted } from '../trash/actions'
 
 export default createReducer(
@@ -8,6 +9,13 @@ export default createReducer(
 		idMap: {}
 	},
 	{
+		[bookBagInitialized]: (state, { payload }) => {
+			state.ids = payload.trash.ids.sort((a, b) => {
+				return payload.trash.idMap[b].trashedAt - payload.trash.idMap[a].trashedAt
+			})
+
+			state.idMap = payload.trash.idMap
+		},
 		[trashFetched]: (state, { payload }) => {
 			state.ids = payload.trash.ids.sort((a, b) => {
 				return payload.trash.idMap[b].trashedAt - payload.trash.idMap[a].trashedAt

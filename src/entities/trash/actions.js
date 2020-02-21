@@ -1,7 +1,7 @@
 import { createAction } from '@reduxjs/toolkit'
 
+import { history } from '../../utils'
 import api from '../../api'
-import { createNewNote } from '../notes/actions'
 import { removeNoteFromNotebook } from '../notebooks/actions'
 
 export const trashFetched = createAction('TRASH_FETCHED')
@@ -19,7 +19,7 @@ export const fetchTrash = () => {
 
 export const sendToTrash = ({ noteId }) => {
 	return (dispatch, getState) => {
-		const { editor, notes } = getState()
+		const { notes } = getState()
 
 		const note = { ...notes.idMap[noteId] }
 
@@ -29,20 +29,22 @@ export const sendToTrash = ({ noteId }) => {
 			dispatch(removeNoteFromNotebook(note))
 		}
 
+		// We're deleting the activeNote
+		// TODO: This could be better.
+		if (history.location.pathname.includes(noteId)) {
+			const nextNote = notes.ids.find(id => id !== noteId)
+			
+			if (nextNote) {
+				history.push(`/note/${nextNote}`, {
+					from: history.location.state?.from
+				})
+			}
+		}
+
 		api.notes.sendToTrash({ note, trashedAt }).then(note => {
-			let activeNoteId
-			let newNote
+			dispatch(noteTrashed({ note, trashedAt }))
 
-			if (editor.activeNoteId === note.id) {
-				activeNoteId = notes.ids.find(id => id !== note.id)
-			}
-
-			if (notes.ids.length === 1) {
-				newNote = createNewNote()
-				activeNoteId = newNote.id
-			}
-
-			dispatch(noteTrashed({ note, trashedAt, activeNoteId, newNote }))
+			return true
 		})
 	}
 }

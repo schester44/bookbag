@@ -23,12 +23,7 @@ export default {
 
 		notebooks.idMap[id] = { id, ...notebook }
 
-		console.log('save notebooks', notebooks.idMap[id])
-
 		await saveNotebooks(notebooks)
-
-		const b = await getNotebooks()
-		console.log({ b })
 
 		return { id, ...notebook }
 	},

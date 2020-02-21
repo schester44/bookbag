@@ -1,6 +1,8 @@
 import { createReducer } from '@reduxjs/toolkit'
 import union from 'lodash/union'
 
+import { bookBagInitialized } from '../bookbag/actions'
+
 import {
 	tagsFetched,
 	tagCreated,
@@ -18,6 +20,10 @@ export default createReducer(
 		idMap: {}
 	},
 	{
+		[bookBagInitialized]: (state, { payload }) => {
+			state.ids = payload.tags.ids
+			state.idMap = payload.tags.idMap
+		},
 		[noteTagRemoved]: (state, { payload }) => {
 			state.byNote[payload.noteId] = state.byNote[payload.noteId].filter(id => id !== payload.tagId)
 		},

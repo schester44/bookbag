@@ -8,7 +8,8 @@ import {
 	noteRemovedFromNotebook
 } from './actions'
 
-import { noteSaved, notesFetched } from '../notes/actions'
+import { bookBagInitialized } from '../bookbag/actions'
+import { noteSaved, notesFetched, noteCreated } from '../notes/actions'
 import { noteTrashed, noteRestored } from '../trash/actions'
 
 // TODO: When restoring a note from the trash, it needs to go back into its original folder, if the folder exists.
@@ -34,6 +35,23 @@ export default createReducer(
 			state.ids = state.ids.filter(id => id !== payload.id)
 
 			delete state.idMap[payload.id]
+		},
+		[bookBagInitialized]: (state, { payload }) => {
+			state.ids = payload.notebooks.ids
+			state.idMap = payload.notebooks.idMap
+
+			// create a map of notes within a notebook for easier look ups
+			payload.notes.ids.forEach(id => {
+				const { notebookId } = payload.notes.idMap[id]
+
+				if (!notebookId) return
+
+				if (!state.noteIdMapByBookId[notebookId]) {
+					state.noteIdMapByBookId[notebookId] = {}
+				}
+
+				state.noteIdMapByBookId[notebookId][id] = true
+			})
 		},
 		[notesFetched]: (state, { payload }) => {
 			payload.notes.ids.forEach(id => {
@@ -98,7 +116,6 @@ export default createReducer(
 		},
 		[noteRestored]: (state, { payload }) => {
 			const { notebookId, id } = payload.note
-			console.log(state.idMap[notebookId], state.noteIdMapByBookId[notebookId])
 
 			// didnt belong to a notebook
 			if (!notebookId) return
@@ -119,6 +136,19 @@ export default createReducer(
 			)
 
 			delete state.noteIdMapByBookId[payload.notebookId][payload.noteId]
+		},
+		[noteCreated]: (state, { payload }) => {
+			const { id, notebookId } = payload.note
+
+			if (!notebookId || !state.idMap[notebookId]) return
+
+			state.idMap[notebookId].notes.push(id)
+
+			if (!state.noteIdMapByBookId[notebookId]) {
+				state.noteIdMapByBookId[notebookId] = {}
+			}
+
+			state.noteIdMapByBookId[notebookId][id] = true
 		}
 	}
 )

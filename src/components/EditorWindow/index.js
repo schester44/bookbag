@@ -11,8 +11,6 @@ import TagList from '../TagList'
 
 import { createNoteTag, removeNoteTag } from '../../entities/tags/actions'
 import { debouncedSaveNote } from '../../entities/notes/actions'
-import { activeNoteChanged } from '../../entities/editor/actions'
-import { activeNoteTagsSelector } from '../../entities/tags/reducer'
 
 import { withLinks } from './plugins/withLinks'
 import { withMarkdownShortcuts } from './plugins/withMarkdownShortcuts'
@@ -28,56 +26,53 @@ const updateIndexHandler = note => {
 
 const debouncedUpdateSearchIndex = debounce(updateIndexHandler, 300)
 
-const activeNoteSelector = state => {
+const defaultTagsArray = []
+
+const activeNoteSelector = id => state => {
 	return {
-		id: state.editor.activeNoteId,
-		note: state.notes.idMap[state.editor.activeNoteId]
+		activeNote: state.notes.idMap[id],
+		activeNoteTags: state.tags.byNote[id] || defaultTagsArray
 	}
 }
 
 const EditorWindow = () => {
-	const active = useSelector(activeNoteSelector)
 	const dispatch = useDispatch()
-	const activeNoteTags = useSelector(activeNoteTagsSelector(active.id))
+	const { noteId } = useParams()
+	const isFirstChange = React.useRef(true)
+
+	const { activeNote, activeNoteTags } = useSelector(activeNoteSelector(noteId))
+
 	const editor = React.useMemo(
 		() => withMarkdownShortcuts(withLinks(withHistory(withReact(createEditor())))),
 		[]
 	)
-
-	const { noteId } = useParams()
 
 	const [{ note, isLoaded }, setState] = React.useState({
 		isLoaded: false,
 		note: undefined
 	})
 
-	// This is here until a parent component is created that holds the sidebar and editor
 	React.useEffect(() => {
-		if (active?.id !== noteId) {
-			dispatch(activeNoteChanged({ noteId }))
-		}
-	}, [noteId, active, dispatch])
-
-	React.useEffect(() => {
-		if (!active.id) return
+		if (!activeNote?.id) return
 
 		// Set the initial value on load.
 		setState(prev => {
-			if (prev.note?.id === active.id) return prev
+			// if the note is already set then we don't want to override it... We only wany to set state.note on initial load (get its body, title, etc)
+			if (prev.note?.id === activeNote.id) return prev
 
 			return {
 				isLoaded: true,
-				note: active.note
+				note: { ...activeNote }
 			}
 		})
-	}, [active])
+	}, [activeNote])
 
 	const handleNewTag = name => {
-		dispatch(createNoteTag(active.id, name))
+		dispatch(createNoteTag(noteId, name))
 	}
 
 	const handleRemoveTag = tag => {
-		dispatch(removeNoteTag(active.id, tag.id))
+		dispatch(removeNoteTag(noteId, tag.id))
 	}
 
 	const handleNoteTitleChange = title => {
@@ -107,6 +102,13 @@ const EditorWindow = () => {
 	}
 
 	const handleNoteBodyChange = body => {
+		// Hack to get around this handler being called when focusing on the editor.
+		// No changes have been made so there's no reason to save the note.
+		if (isFirstChange.current) {
+			isFirstChange.current = false
+			return
+		}
+
 		setState(prev => {
 			return {
 				...prev,
@@ -142,7 +144,7 @@ const EditorWindow = () => {
 			<FloatingToolbar />
 			<div className="flex-1 shadow pb-8 bg-white flex flex-col h-full">
 				<div className="flex justify-center p-2 border-b border-gray-200 mb-2 items-center">
-					<EditorToolbar activeNote={active.note} />
+					<EditorToolbar activeNote={activeNote} />
 				</div>
 
 				<div className="px-8 pb-3">

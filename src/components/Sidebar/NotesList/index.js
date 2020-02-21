@@ -1,12 +1,12 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useParams, useHistory, useRouteMatch, generatePath } from 'react-router-dom'
 
 import SearchBar from './SearchBar'
 import Note from './Note'
 
+import { fetchNoteTags } from '../../../entities/tags/actions'
 import { searchIndex } from '../../../services/search'
-import { selectNote } from '../../../entities/editor/actions'
-import { useParams, useHistory, useRouteMatch, generatePath } from 'react-router-dom'
 
 const searchHandler = searchTerm => {
 	return searchIndex.search(searchTerm, {}).sort((a, b) => b.score - a.score)
@@ -15,19 +15,21 @@ const searchHandler = searchTerm => {
 const notesSelector = state => ({
 	ids: state.notes.ids,
 	idMap: state.notes.idMap,
-	notebooks: state.notebooks,
-	activeNoteId: state.editor.activeNoteId
+	notebooks: state.notebooks
 })
 
 const notebookSelector = id => state => (!id ? undefined : state.notebooks.idMap[id])
 
 const NotesList = () => {
-	const { ids, notebooks, activeNoteId } = useSelector(notesSelector)
+	const { ids, notebooks } = useSelector(notesSelector)
 	const dispatch = useDispatch()
 	const params = useParams()
 	const history = useHistory()
 	const match = useRouteMatch()
+
 	const notebook = useSelector(notebookSelector(params.notebookId))
+
+	const activeNoteId = params.noteId
 
 	const [state, setState] = React.useState({
 		searchTerm: '',
@@ -74,7 +76,10 @@ const NotesList = () => {
 	}, [params.notebookId, notebooks, ids, state.searchTerm, state.isSearching])
 
 	const handleNoteSelection = note => {
-		dispatch(selectNote(note))
+		// this note is already selected
+		if (note.id === params.noteId) return
+
+		dispatch(fetchNoteTags(note.id))
 
 		let pathname = `/note/${note.id}`
 

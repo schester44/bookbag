@@ -19,7 +19,11 @@ export const fetchTags = () => {
 }
 
 export const fetchNoteTags = noteId => {
-	return async dispatch => {
+	return async (dispatch, getState) => {
+		const state = getState()
+
+		if (state.tags.byNote[noteId]) return
+
 		const tags = await api.tags.getByNote(noteId)
 
 		dispatch(noteTagsFetched({ noteId, tags }))

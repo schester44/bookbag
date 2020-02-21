@@ -4,16 +4,20 @@ import { MdFormatListNumbered } from 'react-icons/md'
 import { FaQuoteRight } from 'react-icons/fa'
 
 import BlockButton from './BlockButton'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { sendToTrash } from '../../entities/trash/actions'
 import { openNewNote } from '../../entities/notes/actions'
 import { removeFromSearchIndex } from '../../services/search'
-import { useParams } from 'react-router-dom'
+import { useParams, useHistory } from 'react-router-dom'
+
+const canSendToTrashSelector = state => state.notes.ids.length > 1
 
 const EditorToolbar = ({ activeNote }) => {
 	const dispatch = useDispatch()
 	const { notebookId } = useParams()
+	const history = useHistory()
+	const canSendToTrash = useSelector(canSendToTrashSelector)
 
 	const handleDelete = () => {
 		removeFromSearchIndex(activeNote)
@@ -22,7 +26,14 @@ const EditorToolbar = ({ activeNote }) => {
 	}
 
 	const handleNew = () => {
-		dispatch(openNewNote({ notebookId }))
+		const note = dispatch(openNewNote({ notebookId }))
+
+		const pathname = notebookId ? `/notebook/${notebookId}/${note.id}` : `/note/${note.id}`
+
+		history.push({
+			pathname,
+			from: history.location
+		})
 	}
 
 	return (
@@ -35,9 +46,11 @@ const EditorToolbar = ({ activeNote }) => {
 			</div>
 
 			<div className="settings flex items-center">
-				<div className="toolbar-btn" onClick={handleDelete}>
-					<FiTrash />
-				</div>
+				{canSendToTrash && (
+					<div className="toolbar-btn" onClick={handleDelete}>
+						<FiTrash />
+					</div>
+				)}
 
 				<div
 					onClick={handleNew}
