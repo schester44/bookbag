@@ -9,7 +9,15 @@ Offline-first note taking app
 - pressing `control + n` when the editor is focused throws an error
 - Mobile UI (add notebooks, drag & drop notes, etc.)
 
+- Codeblocks (& syntax highlighting)
+- style `` (<code>)
 
 - Cloud Sync Integrations (username, password --- add email if u want password resets)
 - Collaborative Editing
 
+
+
+TODO:
+- create a new note, add a title and some text, hit refresh... the wrong note is selected (should be latest created note but its the one before that)
+- Trash - delete/restore buttons are hidden/overflow when the note has a long snippet
+- Add note button should be in NotesList column

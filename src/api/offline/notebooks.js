@@ -16,13 +16,19 @@ export default {
 
 		const notebooks = await getNotebooks()
 
+		// if the notebook doesn't exist in the array of IDs then add it.
 		if (!notebooks.idMap[id]) {
 			notebooks.ids.unshift(id)
 		}
 
 		notebooks.idMap[id] = { id, ...notebook }
 
-		saveNotebooks(notebooks)
+		console.log('save notebooks', notebooks.idMap[id])
+
+		await saveNotebooks(notebooks)
+
+		const b = await getNotebooks()
+		console.log({ b })
 
 		return { id, ...notebook }
 	},

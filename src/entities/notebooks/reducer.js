@@ -39,6 +39,8 @@ export default createReducer(
 			payload.notes.ids.forEach(id => {
 				const { notebookId } = payload.notes.idMap[id]
 
+				if (!notebookId) return
+
 				if (!state.noteIdMapByBookId[notebookId]) {
 					state.noteIdMapByBookId[notebookId] = {}
 				}

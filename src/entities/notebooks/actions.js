@@ -45,11 +45,14 @@ export const addNoteToNotebook = (bookId, note) => {
 		const state = getState()
 		const book = state.notebooks.idMap[bookId]
 
+		// Need to call this one first. Putting it inside the array of promises causes a race condition when moving the note from one book to another when using IndexedDB
+
+		await api.notebooks.save(bookId, {
+			...book,
+			notes: book.notes.concat(note.id)
+		})
+
 		const promises = [
-			api.notebooks.save(bookId, {
-				...book,
-				notes: book.notes.concat(note.id)
-			}),
 			api.notes.save(note.id, {
 				...note,
 				notebookId: bookId
@@ -61,12 +64,15 @@ export const addNoteToNotebook = (bookId, note) => {
 		// It belongs to a notebook, so we need to remove it from that notebook
 		if (note.notebookId && state.notebooks.idMap[note.notebookId]) {
 			const originalBook = state.notebooks.idMap[note.notebookId]
-			promises.push(
-				api.notebooks.save(bookId, {
-					...originalBook,
-					notes: originalBook.notes.filter(id => id !== note.id)
-				})
-			)
+
+			if (originalBook) {
+				promises.push(
+					api.notebooks.save(originalBook.id, {
+						...originalBook,
+						notes: originalBook.notes.filter(id => id !== note.id)
+					})
+				)
+			}
 		}
 
 		// TODO: this API method could be something specific to updating/adding a note to a book
