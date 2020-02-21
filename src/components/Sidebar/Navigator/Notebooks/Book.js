@@ -24,7 +24,7 @@ const Book = ({ book }) => {
 			return item.note.notebookId !== book.id
 		},
 		drop: ({ note }) => {
-			dispatch(addNoteToNotebook(book.id, note.id))
+			dispatch(addNoteToNotebook(book.id, note))
 		},
 		collect: monitor => {
 			return {

@@ -8,7 +8,7 @@ import {
 	noteRemovedFromNotebook
 } from './actions'
 
-import { noteSaved, notesFetched, noteDeleted } from '../notes/actions'
+import { noteSaved, notesFetched } from '../notes/actions'
 import { noteTrashed, noteRestored } from '../trash/actions'
 
 // TODO: When restoring a note from the trash, it needs to go back into its original folder, if the folder exists.
@@ -47,10 +47,19 @@ export default createReducer(
 			})
 		},
 		[noteSaved]: (state, { payload }) => {
-			// This note doesn't belong to a notebook so theres no reason to update any books
-			if (!payload.note?.notebookId) return
+			const { note, originalNotebookId } = payload
 
-			const note = payload.note
+			// Remove the note from the original ID
+			if (originalNotebookId && state.idMap[originalNotebookId]) {
+				state.idMap[originalNotebookId].notes = state.idMap[originalNotebookId].notes.filter(
+					id => id !== note.id
+				)
+
+				delete state.noteIdMapByBookId[originalNotebookId][note.id]
+			}
+
+			// This note doesn't belong to a notebook so theres no reason to update any books
+			if (!note.notebookId) return
 
 			if (!state.noteIdMapByBookId[note.notebookId]) {
 				state.noteIdMapByBookId[note.notebookId] = {}

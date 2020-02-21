@@ -40,25 +40,40 @@ export const removeNoteFromNotebook = ({ id, notebookId }) => {
 	}
 }
 
-export const addNoteToNotebook = (bookId, noteId) => {
+export const addNoteToNotebook = (bookId, note) => {
 	return async (dispatch, getState) => {
 		const state = getState()
-		const note = state.notes.idMap[noteId]
 		const book = state.notebooks.idMap[bookId]
 
-		// TODO: this API method could be something specific to updating/adding a note to a book
-		Promise.all([
+		const promises = [
 			api.notebooks.save(bookId, {
 				...book,
-				notes: book.notes.concat(noteId)
+				notes: book.notes.concat(note.id)
 			}),
-			api.notes.save(noteId, {
+			api.notes.save(note.id, {
 				...note,
 				notebookId: bookId
 			})
-		]).then(() => {
+		]
+
+		let originalNotebookId = note.notebookId
+
+		// It belongs to a notebook, so we need to remove it from that notebook
+		if (note.notebookId && state.notebooks.idMap[note.notebookId]) {
+			const originalBook = state.notebooks.idMap[note.notebookId]
+			promises.push(
+				api.notebooks.save(bookId, {
+					...originalBook,
+					notes: originalBook.notes.filter(id => id !== note.id)
+				})
+			)
+		}
+
+		// TODO: this API method could be something specific to updating/adding a note to a book
+		Promise.all(promises).then(() => {
 			dispatch(
 				noteSaved({
+					originalNotebookId,
 					note: {
 						...note,
 						notebookId: bookId
