@@ -113,7 +113,7 @@ const SearchBar = ({ value, onTagSelect, onSearch }) => {
 	}, [])
 
 	return (
-		<div className="relative flex items-center w-full px-2 text-sm outline-none text-gray-600 bg-gray-300 rounded">
+		<div className="relative flex items-center w-full px-2 outline-none text-gray-600 bg-gray-300 rounded">
 			{value.length === 0 && state.selectedTags.length === 0 ? (
 				<FiSearch style={{ minWidth: 20 }} className="text-gray-500" />
 			) : (
@@ -147,7 +147,7 @@ const SearchBar = ({ value, onTagSelect, onSearch }) => {
 				onKeyDown={handleKeyPress}
 				onChange={handleInput}
 				style={{ minWidth: 5 }}
-				className="px-1 py-1 outline-none text-gray-600 bg-transparent"
+				className="px-1 py-1 outline-none text-gray-600 bg-transparent flex-1"
 				type="text"
 			/>
 

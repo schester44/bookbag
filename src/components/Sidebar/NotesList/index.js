@@ -2,9 +2,11 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useHistory, useRouteMatch, generatePath } from 'react-router-dom'
 
+import { TiPlus } from 'react-icons/ti'
 import SearchBar from './SearchBar'
 import Note from './Note'
 
+import { openNewNote } from '../../../entities/notes/actions'
 import { fetchNoteTags } from '../../../entities/tags/actions'
 import { searchIndex } from '../../../services/search'
 
@@ -121,13 +123,36 @@ const NotesList = () => {
 		setState(prev => ({ ...prev, notes }))
 	}
 
+	const handleNewNote = () => {
+		const notebookId = params.notebookId
+
+		const note = dispatch(openNewNote({ notebookId }))
+
+		const pathname = notebookId ? `/notebook/${notebookId}/${note.id}` : `/note/${note.id}`
+
+		history.push({
+			pathname,
+			from: history.location
+		})
+	}
+
 	const noteIds = state.isSearching || params.notebookId ? state.notes : ids
 	const canDelete = (!state.isSearching && noteIds.length > 1) || !!params.notebookId
 
 	return (
 		<div>
-			<div className="mb-2 px-2 w-full pb-2 pt-1">
-				<SearchBar value={state.searchTerm} onSearch={handleSearch} />
+			<div className="mb-2 px-2 w-full pb-2 pt-1 flex">
+				<div className="flex-1">
+					<SearchBar value={state.searchTerm} onSearch={handleSearch} />
+				</div>
+				<div>
+					<div
+						onClick={handleNewNote}
+						className="flex items-center ml-2 rounded bg-gray-300 py-2 px-2 text-gray-600 font-bold cursor-pointer hover:text-gray-700"
+					>
+						<TiPlus />
+					</div>
+				</div>
 			</div>
 
 			{state.isSearching && (

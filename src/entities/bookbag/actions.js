@@ -13,9 +13,9 @@ export const bookBagInitialized = createAction('BOOKBAG_INITIALIZED')
 // We only want to make API calls once though so we return early if its already been loaded.
 // isLoaded gets set to true inside of entities/bookbag/reducer (bookBagInitialized)
 // FIXME: This shouldn't need to be called everytime we click a notebook or note
-export const initBookBag = ({ notebookId, noteId }) => {
+export const initBookBag = ({ noteId }) => {
 	return async (dispatch, getState) => {
-		const { bookbag, notes } = getState()
+		const { bookbag } = getState()
 
 		// if there is a noteId, lets update what the last opened note was.
 		// We use the lastOpened ID to restore the previous session when loading the page

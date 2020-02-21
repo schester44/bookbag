@@ -29,7 +29,7 @@ export const sendToTrash = ({ noteId }) => {
 			dispatch(removeNoteFromNotebook(note))
 		}
 
-		// We're deleting the activeNote
+		// We're deleting the activeNote by the location's pathname
 		// TODO: This could be better.
 		if (history.location.pathname.includes(noteId)) {
 			const nextNote = notes.ids.find(id => id !== noteId)

@@ -52,8 +52,8 @@ const TrashedNote = ({ note, trashedAt }) => {
 					</p>
 
 					<p
-						className="pl-6 text-sm text-gray-500 whitespace-no-wrap overflow-hidden w-full"
-						style={{ textOverflow: 'ellipsis' }}
+						className="pl-6 truncate text-sm text-gray-500"
+						style={{ maxWidth: 290 }}
 					>
 						{note.snippet?.trim().length > 0 ? (
 							note.snippet

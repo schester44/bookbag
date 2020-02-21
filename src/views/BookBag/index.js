@@ -20,14 +20,14 @@ const Notepad = () => {
 		function hotKeyListener(event) {
 			// TODO: Why doesn't isHotKey work here
 			if (event.ctrlKey && event.key === 'n') {
-				dispatch(openNewNote())
+				dispatch(openNewNote({ notebookId }))
 			}
 		}
 
 		document.addEventListener('keypress', hotKeyListener)
 
 		return () => document.removeEventListener('keypress', hotKeyListener)
-	}, [dispatch])
+	}, [dispatch, notebookId])
 
 	return (
 		<div className="flex w-full h-full">
