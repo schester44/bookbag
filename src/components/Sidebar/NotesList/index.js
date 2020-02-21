@@ -5,15 +5,12 @@ import SearchBar from './SearchBar'
 import Note from './Note'
 
 import { searchIndex } from '../../../services/search'
-import { debounce } from '../../../utils'
 import { selectNote } from '../../../entities/editor/actions'
 import { useParams } from 'react-router-dom'
 
 const searchHandler = searchTerm => {
-	return searchIndex.search(searchTerm).sort((a, b) => b.score - a.score)
+	return searchIndex.search(searchTerm, {}).sort((a, b) => b.score - a.score)
 }
-
-const debouncedSearch = debounce(searchHandler, 300)
 
 const notesSelector = state => ({
 	ids: state.notes.ids,
@@ -40,16 +37,40 @@ const NotesList = () => {
 	React.useEffect(() => {
 		if (ids.length === 0) return
 
+		// not on a notebook so just empty the array
+		// when we're not searching and we're not on a notebook, we display all notes from redux
 		if (!params.notebookId) {
-			setState(prev => ({ ...prev, notes: [] }))
+			if (state.isSearching) {
+				const matches = searchHandler(state.searchTerm)
+				return setState(prev => ({ ...prev, notes: matches.map(match => match.ref) }))
+			}
+
+			return setState(prev => ({ ...prev, notes: [] }))
 		}
 
 		const notebook = notebooks.idMap[params.notebookId]
 
 		if (!notebook) return
 
-		setState(prev => ({ ...prev, notes: notebook.notes }))
-	}, [params.notebookId, notebooks, ids])
+		let notes = notebook.notes
+
+		// filter notes by search term and active notebook
+		if (state.isSearching && notebooks.noteIdMapByBookId[params.notebookId]) {
+			const matches = searchHandler(state.searchTerm)
+
+			let bookNotes = []
+
+			matches.forEach(match => {
+				if (notebooks.noteIdMapByBookId[params.notebookId][match.ref]) {
+					bookNotes.push(match.ref)
+				}
+			})
+
+			notes = bookNotes
+		}
+
+		setState(prev => ({ ...prev, notes }))
+	}, [params.notebookId, notebooks, ids, state.searchTerm, state.isSearching])
 
 	const handleNoteSelection = note => {
 		dispatch(selectNote(note))
@@ -60,10 +81,25 @@ const NotesList = () => {
 
 		setState(prev => ({ ...prev, searchTerm: value, isSearching }))
 
-		if (isSearching) {
-			const matches = await debouncedSearch(value)
-			setState(prev => ({ ...prev, notes: matches.map(match => match.ref) }))
-		}
+		if (!isSearching) return
+
+		const matches = searchHandler(value)
+
+		const notebook = notebooks.idMap[params.notebookId]
+
+		const notes = matches.reduce((acc, match) => {
+			if (notebook) {
+				if (notebooks.noteIdMapByBookId[params.notebookId]?.[match.ref]) {
+					acc.push(match.ref)
+				}
+			} else {
+				acc.push(match.ref)
+			}
+
+			return acc
+		}, [])
+
+		setState(prev => ({ ...prev, notes }))
 	}
 
 	const noteIds = state.isSearching || params.notebookId ? state.notes : ids
