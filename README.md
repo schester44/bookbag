@@ -11,7 +11,9 @@ Offline-first note taking app
 - Add trashed items to search index, show trash items in search results
 
 - Tabs
-- Cloud Sync Integrations
+- Cloud Sync Integrations (username, password --- add email if u want password resets)
 - Collaborative Editing
 
 - view trashed notes in read only mode
+
+- pressing `control + n` when the editor is focused throws an error

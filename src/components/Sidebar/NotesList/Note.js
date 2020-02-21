@@ -10,9 +10,11 @@ import { ItemTypes } from '../constants'
 import { deleteNote } from '../../../entities/notes/actions'
 
 const noteSelector = id => state => state.notes.idMap[id]
+const bookSelector = id => state => state.notebooks.idMap[id]
 
 const Note = ({ id, isSelected, canDelete = true, onSelect }) => {
 	const note = useSelector(noteSelector(id))
+	const book = useSelector(bookSelector(note.notebookId))
 	const dispatch = useDispatch()
 
 	const [{ isDragging }, dragRef] = useDrag({
@@ -43,8 +45,10 @@ const Note = ({ id, isSelected, canDelete = true, onSelect }) => {
 			} ${isDragging ? 'text-white bg-indigo-900' : ''}`}
 		>
 			<div className="flex items-center pb-2 justify-between">
-				<div className="text-gray-400 text-xl">
+				<div className="text-gray-400 text-xl flex items-center">
 					<GoNote className={isSelected ? 'text-indigo-700' : ''} />
+
+					{book && <span className="pl-2 text-xs">{book.name}</span>}
 				</div>
 
 				<div className="flex items-center">
