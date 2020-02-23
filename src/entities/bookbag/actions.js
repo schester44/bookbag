@@ -7,6 +7,9 @@ import { createSearchIndex, createTagSearchIndex } from '../../services/search'
 import { fetchNoteTags } from '../tags/actions'
 import { createNewNote } from '../notes/actions'
 
+export const paneShown = createAction('BOOKBAG_PANE_SHOWN')
+export const paneHidden = createAction('BOOKBAG_PANE_HIDDEN')
+
 export const bookBagInitialized = createAction('BOOKBAG_INITIALIZED')
 
 // this gets called on initial page load and everytime the noteId changes.

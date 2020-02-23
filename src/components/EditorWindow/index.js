@@ -8,6 +8,7 @@ import { useParams } from 'react-router-dom'
 import Editor from './Editor'
 import EditorToolbar from './EditorToolbar'
 import TagList from '../TagList'
+import PaneTrigger from '../../components/PaneTrigger'
 
 import { createNoteTag, removeNoteTag } from '../../entities/tags/actions'
 import { debouncedSaveNote } from '../../entities/notes/actions'
@@ -35,10 +36,13 @@ const activeNoteSelector = id => state => {
 	}
 }
 
+const collapsedSelector = state => state.bookbag.collapsed > 0
+
 const EditorWindow = () => {
 	const dispatch = useDispatch()
 	const { noteId } = useParams()
 	const isFirstChange = React.useRef(true)
+	const showPaneTrigger = useSelector(collapsedSelector)
 
 	const { activeNote, activeNoteTags } = useSelector(activeNoteSelector(noteId))
 
@@ -142,7 +146,7 @@ const EditorWindow = () => {
 	return (
 		<Slate editor={editor} value={note.body} onChange={handleNoteBodyChange}>
 			<FloatingToolbar />
-			<div className="flex-1 shadow pb-8 bg-white flex flex-col h-full">
+			<div className="flex-1 shadow pb-8 bg-white flex flex-col h-full relative">
 				<div className="flex justify-center p-2 border-b border-gray-200 mb-2 items-center">
 					<EditorToolbar activeNote={activeNote} />
 				</div>
@@ -160,6 +164,12 @@ const EditorWindow = () => {
 
 					<Editor editor={editor} />
 				</div>
+
+				{showPaneTrigger && (
+					<div className="absolute bottom-0 left-0 mb-2">
+						<PaneTrigger action="show" />
+					</div>
+				)}
 			</div>
 		</Slate>
 	)
