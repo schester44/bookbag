@@ -4,18 +4,11 @@ import { useSelector } from 'react-redux'
 import produce from 'immer'
 import TagMenuDropdown from '../TagMenuDropdown'
 import Tag from '../SearchBar/Tag'
+import omit from 'lodash/omit'
 
 const tagsSelector = state => state.tags
 
-/**
- *
- * TODO:
- * - onOutsideClick for dropdown
- * - highlight dropdown matches
- * - dropdown keyboard navigation
- */
-
-const SearchBar = ({ value, onTagSelect, onSearch }) => {
+const SearchBar = ({ value, onTagChange, onSearch }) => {
 	const inputRef = React.useRef()
 
 	const tags = useSelector(tagsSelector)
@@ -27,6 +20,10 @@ const SearchBar = ({ value, onTagSelect, onSearch }) => {
 		selectedTagIds: {},
 		searchTerm: ''
 	})
+
+	React.useEffect(() => {
+		setState(prev => ({ ...prev, tags: tags.ids }))
+	}, [tags])
 
 	const handleInput = ({ target: { value } }) => {
 		setState(prev => {
@@ -58,21 +55,38 @@ const SearchBar = ({ value, onTagSelect, onSearch }) => {
 		onSearch('')
 	}
 
-	const selectTag = React.useCallback(id => {
-		setState(prev => ({
-			...prev,
-			searchTerm: '',
-			selectedTags: prev.selectedTags.concat(id),
-			selectedTagIds: {
-				...prev.selectedTagIds,
-				[id]: true
+	const selectTag = React.useCallback(
+		id => {
+			if (onTagChange) {
+				onTagChange(
+					{
+						...state.selectedTagIds,
+						[id]: true
+					},
+					state.selectedTags + 1
+				)
 			}
-		}))
 
-		inputRef.current.focus()
-	}, [])
+			setState(prev => ({
+				...prev,
+				searchTerm: '',
+				selectedTags: prev.selectedTags.concat(id),
+				selectedTagIds: {
+					...prev.selectedTagIds,
+					[id]: true
+				}
+			}))
+
+			inputRef.current.focus()
+		},
+		[onTagChange, state.selectedTagIds, state.selectedTags]
+	)
 
 	const removeTag = id => {
+		if (onTagChange) {
+			onTagChange(omit(state.selectedTagIds, [id]), state.selectedTags.length - 1)
+		}
+
 		setState(prev =>
 			produce(prev, draft => {
 				const index = prev.selectedTags.findIndex(tagId => tagId === id)
@@ -112,6 +126,8 @@ const SearchBar = ({ value, onTagSelect, onSearch }) => {
 		setState(prev => ({ ...prev, tagsVisible: false }))
 	}, [])
 
+	const isTagListVisible = state.tagsVisible && state.selectedTags.length < 3
+
 	return (
 		<div className="relative flex items-center w-full px-2 outline-none text-gray-600 bg-gray-300 rounded">
 			{value.length === 0 && state.selectedTags.length === 0 ? (
@@ -131,7 +147,7 @@ const SearchBar = ({ value, onTagSelect, onSearch }) => {
 			)}
 
 			{state.selectedTags.length > 0 && (
-				<div className="flex flex-1 pl-1">
+				<div className="flex pl-1">
 					{state.selectedTags.map(id => {
 						const tag = tags.idMap[id]
 
@@ -151,7 +167,7 @@ const SearchBar = ({ value, onTagSelect, onSearch }) => {
 				type="text"
 			/>
 
-			{state.tagsVisible && (
+			{isTagListVisible && (
 				<TagMenuDropdown
 					selectedTags={state.selectedTagIds}
 					ids={state.tags}

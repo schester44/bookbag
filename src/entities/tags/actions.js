@@ -27,6 +27,8 @@ export const fetchNoteTags = noteId => {
 		const tags = await api.tags.getByNote(noteId)
 
 		dispatch(noteTagsFetched({ noteId, tags }))
+
+		return tags
 	}
 }
 

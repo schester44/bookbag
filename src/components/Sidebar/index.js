@@ -27,6 +27,7 @@ const Sidebar = () => {
 			<div
 				className="flex sm:w-3/6 xl:w-4/12"
 				style={{
+					minWidth: 200,
 					transition: 'margin .2s ease-in-out',
 					marginLeft:
 						collapsed === 1

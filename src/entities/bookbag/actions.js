@@ -27,21 +27,6 @@ export const initBookBag = ({ noteId }) => {
 		}
 
 		if (bookbag.isLoaded) {
-			// if there's no noteId then the user landed on the home page without a note.. lets get the last note
-
-			// if (!noteId && !notebookId) {
-			// 	const lastOpenedId = await api.notes.lastOpened.get()
-			// 	const activeNote = notes.idMap[lastOpenedId] || notes.idMap[notes.ids[0]]
-
-			// 	console.log('here')
-			// 	if (activeNote) {
-			// 		history.push(`/note/${activeNote.id}`)
-			// 	} else {
-			// 		// TODO: handle this state
-			// 	}
-			// }
-
-			// no need to go any futher call the APIs if its already been loaded
 			return
 		}
 
@@ -50,10 +35,11 @@ export const initBookBag = ({ noteId }) => {
 			api.notes.getAll(),
 			api.tags.getAll(),
 			api.trash.getAll(),
+			api.tags.getNoteTags(),
 			api.notes.lastOpened.get()
 		]
 
-		Promise.all(promises).then(async ([notebooks, notes, tags, trash, lastOpenedId]) => {
+		Promise.all(promises).then(async ([notebooks, notes, tags, trash, noteTags, lastOpenedId]) => {
 			createSearchIndex({ notes: notes.ids.map(id => notes.idMap[id]) })
 			createTagSearchIndex({ tags: tags.ids.map(id => tags.idMap[id]) })
 
@@ -80,6 +66,7 @@ export const initBookBag = ({ noteId }) => {
 				bookBagInitialized({
 					notebooks,
 					notes,
+					noteTags,
 					tags,
 					trash,
 					lastOpenedId,

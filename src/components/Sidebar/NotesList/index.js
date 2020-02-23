@@ -21,6 +21,12 @@ const notesSelector = state => ({
 })
 
 const notebookSelector = id => state => (!id ? undefined : state.notebooks.idMap[id])
+const noteTagSelector = state => {
+	return {
+		byNote: state.tags.byNote,
+		byTag: state.tags.byTag
+	}
+}
 
 const NotesList = () => {
 	const { ids, notebooks } = useSelector(notesSelector)
@@ -30,6 +36,7 @@ const NotesList = () => {
 	const match = useRouteMatch()
 
 	const notebook = useSelector(notebookSelector(params.notebookId))
+	const noteTags = useSelector(noteTagSelector)
 
 	const activeNoteId = params.noteId
 
@@ -97,6 +104,93 @@ const NotesList = () => {
 		})
 	}
 
+	const handleTagChange = (tagIds, totalTags) => {
+		// TODO: If there are no tags, then undo everything.
+		const notebook = notebooks.idMap[params.notebookId]
+
+		console.log(tagIds, totalTags)
+
+		if (totalTags === 0) {
+			if (state.isSearching) {
+				const matches = searchHandler(state.searchTerm)
+
+				const notes = matches.reduce((acc, match) => {
+					if (notebook) {
+						if (notebooks.noteIdMapByBookId[params.notebookId]?.[match.ref]) {
+							acc.push(match.ref)
+						}
+					} else {
+						acc.push(match.ref)
+					}
+
+					return acc
+				}, [])
+				setState(prev => ({ ...prev, notes }))
+			} else {
+				const notes = ids.reduce((acc, id) => {
+					if (notebook) {
+						if (notebooks.noteIdMapByBookId[params.notebookId]?.[id]) {
+							acc.push(id)
+						}
+					} else {
+						acc.push(id)
+					}
+
+					return acc
+				}, [])
+
+				setState(prev => ({ ...prev, notes }))
+			}
+
+			return
+		}
+
+		setState(prev => {
+			let notes = []
+
+			if (prev.isSearching) {
+				const matches = searchHandler(prev.searchTerm)
+
+				notes = matches.reduce((acc, match) => {
+					const notesTags = noteTags.byNote[match.ref]
+
+					const isTagged = notesTags?.length > 0
+					// Note isn't tagged but we're dealing with tags, so...
+					if (!isTagged) return acc
+
+					if (notebook) {
+						if (notebooks.noteIdMapByBookId[params.notebookId]?.[match.ref]) {
+							// Only show the note if the note has the selected tags and the note exists within teh selected notebook
+							const isInTag = notesTags && notesTags.some(tagId => !!tagIds[tagId])
+
+							if (isInTag) {
+								acc.push(match.ref)
+							}
+						}
+					} else {
+						const isInTag = notesTags && notesTags.some(tagId => !!tagIds[tagId])
+
+						if (isInTag) {
+							acc.push(match.ref)
+						}
+					}
+
+					return acc
+				}, [])
+			} else {
+				Object.keys(tagIds).forEach(tagId => {
+					const noteIds = noteTags.byTag[tagId]
+					notes = notes.concat(noteIds || [])
+				})
+			}
+
+			return {
+				...prev,
+				notes
+			}
+		})
+	}
+
 	const handleSearch = async value => {
 		const isSearching = value.trim().length > 0
 
@@ -142,8 +236,12 @@ const NotesList = () => {
 	return (
 		<div>
 			<div className="mb-2 px-2 w-full pb-2 pt-1 flex">
-				<div className="flex-1">
-					<SearchBar value={state.searchTerm} onSearch={handleSearch} />
+				<div style={{ width: 'calc(100% - 40px)' }}>
+					<SearchBar
+						value={state.searchTerm}
+						onSearch={handleSearch}
+						onTagChange={handleTagChange}
+					/>
 				</div>
 				<div>
 					<div

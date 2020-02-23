@@ -24,9 +24,14 @@ async function tagsByNote(noteId) {
 	return relationships.byNote[noteId] || []
 }
 
+function saveNoteTags(tagRelations) {
+	return localforage.setItem('noteTags', tagRelations)
+}
+
 export default {
 	getAll: getTags,
 	getByNote: tagsByNote,
+	getNoteTags,
 	save: async (tagId, tag) => {
 		const id = tagId || nanoid()
 
@@ -60,7 +65,7 @@ export default {
 			tagRelations.byTag[tagId].push(noteId)
 		}
 
-		return localforage.setItem('noteTags', tagRelations)
+		return saveNoteTags(tagRelations)
 	},
 	removeFromNote: async (tagId, noteId) => {
 		const tagRelations = await getNoteTags()
