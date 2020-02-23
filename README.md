@@ -4,7 +4,6 @@ Offline-first note taking app
 
 ### TODO
 
-- view trashed notes in read only mode
 - pressing `control + n` when the editor is focused throws an error
 - Search Notes by tags (via search input)
 - Tabs (multiple active notes)
@@ -15,3 +14,7 @@ Offline-first note taking app
 
 - Cloud Sync Integrations (username, password --- add email if u want password resets)
 - Collaborative Editing
+
+### Bugs
+
+- Click a TrashedNote, delete it --- its state persists in the Editor until we change the activeNote.

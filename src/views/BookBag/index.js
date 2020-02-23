@@ -1,6 +1,6 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useParams, useRouteMatch } from 'react-router-dom'
 
 import { openNewNote } from '../../entities/notes/actions'
 import { initBookBag } from '../../entities/bookbag/actions'
@@ -11,6 +11,7 @@ import EditorWindow from '../../components/EditorWindow'
 const Notepad = () => {
 	const dispatch = useDispatch()
 	const { notebookId, noteId } = useParams()
+	const match = useRouteMatch()
 
 	React.useEffect(() => {
 		dispatch(initBookBag({ notebookId, noteId }))
@@ -32,7 +33,7 @@ const Notepad = () => {
 	return (
 		<div className="flex w-full h-full">
 			<Sidebar />
-			<EditorWindow />
+			<EditorWindow isReadOnly={match.path === '/trash/:noteId'} />
 		</div>
 	)
 }

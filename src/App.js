@@ -4,15 +4,21 @@ import { Switch, Route } from 'react-router-dom'
 import Bookbag from './views/BookBag'
 import Settings from './views/Settings'
 
+const bookBagRoutes = [
+	'/',
+	'/note/:noteId',
+	'/trash',
+	'/trash/:noteId',
+	'/notebook/:notebookId/:noteId?',
+	'/tags'
+]
+
 function App() {
 	return (
 		<div className="App w-full h-full">
 			<React.Suspense fallback={null}>
 				<Switch>
-					<Route
-						exact
-						path={['/', '/note/:noteId', '/trash', '/notebook/:notebookId/:noteId?', '/tags']}
-					>
+					<Route exact path={bookBagRoutes}>
 						<Bookbag />
 					</Route>
 

@@ -48,7 +48,11 @@ const Sidebar = () => {
 					}}
 				>
 					<React.Suspense fallback={null}>
-						{match.path === '/trash' ? <TrashList /> : <NotesList />}
+						{match.path === '/trash' || match.path === '/trash/:noteId' ? (
+							<TrashList />
+						) : (
+							<NotesList />
+						)}
 					</React.Suspense>
 
 					<div className="absolute bottom-0 right-0 mb-2">

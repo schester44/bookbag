@@ -29,7 +29,13 @@ const debouncedUpdateSearchIndex = debounce(updateIndexHandler, 300)
 
 const defaultTagsArray = []
 
-const activeNoteSelector = id => state => {
+const activeNoteSelector = (id, isReadOnly) => state => {
+	if (isReadOnly) {
+		return {
+			activeNote: state.trash.idMap[id]?.note
+		}
+	}
+
 	return {
 		activeNote: state.notes.idMap[id],
 		activeNoteTags: state.tags.byNote[id] || defaultTagsArray
@@ -38,13 +44,13 @@ const activeNoteSelector = id => state => {
 
 const collapsedSelector = state => state.bookbag.collapsed > 0
 
-const EditorWindow = () => {
+const EditorWindow = ({ isReadOnly }) => {
 	const dispatch = useDispatch()
 	const { noteId } = useParams()
 	const isFirstChange = React.useRef(true)
 	const showPaneTrigger = useSelector(collapsedSelector)
 
-	const { activeNote, activeNoteTags } = useSelector(activeNoteSelector(noteId))
+	const { activeNote, activeNoteTags } = useSelector(activeNoteSelector(noteId, isReadOnly))
 
 	const editor = React.useMemo(
 		() => withMarkdownShortcuts(withLinks(withHistory(withReact(createEditor())))),
@@ -147,22 +153,26 @@ const EditorWindow = () => {
 		<Slate editor={editor} value={note.body} onChange={handleNoteBodyChange}>
 			<FloatingToolbar />
 			<div className="flex-1 shadow pb-8 bg-white flex flex-col h-full relative">
-				<div className="flex justify-center p-2 border-b border-gray-200 mb-2 items-center">
-					<EditorToolbar activeNote={activeNote} />
-				</div>
+				{!isReadOnly && (
+					<div className="flex justify-center p-2 border-b border-gray-200 mb-2 items-center">
+						<EditorToolbar activeNote={activeNote} />
+					</div>
+				)}
 
 				<div className="px-8 pb-3">
-					<NoteTitle title={note.title} onChange={handleNoteTitleChange} />
+					<NoteTitle isReadOnly={isReadOnly} title={note.title} onChange={handleNoteTitleChange} />
 
-					<div className="pb-4">
-						<TagList
-							ids={activeNoteTags}
-							onTagCreate={handleNewTag}
-							onRemoveTag={handleRemoveTag}
-						/>
-					</div>
+					{!isReadOnly && (
+						<div className="pb-4">
+							<TagList
+								ids={activeNoteTags}
+								onTagCreate={handleNewTag}
+								onRemoveTag={handleRemoveTag}
+							/>
+						</div>
+					)}
 
-					<Editor editor={editor} />
+					<Editor editor={editor} isReadOnly={isReadOnly} />
 				</div>
 
 				{showPaneTrigger && (

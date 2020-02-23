@@ -11,7 +11,7 @@ import { HOTKEYS } from './constants'
 import { openNewNote } from '../../entities/notes/actions'
 import { useParams } from 'react-router-dom'
 
-const Editor = ({ editor }) => {
+const Editor = ({ editor, isReadOnly }) => {
 	const dispatch = useDispatch()
 	const { notebookId } = useParams()
 
@@ -43,6 +43,7 @@ const Editor = ({ editor }) => {
 				placeholder="Whats on your mind?"
 				spellCheck
 				autoFocus
+				readOnly={isReadOnly}
 				onKeyDown={handleKeyDown}
 			/>
 		</div>
