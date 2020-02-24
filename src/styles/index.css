@@ -22,22 +22,6 @@
 	@apply bg-gray-700 text-white;
 }
 
-.app-nav-item {
-	@apply flex items-center w-full justify-center h-12 cursor-pointer;
-}
-
-.app-nav-item .icon {
-	@apply border-2 rounded text-gray-400 border-transparent mx-2 px-2 w-full py-1 flex items-center justify-center;
-}
-
-.app-nav-item:hover .icon {
-	@apply text-white;
-}
-
-.app-nav-item.active .icon {
-	@apply border-2 border-indigo-700 bg-gray-800 text-white;
-}
-
 .sidebar-note:hover .delete-btn {
 	@apply opacity-100;
 }
@@ -47,7 +31,7 @@
 }
 
 .navigator-link {
-	@apply px-4 py-2 flex items-center text-gray-400 cursor-pointer;
+	@apply px-4 py-2 flex items-center text-gray-400 cursor-pointer border-l-2 border-transparent;
 }
 
 .navigator-link:hover {
@@ -55,7 +39,7 @@
 }
 
 .navigator-link.active {
-	@apply text-white bg-gray-800 cursor-default;
+	@apply text-white bg-gray-800 cursor-default border-indigo-500;
 }
 
 .truncate {

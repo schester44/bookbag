@@ -108,8 +108,6 @@ const NotesList = () => {
 		// TODO: If there are no tags, then undo everything.
 		const notebook = notebooks.idMap[params.notebookId]
 
-		console.log(tagIds, totalTags)
-
 		if (totalTags === 0) {
 			if (state.isSearching) {
 				const matches = searchHandler(state.searchTerm)

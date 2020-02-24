@@ -8,7 +8,7 @@ import { FiTrash2 } from 'react-icons/fi'
 
 import { restoreFromTrash, deleteTrashedNote } from '../../../entities/trash/actions'
 
-const TrashedNote = ({ note, trashedAt }) => {
+const TrashedNote = ({ note, trashedAt, isSelected }) => {
 	const dispatch = useDispatch()
 
 	const handleDelete = note => {
@@ -20,7 +20,7 @@ const TrashedNote = ({ note, trashedAt }) => {
 	}
 
 	return (
-		<div className="sidebar-note border-b border-gray-300 pt-3 px-4 pb-4">
+		<div className={`sidebar-note border-b border-gray-300 pt-3 px-4 pb-4 ${isSelected ? 'bg-white' : ''}`}>
 			<div className="flex items-center pb-2 justify-between">
 				<div className="text-gray-400 text-xl">
 					<FiTrash />
@@ -51,10 +51,7 @@ const TrashedNote = ({ note, trashedAt }) => {
 						)}
 					</p>
 
-					<p
-						className="pl-6 truncate text-sm text-gray-500"
-						style={{ maxWidth: 200 }}
-					>
+					<p className="pl-6 truncate text-sm text-gray-500" style={{ maxWidth: 200 }}>
 						{note.snippet?.trim().length > 0 ? (
 							note.snippet
 						) : (

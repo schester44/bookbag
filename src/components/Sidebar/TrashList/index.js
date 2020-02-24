@@ -3,13 +3,14 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import TrashedNote from './TrashedNote'
 import { fetchTrash } from '../../../entities/trash/actions'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 const trashSelector = state => state.trash
 
 const NotesList = () => {
 	const dispatch = useDispatch()
 	const trash = useSelector(trashSelector)
+	const { noteId } = useParams()
 
 	React.useEffect(() => {
 		dispatch(fetchTrash())
@@ -22,7 +23,12 @@ const NotesList = () => {
 
 				return (
 					<Link to={`/trash/${note.id}`} key={id}>
-						<TrashedNote key={id} note={note} trashedAt={trashedAt} />
+						<TrashedNote
+							key={id}
+							note={note}
+							trashedAt={trashedAt}
+							isSelected={noteId === note.id}
+						/>
 					</Link>
 				)
 			})}
