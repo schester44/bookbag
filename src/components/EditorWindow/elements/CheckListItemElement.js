@@ -12,7 +12,7 @@ export const CheckListItemElement = ({ attributes, children, element }) => {
 		<div className={`flex mb-2 items-center`} {...attributes}>
 			<span className="mr-2" style={{ userSelect: 'none' }} contentEditable={false}>
 				<div
-					className="rounded border text-gray-700 bg-gray-200 w-6 h-6 flex items-center justify-center cursor-pointer"
+					className="rounded text-gray-700 bg-gray-200 w-6 h-6 flex items-center justify-center cursor-pointer"
 					onClick={() => {
 						const path = ReactEditor.findPath(editor, element)
 						Transforms.setNodes(editor, { checked: !checked }, { at: path })

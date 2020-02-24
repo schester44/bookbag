@@ -28,11 +28,7 @@ export const debouncedSaveNote = debounce(({ note }, dispatch) => {
 
 export const saveNote = ({ note }) => {
 	return async dispatch => {
-		let snippet = note.snippet
-
-		if (!snippet || snippet.length < 50) {
-			snippet = serializeToText(note.body).slice(0, 150)
-		}
+		const snippet = serializeToText(note.body).slice(0, 150)
 
 		const savedNote = await api.notes.save(note.id, { ...note, snippet })
 
