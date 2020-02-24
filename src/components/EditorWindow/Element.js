@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { CheckListItemElement } from './elements/CheckListItemElement'
+import { Image } from './elements/Image'
 
 const Element = ({ attributes, children, element, ...props }) => {
 	switch (element.type) {
@@ -48,6 +49,15 @@ const Element = ({ attributes, children, element, ...props }) => {
 					{children}
 				</h3>
 			)
+
+		case 'list-item':
+			return <li {...attributes}>{children}</li>
+		case 'numbered-list':
+			return (
+				<ol className="list-decimal list-inside" {...attributes}>
+					{children}
+				</ol>
+			)
 		case 'checklist-item':
 			return (
 				<CheckListItemElement
@@ -57,14 +67,8 @@ const Element = ({ attributes, children, element, ...props }) => {
 					{...props}
 				/>
 			)
-		case 'list-item':
-			return <li {...attributes}>{children}</li>
-		case 'numbered-list':
-			return (
-				<ol className="list-decimal list-inside" {...attributes}>
-					{children}
-				</ol>
-			)
+		case 'image':
+			return <Image attributes={attributes} children={children} element={element} {...props} />
 		default:
 			return <p {...attributes}>{children}</p>
 	}

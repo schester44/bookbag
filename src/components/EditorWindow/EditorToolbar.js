@@ -2,9 +2,10 @@ import React from 'react'
 import { FiList, FiTrash, FiCheckSquare } from 'react-icons/fi'
 import { MdFormatListNumbered } from 'react-icons/md'
 import { FaQuoteRight } from 'react-icons/fa'
+import { useDispatch, useSelector } from 'react-redux'
 
 import BlockButton from './BlockButton'
-import { useDispatch, useSelector } from 'react-redux'
+import InsertImageButton from './EditorToolbar/InsertImageButton'
 
 import { deleteNote } from '../../entities/notes/actions'
 import { sendToTrash } from '../../entities/trash/actions'
@@ -12,7 +13,7 @@ import { removeFromSearchIndex } from '../../services/search'
 
 const canSendToTrashSelector = state => state.notes.ids.length > 1
 
-const EditorToolbar = ({ activeNote }) => {
+const EditorToolbar = ({ editor, activeNote }) => {
 	const dispatch = useDispatch()
 	const canSendToTrash = useSelector(canSendToTrashSelector)
 
@@ -34,6 +35,7 @@ const EditorToolbar = ({ activeNote }) => {
 				<BlockButton format="numbered-list" icon={<MdFormatListNumbered />} />
 				<BlockButton format="bulleted-list" icon={<FiList />} />
 				<BlockButton format="checklist-item" icon={<FiCheckSquare />} />
+				<InsertImageButton editor={editor} />
 			</div>
 
 			<div className="settings flex items-center">

@@ -21,6 +21,7 @@ import FloatingToolbar from './FloatingToolbar'
 import { debounce } from '../../utils'
 import { updateSearchIndex } from '../../services/search'
 import NoteTitle from './NoteTitle'
+import { withImages } from './plugins/withImages'
 
 const updateIndexHandler = note => {
 	updateSearchIndex({ ...note, body: JSON.stringify(note.body) })
@@ -54,7 +55,10 @@ const EditorWindow = ({ isReadOnly }) => {
 	const { activeNote, activeNoteTags } = useSelector(activeNoteSelector(noteId, isReadOnly))
 
 	const editor = React.useMemo(
-		() => withChecklists(withMarkdownShortcuts(withLinks(withHistory(withReact(createEditor()))))),
+		() =>
+			withImages(
+				withChecklists(withMarkdownShortcuts(withLinks(withHistory(withReact(createEditor())))))
+			),
 		[]
 	)
 
@@ -156,7 +160,7 @@ const EditorWindow = ({ isReadOnly }) => {
 			<div className="flex-1 shadow pb-8 bg-white flex flex-col h-full relative">
 				{!isReadOnly && (
 					<div className="flex justify-center p-2 border-b border-gray-200 mb-2 items-center">
-						<EditorToolbar activeNote={activeNote} />
+						<EditorToolbar activeNote={activeNote} editor={editor} />
 					</div>
 				)}
 
