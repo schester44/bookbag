@@ -20,6 +20,7 @@ const Notepad = () => {
 	React.useEffect(() => {
 		function hotKeyListener(event) {
 			// TODO: Why doesn't isHotKey work here
+			// TODO: does this work on Windows?
 			if (event.ctrlKey && event.key === 'n') {
 				dispatch(openNewNote({ notebookId }))
 			}

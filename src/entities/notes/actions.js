@@ -63,7 +63,7 @@ export const deleteNote = noteId => {
 		const note = notes.idMap[noteId]
 
 		return api.notes.delete(noteId).then(() => {
-			if (note.notebookId) {
+			if (note?.notebookId) {
 				dispatch(removeNoteFromNotebook(note))
 			}
 

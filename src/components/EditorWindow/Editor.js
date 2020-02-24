@@ -19,7 +19,7 @@ const Editor = ({ editor, isReadOnly }) => {
 	const renderLeaf = React.useCallback(props => <Leaf {...props} />, [])
 
 	const handleKeyDown = event => {
-		const shouldOpenNewTab = isHotkey('ctrl+n', event)
+		const shouldOpenNewTab = isHotkey('mod+n', event)
 		if (shouldOpenNewTab) {
 			dispatch(openNewNote({ notebookId }))
 			return
