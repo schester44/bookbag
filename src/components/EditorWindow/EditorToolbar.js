@@ -33,7 +33,7 @@ const EditorToolbar = ({ activeNote }) => {
 				<BlockButton format="block-quote" icon={<FaQuoteRight />} />
 				<BlockButton format="numbered-list" icon={<MdFormatListNumbered />} />
 				<BlockButton format="bulleted-list" icon={<FiList />} />
-				<BlockButton format="todo-item" icon={<FiCheckSquare />} />
+				<BlockButton format="checklist-item" icon={<FiCheckSquare />} />
 			</div>
 
 			<div className="settings flex items-center">

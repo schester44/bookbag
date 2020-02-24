@@ -15,6 +15,7 @@ import { debouncedSaveNote } from '../../entities/notes/actions'
 
 import { withLinks } from './plugins/withLinks'
 import { withMarkdownShortcuts } from './plugins/withMarkdownShortcuts'
+import { withChecklists } from './plugins/withChecklists'
 
 import FloatingToolbar from './FloatingToolbar'
 import { debounce } from '../../utils'
@@ -53,7 +54,7 @@ const EditorWindow = ({ isReadOnly }) => {
 	const { activeNote, activeNoteTags } = useSelector(activeNoteSelector(noteId, isReadOnly))
 
 	const editor = React.useMemo(
-		() => withMarkdownShortcuts(withLinks(withHistory(withReact(createEditor())))),
+		() => withChecklists(withMarkdownShortcuts(withLinks(withHistory(withReact(createEditor()))))),
 		[]
 	)
 

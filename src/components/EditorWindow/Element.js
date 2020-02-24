@@ -1,29 +1,15 @@
 import React from 'react'
 
-const TodoItem = ({ attributes, children }) => {
-	// TODO: How to preserve TODO state?
-	const [checked, setChecked] = React.useState(false)
-	return (
-		<div
-			className={`w-1/2 bg-gray-100 rounded px-2 py-1 mb-2 flex items-center ${
-				checked ? 'text-gray-400 line-through' : ''
-			}`}
-			{...attributes}
-		>
-			<span className="mr-2" style={{ userSelect: 'none' }} contentEditable={false}>
-				<input
-					type="checkbox"
-					onChange={({ target: { checked } }) => setChecked(checked)}
-					checked={checked}
-				/>
-			</span>
-			{children}
-		</div>
-	)
-}
+import { CheckListItemElement } from './elements/CheckListItemElement'
 
-const Element = ({ onTodoCheck, attributes, children, element }) => {
+const Element = ({ attributes, children, element, ...props }) => {
 	switch (element.type) {
+		case 'code':
+			return (
+				<code {...attributes} className="bg-gray-200">
+					{children}
+				</code>
+			)
 		case 'link':
 			return (
 				<a
@@ -62,8 +48,15 @@ const Element = ({ onTodoCheck, attributes, children, element }) => {
 					{children}
 				</h3>
 			)
-		case 'todo-item':
-			return <TodoItem onTodoCheck={onTodoCheck} attributes={attributes} children={children} />
+		case 'checklist-item':
+			return (
+				<CheckListItemElement
+					attributes={attributes}
+					children={children}
+					element={element}
+					{...props}
+				/>
+			)
 		case 'list-item':
 			return <li {...attributes}>{children}</li>
 		case 'numbered-list':
