@@ -23,7 +23,7 @@ const Element = ({ attributes, children, element, ...props }) => {
 				</a>
 			)
 		case 'block-quote':
-			return <blockquote {...attributes}>{children}</blockquote>
+			return <blockquote className="bg-gray-100 border-l-2 border-indigo-200 text-gray-700 px-2 py-2" {...attributes}>{children}</blockquote>
 
 		case 'bulleted-list':
 			return (
