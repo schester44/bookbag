@@ -1,6 +1,6 @@
-# Notes
+# BookBag
 
-Offline-first note taking app
+A privacy focused, offline first, note taking app built with React.
 
 ### Installation
 `yarn`
