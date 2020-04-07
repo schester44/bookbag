@@ -1,15 +1,20 @@
 import React from 'react'
 import { FiDelete, FiPlus } from 'react-icons/fi'
-
+import { useMutation } from '@apollo/client'
 import { NavLink, useParams, useHistory } from 'react-router-dom'
 import { useDrop } from 'react-dnd'
 
 import ContextMenu, { Menu, MenuItem } from 'components/ContextMenu'
+import { deleteNoteBookMutation, updateNoteBookMutation } from 'mutations'
 import { ItemTypes } from '../../constants'
+import produce from 'immer'
+import { bookbagQuery } from 'queries'
 
 const Book = ({ book }) => {
 	const { notebookId } = useParams()
 	const history = useHistory()
+	const [deleteNoteBook] = useMutation(deleteNoteBookMutation)
+	const [updateNoteBook] = useMutation(updateNoteBookMutation)
 
 	const [rename, setRename] = React.useState({ visible: false, name: book.name })
 
@@ -35,8 +40,27 @@ const Book = ({ book }) => {
 	})
 
 	const handleDelete = () => {
-		// TODO: Delete this notebook.
-		// dispatch(deleteNotebook(book.id))
+		deleteNoteBook({
+			variables: {
+				id: book.id,
+			},
+			optimisticResponse: {
+				__typename: 'Mutation',
+				deleteNoteBook: true,
+			},
+			update: (client) => {
+				const data = client.readQuery({
+					query: bookbagQuery,
+				})
+
+				client.writeQuery({
+					query: bookbagQuery,
+					data: produce(data, (draft) => {
+						draft.notebooks = draft.notebooks.filter(({ id }) => id !== book.id)
+					}),
+				})
+			},
+		})
 
 		if (notebookId === book.id) {
 			history.push('/')
@@ -58,13 +82,19 @@ const Book = ({ book }) => {
 		if (e.key === 'Enter') {
 			setRename((prev) => ({ ...prev, visible: false }))
 
-			// TODO: Rename this notebook
-			// dispatch(
-			// 	updateNotebook({
-			// 		...book,
-			// 		name: rename.name,
-			// 	})
-			// )
+			updateNoteBook({
+				optimisticResponse: {
+					__typename: 'Mutation',
+					updateNoteBook: {
+						name: rename.name,
+						__typename: 'NoteBook',
+					},
+				},
+				variables: {
+					id: book.id,
+					name: rename.name,
+				},
+			})
 		}
 	}
 

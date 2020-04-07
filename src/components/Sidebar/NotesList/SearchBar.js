@@ -23,7 +23,7 @@ const SearchBar = ({ value, onTagChange, onSearch }) => {
 
 	React.useEffect(() => {
 		setState((prev) => ({ ...prev, tags: tags.ids }))
-	}, [tags])
+	}, [])
 
 	const handleInput = ({ target: { value } }) => {
 		setState((prev) => {

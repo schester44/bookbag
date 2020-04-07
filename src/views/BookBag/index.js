@@ -1,15 +1,18 @@
 import React from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useHistory } from 'react-router-dom'
 
 import { useQuery } from '@apollo/client'
 import Sidebar from 'components/Sidebar'
 import EditorWindow from 'components/EditorWindow'
 import { bookbagQuery, noteQuery } from 'queries'
+import useNewNote from 'hooks/useNewNote'
 
 const BookBag = ({ user }) => {
 	const { notebookId, noteId } = useParams()
+	const [createNewNote] = useNewNote({ notebookId })
+	const history = useHistory()
 
-	const { data, loading } = useQuery(bookbagQuery, {
+	const { loading } = useQuery(bookbagQuery, {
 		returnPartialData: true,
 		variables: {
 			id: noteId,
@@ -26,22 +29,32 @@ const BookBag = ({ user }) => {
 	const activeNote = noteQueryData?.note
 
 	React.useEffect(() => {
-		function hotKeyListener(event) {
+		async function hotKeyListener(event) {
 			// TODO: Why doesn't isHotKey work here
 			// TODO: does this work on Windows?
 			if (event.ctrlKey && event.key === 'n') {
-				// dispatch(openNewNote({ notebookId }))
+				const { data } = await createNewNote({ variables: { notebookId } })
+
+				const pathname = notebookId
+					? `/notebook/${notebookId}/${data.createNote.id}`
+					: `/note/${data.createNote.id}`
+
+				history.push({
+					pathname,
+					state: {
+						from: history.location,
+					},
+				})
 			}
 		}
 
 		document.addEventListener('keypress', hotKeyListener)
 
 		return () => document.removeEventListener('keypress', hotKeyListener)
-	}, [notebookId])
+	}, [notebookId, history, createNewNote])
 
 	if (loading) return <div>loading...</div>
 
-	console.log({ activeNote })
 	return (
 		<div className="flex w-full h-full">
 			<Sidebar user={user} />

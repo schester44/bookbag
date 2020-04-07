@@ -44,3 +44,18 @@ export const deleteNoteMutation = gql`
 		deleteNote(noteId: $id)
 	}
 `
+
+export const deleteNoteBookMutation = gql`
+	mutation deleteNoteBookMutation($id: String!) {
+		deleteNoteBook(bookId: $id)
+	}
+`
+
+export const updateNoteBookMutation = gql`
+	mutation updateNoteBook($id: String!, $name: String!) {
+		updateNoteBook(noteId: $id, name: $name) {
+			id
+			name
+		}
+	}
+`

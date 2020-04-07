@@ -3,6 +3,7 @@ import { useMutation } from '@apollo/client'
 import { useHistory } from 'react-router-dom'
 import { FaBook } from 'react-icons/fa'
 import { GoPlus } from 'react-icons/go'
+import { produce } from 'immer'
 
 import { bookbagQuery } from 'queries'
 import { createNoteBookMutation } from 'mutations'
@@ -32,14 +33,14 @@ const Heading = () => {
 			variables: {
 				name,
 			},
-			update: (cache, { data }) => {
-				const query = cache.readQuery({ query: bookbagQuery })
+			update: (cache, { data: { createNoteBook } }) => {
+				const data = cache.readQuery({ query: bookbagQuery })
 
 				cache.writeQuery({
-					data: {
-						...query,
-						notebooks: query.notebooks.push(data.createNoteBook),
-					},
+					query: bookbagQuery,
+					data: produce(data, (draft) => {
+						draft.notebooks.push(createNoteBook)
+					}),
 				})
 			},
 		})

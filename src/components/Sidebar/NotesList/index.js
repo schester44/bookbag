@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams, useHistory, useRouteMatch, generatePath } from 'react-router-dom'
-import { useQuery, useMutation } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 
 import { TiPlus } from 'react-icons/ti'
 import SearchBar from './SearchBar'
@@ -27,7 +27,6 @@ const NotesList = () => {
 	})
 
 	const notebook = notebookData?.notebook
-	const notebooks = data?.notebooks
 
 	const notes = React.useMemo(() => {
 		const notes = notebook?.notes || data.notes

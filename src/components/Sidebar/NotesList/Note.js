@@ -1,6 +1,5 @@
 import React from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { produce } from 'immer'
 import { GoNote } from 'react-icons/go'
 import { FiTrash2 } from 'react-icons/fi'
 import { formatDistanceToNow } from 'date-fns'
@@ -11,10 +10,13 @@ import { ItemTypes } from '../constants'
 import { notebookQuery } from 'queries'
 import { updateNoteMutation, deleteNoteMutation } from 'mutations'
 import useDeleteNote from 'hooks/useDeleteNote'
+import { useParams } from 'react-router'
 
 const Note = ({ note, isSelected, onSelect }) => {
+	const { notebookId } = useParams()
+
 	const [updateNote] = useMutation(updateNoteMutation)
-	const [deleteNote] = useDeleteNote({ id: note.id })
+	const [deleteNote] = useDeleteNote({ id: note.id, notebookId })
 
 	useMutation(deleteNoteMutation, {
 		variables: { id: note.id },

@@ -3,7 +3,7 @@ import { produce } from 'immer'
 import { deleteNoteMutation } from '../mutations'
 import { bookbagQuery } from '../queries'
 
-export default function useDeleteNote({ id }) {
+export default function useDeleteNote({ id, notebookId }) {
 	return useMutation(deleteNoteMutation, {
 		variables: { id },
 		optimisticResponse: {
@@ -19,9 +19,17 @@ export default function useDeleteNote({ id }) {
 			client.writeQuery({
 				query: bookbagQuery,
 				data: produce(data, (draft) => {
-					const noteIndex = draft.notes.findIndex((note) => note.id === id)
+					draft.notes = draft.notes.filter((note) => note.id !== id)
 
-					draft.notes.splice(noteIndex, 1)
+					if (notebookId) {
+						const idx = draft.notebooks.findIndex((book) => book.id === notebookId)
+
+						if (idx > -1) {
+							draft.notebooks[idx].notes = draft.notebooks[idx].notes.filter(
+								(note) => note.id !== id
+							)
+						}
+					}
 				}),
 			})
 		},

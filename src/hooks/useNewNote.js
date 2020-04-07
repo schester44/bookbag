@@ -4,7 +4,7 @@ import { createNoteMutation } from '../mutations'
 import { bookbagQuery } from '../queries'
 
 export default function useNewNote({ notebookId } = {}) {
-	const [createNote, { loading }] = useMutation(createNoteMutation, {
+	return useMutation(createNoteMutation, {
 		update: (client, { data: { createNote: createdNote } }) => {
 			const bookbag = client.readQuery({ query: bookbagQuery })
 
@@ -27,6 +27,4 @@ export default function useNewNote({ notebookId } = {}) {
 			})
 		},
 	})
-
-	return [createNote]
 }
