@@ -1,39 +1,36 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-
+import { useQuery } from '@apollo/client'
 import TrashedNote from './TrashedNote'
-import { fetchTrash } from '../../../entities/trash/actions'
 import { Link, useParams } from 'react-router-dom'
 
-const trashSelector = state => state.trash
+import { bookbagQuery } from 'queries'
 
 const NotesList = () => {
-	const dispatch = useDispatch()
-	const trash = useSelector(trashSelector)
+	const { data, loading } = useQuery(bookbagQuery)
 	const { noteId } = useParams()
 
-	React.useEffect(() => {
-		dispatch(fetchTrash())
-	}, [dispatch])
+	const trash = React.useMemo(() => {
+		return !data?.notes ? [] : data.notes.filter((note) => note.trashed)
+	}, [data])
+
+	if (loading) return <div>LOADING</div>
 
 	return (
 		<div>
-			{trash.ids.map(id => {
-				const { note, trashedAt } = trash.idMap[id]
-
+			{trash.map((note) => {
 				return (
-					<Link to={`/trash/${note.id}`} key={id}>
+					<Link to={`/trash/${note.id}`} key={note.id}>
 						<TrashedNote
-							key={id}
+							key={note.id}
 							note={note}
-							trashedAt={trashedAt}
+							trashedAt={note.updatedAt}
 							isSelected={noteId === note.id}
 						/>
 					</Link>
 				)
 			})}
 
-			{trash.ids.length === 0 && (
+			{trash.length === 0 && (
 				<p className="m-4 text-center text-sm text-gray-400">Trash is empty</p>
 			)}
 		</div>

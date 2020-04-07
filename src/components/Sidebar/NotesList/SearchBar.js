@@ -1,33 +1,33 @@
 import React from 'react'
 import { FiSearch, FiX } from 'react-icons/fi'
-import { useSelector } from 'react-redux'
 import produce from 'immer'
 import TagMenuDropdown from '../TagMenuDropdown'
 import Tag from '../SearchBar/Tag'
 import omit from 'lodash/omit'
 
-const tagsSelector = state => state.tags
+const tags = { ids: [], idMap: {} }
 
 const SearchBar = ({ value, onTagChange, onSearch }) => {
 	const inputRef = React.useRef()
 
-	const tags = useSelector(tagsSelector)
+	// TODO: Re-implement tags
+	// const tags = useSelector(tagsSelector)
 
 	const [state, setState] = React.useState({
 		tagsVisible: false,
 		tags: tags.ids,
 		selectedTags: [],
 		selectedTagIds: {},
-		searchTerm: ''
+		searchTerm: '',
 	})
 
 	React.useEffect(() => {
-		setState(prev => ({ ...prev, tags: tags.ids }))
+		setState((prev) => ({ ...prev, tags: tags.ids }))
 	}, [tags])
 
 	const handleInput = ({ target: { value } }) => {
-		setState(prev => {
-			const filteredTags = tags.ids.filter(id => {
+		setState((prev) => {
+			const filteredTags = tags.ids.filter((id) => {
 				const tag = tags.idMap[id]
 				return tag.name.toLowerCase().indexOf(value.toLowerCase()) > -1
 			})
@@ -35,46 +35,46 @@ const SearchBar = ({ value, onTagChange, onSearch }) => {
 			return {
 				...prev,
 				searchTerm: value,
-				tags: filteredTags
+				tags: filteredTags,
 			}
 		})
 	}
 
 	const handleFocus = () => {
-		setState(prev => ({ ...prev, tagsVisible: true }))
+		setState((prev) => ({ ...prev, tagsVisible: true }))
 	}
 
 	const handleClear = () => {
-		setState(prev => ({
+		setState((prev) => ({
 			...prev,
 			searchTerm: '',
 			selectedTagIds: {},
-			selectedTags: []
+			selectedTags: [],
 		}))
 
 		onSearch('')
 	}
 
 	const selectTag = React.useCallback(
-		id => {
+		(id) => {
 			if (onTagChange) {
 				onTagChange(
 					{
 						...state.selectedTagIds,
-						[id]: true
+						[id]: true,
 					},
 					state.selectedTags + 1
 				)
 			}
 
-			setState(prev => ({
+			setState((prev) => ({
 				...prev,
 				searchTerm: '',
 				selectedTags: prev.selectedTags.concat(id),
 				selectedTagIds: {
 					...prev.selectedTagIds,
-					[id]: true
-				}
+					[id]: true,
+				},
 			}))
 
 			inputRef.current.focus()
@@ -82,14 +82,14 @@ const SearchBar = ({ value, onTagChange, onSearch }) => {
 		[onTagChange, state.selectedTagIds, state.selectedTags]
 	)
 
-	const removeTag = id => {
+	const removeTag = (id) => {
 		if (onTagChange) {
 			onTagChange(omit(state.selectedTagIds, [id]), state.selectedTags.length - 1)
 		}
 
-		setState(prev =>
-			produce(prev, draft => {
-				const index = prev.selectedTags.findIndex(tagId => tagId === id)
+		setState((prev) =>
+			produce(prev, (draft) => {
+				const index = prev.selectedTags.findIndex((tagId) => tagId === id)
 
 				if (index > -1) {
 					draft.selectedTags.splice(prev.selectedTags.length - 1, 1)
@@ -108,7 +108,7 @@ const SearchBar = ({ value, onTagChange, onSearch }) => {
 		removeTag(state.selectedTags[state.selectedTags.length - 1])
 	}
 
-	const handleKeyPress = e => {
+	const handleKeyPress = (e) => {
 		switch (e.key) {
 			case 'Backspace':
 				handleBackSpace()
@@ -123,7 +123,7 @@ const SearchBar = ({ value, onTagChange, onSearch }) => {
 	}
 
 	const onTagMenuDropdownClose = React.useCallback(() => {
-		setState(prev => ({ ...prev, tagsVisible: false }))
+		setState((prev) => ({ ...prev, tagsVisible: false }))
 	}, [])
 
 	const isTagListVisible = state.tagsVisible && state.selectedTags.length < 3
@@ -148,7 +148,7 @@ const SearchBar = ({ value, onTagChange, onSearch }) => {
 
 			{state.selectedTags.length > 0 && (
 				<div className="flex pl-1">
-					{state.selectedTags.map(id => {
+					{state.selectedTags.map((id) => {
 						const tag = tags.idMap[id]
 
 						return <Tag tag={tag} key={id} onRemove={() => removeTag(id)} />

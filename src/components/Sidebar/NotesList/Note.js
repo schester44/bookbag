@@ -1,41 +1,60 @@
 import React from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useMutation, useQuery } from '@apollo/client'
+import { produce } from 'immer'
 import { GoNote } from 'react-icons/go'
 import { FiTrash2 } from 'react-icons/fi'
 import { formatDistanceToNow } from 'date-fns'
 import { useDrag } from 'react-dnd'
 
-import { sendToTrash } from '../../../entities/trash/actions'
 import { ItemTypes } from '../constants'
-import { deleteNote } from '../../../entities/notes/actions'
 
-const noteSelector = id => state => state.notes.idMap[id]
-const bookSelector = id => state => state.notebooks.idMap[id]
+import { notebookQuery } from 'queries'
+import { updateNoteMutation, deleteNoteMutation } from 'mutations'
+import useDeleteNote from 'hooks/useDeleteNote'
 
-const Note = ({ id, isSelected, canDelete = true, onSelect }) => {
-	const dispatch = useDispatch()
+const Note = ({ note, isSelected, onSelect }) => {
+	const [updateNote] = useMutation(updateNoteMutation)
+	const [deleteNote] = useDeleteNote({ id: note.id })
 
-	const note = useSelector(noteSelector(id))
-	const book = useSelector(bookSelector(note.notebookId))
+	useMutation(deleteNoteMutation, {
+		variables: { id: note.id },
+	})
+
+	const { data } = useQuery(notebookQuery, {
+		skip: !note.notebookId,
+		variables: { id: note.notebookId },
+	})
+
+	const book = data?.notebook
 
 	const [{ isDragging }, dragRef] = useDrag({
 		item: { type: ItemTypes.NOTE, note },
-		collect: monitor => ({
-			isDragging: monitor.isDragging()
-		})
+		collect: (monitor) => ({
+			isDragging: monitor.isDragging(),
+		}),
 	})
 
 	if (!note) return null
 
-	const handleDelete = () => {
+	const handleDelete = (e) => {
+		e.stopPropagation()
+
 		// just delete any empty notes, dont send them to the trash
 		if (note.snippet.trim().length === 0 && note.title.trim().length === 0) {
-			dispatch(deleteNote(note.id))
+			deleteNote()
 		} else {
-			dispatch(sendToTrash({ noteId: id }))
+			updateNote({
+				variables: {
+					id: note.id,
+					input: {
+						trashed: true,
+					},
+				},
+			})
 		}
-
 	}
+
+	if (note.trashed) return null
 
 	return (
 		<div
@@ -55,17 +74,15 @@ const Note = ({ id, isSelected, canDelete = true, onSelect }) => {
 
 				<div className="flex items-center">
 					<p className="text-right leading-none text-xs text-gray-400">
-						{formatDistanceToNow(note.lastUpdate)} ago
+						{formatDistanceToNow(new Date(note.updatedAt))} ago
 					</p>
 
-					{canDelete && (
-						<div
-							className="text-gray-400 pl-2 text-xs hover:text-gray-900 opacity-0 delete-btn"
-							onClick={handleDelete}
-						>
-							<FiTrash2 />
-						</div>
-					)}
+					<div
+						className="text-gray-400 pl-2 text-xs hover:text-gray-900 opacity-0 delete-btn"
+						onClick={handleDelete}
+					>
+						<FiTrash2 />
+					</div>
 				</div>
 			</div>
 
@@ -75,7 +92,7 @@ const Note = ({ id, isSelected, canDelete = true, onSelect }) => {
 					overflow: 'hidden',
 					display: '-webkit-box',
 					WebkitLineClamp: 3,
-					WebkitBoxOrient: 'vertical'
+					WebkitBoxOrient: 'vertical',
 				}}
 			>
 				{note.title.trim().length > 0 ? (

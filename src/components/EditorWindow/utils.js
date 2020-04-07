@@ -6,12 +6,12 @@ export const toggleBlock = (editor, format) => {
 	const isList = LIST_TYPES.includes(format)
 
 	Transforms.unwrapNodes(editor, {
-		match: n => LIST_TYPES.includes(n.type),
-		split: true
+		match: (n) => LIST_TYPES.includes(n.type),
+		split: true,
 	})
 
 	Transforms.setNodes(editor, {
-		type: isActive ? 'paragraph' : isList ? 'list-item' : format
+		type: isActive ? 'paragraph' : isList ? 'list-item' : format,
 	})
 
 	if (!isActive && isList) {
@@ -32,7 +32,7 @@ export const toggleMark = (editor, format) => {
 
 export const isBlockActive = (editor, format) => {
 	const [match] = Editor.nodes(editor, {
-		match: n => n.type === format
+		match: (n) => n.type === format,
 	})
 
 	return !!match
@@ -43,8 +43,8 @@ export const isMarkActive = (editor, format) => {
 	return marks ? marks[format] === true : false
 }
 
+export const serializeToText = (nodes) => {
+	if (typeof nodes === 'string') return nodes
 
-
-export const serializeToText = nodes => {
-	return nodes.map(n => Node.string(n)).join('\n')
+	return nodes.map((n) => Node.string(n)).join('\n')
 }

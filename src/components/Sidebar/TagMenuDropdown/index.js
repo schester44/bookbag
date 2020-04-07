@@ -2,35 +2,36 @@ import React from 'react'
 
 import Tag from './Tag'
 import useOutsideClick from '@rooks/use-outside-click'
-import { useSelector } from 'react-redux'
 
-const tagSelector = state => state.tags.idMap
+const tagSelector = (state) => state.tags.idMap
 
 const TagMenuDropdown = ({ selectedTags, ids, onSelect, onClose }) => {
 	const ref = React.useRef()
 	const [highlight, setHighlight] = React.useState(0)
 
-	const tags = useSelector(tagSelector)
+	// TODO: Reimplement tags
+	// const tags = useSelector(tagSelector)
+	const tags = {}
 
 	useOutsideClick(ref, onClose)
 
 	const totalTags = ids.length
 
 	React.useEffect(() => {
-		const listener = e => {
+		const listener = (e) => {
 			switch (e.key) {
 				case 'Escape':
 					onClose()
 					break
 
 				case 'ArrowDown':
-					setHighlight(prev => {
+					setHighlight((prev) => {
 						if (prev + 1 >= totalTags) return 0
 						return prev + 1
 					})
 					break
 				case 'ArrowUp':
-					setHighlight(prev => {
+					setHighlight((prev) => {
 						if (prev - 1 < 0) return totalTags - 1
 						return prev - 1
 					})

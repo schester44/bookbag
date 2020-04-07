@@ -1,20 +1,19 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Router } from 'react-router-dom'
-import { Provider } from 'react-redux'
 
 import App from './App'
-import { store } from './redux-store'
 import './styles/tailwind.css'
 
 import { history } from './utils'
+import { ApolloProvider } from '@apollo/client'
+import { client } from './apollo-client'
 
 ReactDOM.render(
-	<Router history={history}>
-		<Provider store={store}>
+	<ApolloProvider client={client}>
+		<Router history={history}>
 			<App />
-		</Provider>
-	</Router>,
-
+		</Router>
+	</ApolloProvider>,
 	document.getElementById('root')
 )

@@ -2,47 +2,41 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { IoIosPaper } from 'react-icons/io'
 import { useDrop } from 'react-dnd'
-import { useDispatch, useSelector } from 'react-redux'
-import { removeNoteFromNotebook } from '../../../entities/notebooks/actions'
 
 import { ItemTypes } from '../constants'
 
-const noteIdsSelector = state => state.notes.ids
-
-const AllNotesLink = () => {
-	const dispatch = useDispatch()
-	const noteIds = useSelector(noteIdsSelector)
-
+const AllNotesLink = ({ totalNotes }) => {
 	const [dropProps, dropRef] = useDrop({
 		accept: ItemTypes.NOTE,
 
-		canDrop: item => !!item.note.notebookId,
+		canDrop: (item) => !!item.note.notebookId,
 		// Dropping on 'All Notebooks' deletes the notebookId from a note
 		drop: ({ note }) => {
-			dispatch(removeNoteFromNotebook(note))
+			// TODO: Remove the note from the notebook
+			// dispatch(removeNoteFromNotebook(note))
 		},
-		collect: monitor => {
+		collect: (monitor) => {
 			return {
-				isOver: monitor.isOver() && monitor.canDrop()
+				isOver: monitor.isOver() && monitor.canDrop(),
 			}
-		}
+		},
 	})
 
 	return (
 		<NavLink
-			ref={dropRef}
 			exact
+			ref={dropRef}
 			to="/"
-			className={`navigator-link flex items-center justify-between ${dropProps.isOver ? 'bg-indigo-900' : ''}`}
+			className={`navigator-link flex items-center justify-between ${
+				dropProps.isOver ? 'bg-indigo-900' : ''
+			}`}
 		>
 			<div className="flex items-center">
 				<IoIosPaper />
 				<span className="ml-3">All Notes</span>
 			</div>
 
-			{noteIds.length > 0 && (
-				<span className="text-xs font-bold text-gray-600">{noteIds.length}</span>
-			)}
+			{totalNotes > 0 && <span className="text-xs font-bold text-gray-600">{totalNotes}</span>}
 		</NavLink>
 	)
 }

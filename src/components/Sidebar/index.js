@@ -8,14 +8,16 @@ import NotesList from './NotesList'
 import PaneTrigger from '../../components/PaneTrigger'
 
 import { useRouteMatch } from 'react-router-dom'
-import { useSelector } from 'react-redux'
 
 const TrashList = React.lazy(() => import('./TrashList'))
 
-const collapsedSelector = state => state.bookbag.collapsed
-const Sidebar = () => {
+const Sidebar = ({ user }) => {
 	const match = useRouteMatch()
-	const collapsed = useSelector(collapsedSelector)
+
+	// TODO:
+	// const collapsed = useSelector(collapsedSelector)
+	const collapsed = false
+
 	const navRef = React.useRef()
 	const listRef = React.useRef()
 
@@ -34,18 +36,18 @@ const Sidebar = () => {
 							? -(navBox.width || 0)
 							: collapsed === 2
 							? -((navBox.width || 0) + (listBox.width || 0))
-							: 0
+							: 0,
 				}}
 			>
 				<div ref={navRef} className="w-5/12 bg-gray-900 border-r border-gray-300 pt-8">
-					<Navigator />
+					<Navigator user={user} />
 				</div>
 
 				<div
 					className="relative w-7/12 bg-gray-100 h-full overflow-auto flex flex-col py-1"
 					ref={listRef}
 					style={{
-						minWidth: 275
+						minWidth: 275,
 					}}
 				>
 					<React.Suspense fallback={null}>

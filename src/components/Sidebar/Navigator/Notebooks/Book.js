@@ -2,39 +2,41 @@ import React from 'react'
 import { FiDelete, FiPlus } from 'react-icons/fi'
 
 import { NavLink, useParams, useHistory } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
 import { useDrop } from 'react-dnd'
 
-import { addNoteToNotebook } from '../../../../entities/notebooks/actions'
-import ContextMenu, { Menu, MenuItem } from '../../../../components/ContextMenu'
-import { updateNotebook, deleteNotebook } from '../../../../entities/notebooks/actions'
+import ContextMenu, { Menu, MenuItem } from 'components/ContextMenu'
 import { ItemTypes } from '../../constants'
 
 const Book = ({ book }) => {
 	const { notebookId } = useParams()
 	const history = useHistory()
-	const dispatch = useDispatch()
 
 	const [rename, setRename] = React.useState({ visible: false, name: book.name })
+
+	const totalNotes = React.useMemo(() => {
+		return book.notes.filter((note) => !note.trashed).length
+	}, [book.notes])
 
 	const [dropProps, dropRef] = useDrop({
 		accept: ItemTypes.NOTE,
 
-		canDrop: item => {
+		canDrop: (item) => {
 			return item.note.notebookId !== book.id
 		},
 		drop: ({ note }) => {
-			dispatch(addNoteToNotebook(book.id, note))
+			// TODO: Add this note to the notebook
+			// dispatch(addNoteToNotebook(book.id, note))
 		},
-		collect: monitor => {
+		collect: (monitor) => {
 			return {
-				isOver: monitor.isOver() && monitor.canDrop()
+				isOver: monitor.isOver() && monitor.canDrop(),
 			}
-		}
+		},
 	})
 
 	const handleDelete = () => {
-		dispatch(deleteNotebook(book.id))
+		// TODO: Delete this notebook.
+		// dispatch(deleteNotebook(book.id))
 
 		if (notebookId === book.id) {
 			history.push('/')
@@ -45,22 +47,24 @@ const Book = ({ book }) => {
 		setRename({ visible: true, name: book.name })
 	}
 
-	const handleNameChange = ({ target: { value } }) => setRename(prev => ({ ...prev, name: value }))
+	const handleNameChange = ({ target: { value } }) =>
+		setRename((prev) => ({ ...prev, name: value }))
 
-	const handleKeyPress = e => {
+	const handleKeyPress = (e) => {
 		if (e.key === 'Escape') {
 			return setRename({ visible: false, name: book.name })
 		}
 
 		if (e.key === 'Enter') {
-			setRename(prev => ({ ...prev, visible: false }))
+			setRename((prev) => ({ ...prev, visible: false }))
 
-			dispatch(
-				updateNotebook({
-					...book,
-					name: rename.name
-				})
-			)
+			// TODO: Rename this notebook
+			// dispatch(
+			// 	updateNotebook({
+			// 		...book,
+			// 		name: rename.name,
+			// 	})
+			// )
 		}
 	}
 
@@ -100,8 +104,8 @@ const Book = ({ book }) => {
 				to={`/notebook/${book.id}`}
 			>
 				<div className="ml-8 flex-1 truncate">{rename.name}</div>
-				{book.notes.length > 0 && (
-					<span className="text-xs font-bold ml-1 text-gray-600">{book.notes.length}</span>
+				{totalNotes > 0 && (
+					<span className="text-xs font-bold ml-1 text-gray-600">{totalNotes}</span>
 				)}
 			</NavLink>
 		</ContextMenu>

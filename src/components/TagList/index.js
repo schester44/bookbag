@@ -1,17 +1,17 @@
 import React from 'react'
 import { MdClose } from 'react-icons/md'
 import { FiPlus, FiHash } from 'react-icons/fi'
-import { useSelector } from 'react-redux'
-
-const tagMapSelector = state => state.tags.idMap
 
 const TagList = ({ ids, onTagCreate, onRemoveTag }) => {
 	const [visible, setVisible] = React.useState(false)
 
-	const tags = useSelector(tagMapSelector)
+	// TODO: Reimplement tags
+	// const tags = useSelector(tagMapSelector)
+	const tags = {}
+
 	const inputRef = React.useRef()
 
-	const handleKeyPress = event => {
+	const handleKeyPress = (event) => {
 		if (event.key !== 'Enter' || event.target.value.trim().length === 0) return
 
 		onTagCreate(event.target.value)
@@ -22,7 +22,7 @@ const TagList = ({ ids, onTagCreate, onRemoveTag }) => {
 	const handleToggle = () => {
 		inputRef.current.focus()
 
-		setVisible(prev => !prev)
+		setVisible((prev) => !prev)
 	}
 
 	return (
@@ -30,7 +30,7 @@ const TagList = ({ ids, onTagCreate, onRemoveTag }) => {
 			<FiHash className="cursor-pointer text-gray-400 hover:text-gray-900" onClick={handleToggle} />
 
 			<div className="tags ml-2 flex">
-				{ids.map(id => {
+				{ids.map((id) => {
 					const tag = tags[id]
 
 					return (

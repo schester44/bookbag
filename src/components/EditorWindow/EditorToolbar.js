@@ -1,30 +1,38 @@
 import React from 'react'
+import { useMutation } from '@apollo/client'
 import { FiList, FiTrash, FiCheckSquare } from 'react-icons/fi'
 import { MdFormatListNumbered } from 'react-icons/md'
 import { FaQuoteRight } from 'react-icons/fa'
-import { useDispatch, useSelector } from 'react-redux'
 
 import BlockButton from './BlockButton'
 import InsertImageButton from './EditorToolbar/InsertImageButton'
 
-import { deleteNote } from '../../entities/notes/actions'
-import { sendToTrash } from '../../entities/trash/actions'
-import { removeFromSearchIndex } from '../../services/search'
-
-const canSendToTrashSelector = state => state.notes.ids.length > 1
+import { updateNoteMutation } from '../../mutations'
+import useDeleteNote from 'hooks/useDeleteNote'
+import { useHistory } from 'react-router'
 
 const EditorToolbar = ({ editor, activeNote }) => {
-	const dispatch = useDispatch()
-	const canSendToTrash = useSelector(canSendToTrashSelector)
+	const [updateNote] = useMutation(updateNoteMutation)
+	const [deleteNote] = useDeleteNote({ id: activeNote?.id })
+	const history = useHistory()
 
 	const handleDelete = () => {
-		removeFromSearchIndex(activeNote)
+		const isEmpty = activeNote.snippet.trim().length === 0 && activeNote.title.trim().length === 0
+
+		history.push('/')
 
 		// just delete any empty notes, don't send them to the trash
-		if (activeNote.snippet.trim().length === 0 && activeNote.title.trim().length === 0) {
-			dispatch(deleteNote(activeNote.id))
+		if (isEmpty) {
+			deleteNote()
 		} else {
-			dispatch(sendToTrash({ noteId: activeNote.id }))
+			updateNote({
+				variables: {
+					id: activeNote.id,
+					input: {
+						trashed: true,
+					},
+				},
+			})
 		}
 	}
 
@@ -39,11 +47,9 @@ const EditorToolbar = ({ editor, activeNote }) => {
 			</div>
 
 			<div className="settings flex items-center">
-				{canSendToTrash && (
-					<div className="toolbar-btn" onClick={handleDelete}>
-						<FiTrash />
-					</div>
-				)}
+				<div className="toolbar-btn" onClick={handleDelete}>
+					<FiTrash />
+				</div>
 			</div>
 		</div>
 	)

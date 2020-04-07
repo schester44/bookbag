@@ -1,18 +1,16 @@
 import React from 'react'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
-import { useDispatch } from 'react-redux'
 
-import { paneShown, paneHidden } from '../entities/bookbag/actions'
+// import { paneShown, paneHidden } from '../entities/bookbag/actions'
 
 const PaneTrigger = ({ action }) => {
 	const isCollapsing = action === 'collapse'
-	const dispatch = useDispatch()
 
 	const handleClick = () => {
 		if (isCollapsing) {
-			dispatch(paneHidden())
+			// dispatch(paneHidden())
 		} else {
-			dispatch(paneShown())
+			// dispatch(paneShown())
 		}
 	}
 

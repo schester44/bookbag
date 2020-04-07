@@ -1,26 +1,45 @@
 import React from 'react'
 import { FiTrash } from 'react-icons/fi'
-import { useDispatch } from 'react-redux'
 
+import { useMutation } from '@apollo/client'
 import { formatDistanceToNow } from 'date-fns/esm'
 import { MdSettingsBackupRestore } from 'react-icons/md'
 import { FiTrash2 } from 'react-icons/fi'
 
-import { restoreFromTrash, deleteTrashedNote } from '../../../entities/trash/actions'
+import { updateNoteMutation } from 'mutations'
+import useDeleteNote from 'hooks/useDeleteNote'
 
 const TrashedNote = ({ note, trashedAt, isSelected }) => {
-	const dispatch = useDispatch()
+	const [updateNote] = useMutation(updateNoteMutation)
+	const [deleteNote] = useDeleteNote({ id: note.id })
 
-	const handleDelete = note => {
-		dispatch(deleteTrashedNote({ noteId: note.id }))
+	const handleDelete = (e) => {
+		e.stopPropagation()
+		e.preventDefault()
+
+		deleteNote()
 	}
 
-	const handleRestore = note => {
-		dispatch(restoreFromTrash({ noteId: note.id }))
+	const handleRestore = (e) => {
+		e.stopPropagation()
+		e.preventDefault()
+
+		updateNote({
+			variables: {
+				id: note.id,
+				input: {
+					trashed: false,
+				},
+			},
+		})
 	}
 
 	return (
-		<div className={`sidebar-note border-b border-gray-300 pt-3 px-4 pb-4 ${isSelected ? 'bg-white' : ''}`}>
+		<div
+			className={`sidebar-note border-b border-gray-300 pt-3 px-4 pb-4 ${
+				isSelected ? 'bg-white' : ''
+			}`}
+		>
 			<div className="flex items-center pb-2 justify-between">
 				<div className="text-gray-400 text-xl">
 					<FiTrash />
@@ -28,7 +47,7 @@ const TrashedNote = ({ note, trashedAt, isSelected }) => {
 
 				<div className="flex items-center">
 					<p className="text-right leading-none text-xs text-gray-400">
-						Sent to trash {formatDistanceToNow(trashedAt)} ago
+						Sent to trash {formatDistanceToNow(new Date(trashedAt))} ago
 					</p>
 				</div>
 			</div>
@@ -41,7 +60,7 @@ const TrashedNote = ({ note, trashedAt, isSelected }) => {
 							overflow: 'hidden',
 							display: '-webkit-box',
 							WebkitLineClamp: 3,
-							WebkitBoxOrient: 'vertical'
+							WebkitBoxOrient: 'vertical',
 						}}
 					>
 						{note.title.trim().length > 0 ? (
@@ -63,14 +82,14 @@ const TrashedNote = ({ note, trashedAt, isSelected }) => {
 				<div className="flex items-center">
 					<div
 						className="bg-gray-200 px-2 py-2 hover:bg-gray-300 rounded cursor-pointer"
-						onClick={() => handleRestore(note)}
+						onClick={handleRestore}
 					>
 						<MdSettingsBackupRestore />
 					</div>
 
 					<div
 						className="ml-1 text-red-700 bg-gray-200 px-2 py-2 hover:bg-gray-300 rounded cursor-pointer"
-						onClick={() => handleDelete(note)}
+						onClick={handleDelete}
 					>
 						<FiTrash2 />
 					</div>

@@ -1,23 +1,24 @@
 import React from 'react'
+import { useMutation } from '@apollo/client'
+import { useHistory } from 'react-router-dom'
 import { FaBook } from 'react-icons/fa'
 import { GoPlus } from 'react-icons/go'
-import { useDispatch } from 'react-redux'
 
-import { createNotebook } from '../../../../entities/notebooks/actions'
-import { useHistory } from 'react-router-dom'
+import { bookbagQuery } from 'queries'
+import { createNoteBookMutation } from 'mutations'
 
 const Heading = () => {
-	const dispatch = useDispatch()
+	const [createNoteBook] = useMutation(createNoteBookMutation)
 	const history = useHistory()
 
 	const [state, setState] = React.useState({
 		newBookInputVisible: false,
-		newBookName: ''
+		newBookName: '',
 	})
 
-	const handleNewBookInputKeyDown = e => {
+	const handleNewBookInputKeyDown = async (e) => {
 		if (e.key === 'Escape') {
-			return setState(prev => ({ ...prev, newBookInputVisible: false, newBookName: '' }))
+			return setState((prev) => ({ ...prev, newBookInputVisible: false, newBookName: '' }))
 		}
 
 		// save
@@ -25,15 +26,29 @@ const Heading = () => {
 
 		const name = state.newBookName
 
-		dispatch(createNotebook({ name })).then(notebook => {
-			history.push(`/notebook/${notebook.id}`)
+		setState((prev) => ({ ...prev, newBookInputVisible: false, newBookName: '' }))
+
+		const { data } = await createNoteBook({
+			variables: {
+				name,
+			},
+			update: (cache, { data }) => {
+				const query = cache.readQuery({ query: bookbagQuery })
+
+				cache.writeQuery({
+					data: {
+						...query,
+						notebooks: query.notebooks.push(data.createNoteBook),
+					},
+				})
+			},
 		})
 
-		setState(prev => ({ ...prev, newBookInputVisible: false, newBookName: '' }))
+		history.push(`/notebook/${data.createNoteBook.id}`)
 	}
 
 	const handleNewBookInputChange = ({ target: { value } }) => {
-		setState(prev => ({ ...prev, newBookName: value }))
+		setState((prev) => ({ ...prev, newBookName: value }))
 	}
 
 	return (
@@ -46,7 +61,7 @@ const Heading = () => {
 
 				<GoPlus
 					className="cursor-pointer hover:text-indigo-500"
-					onClick={() => setState(prev => ({ ...prev, newBookInputVisible: true }))}
+					onClick={() => setState((prev) => ({ ...prev, newBookInputVisible: true }))}
 				/>
 			</div>
 

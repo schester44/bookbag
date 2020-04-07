@@ -2,57 +2,46 @@ import React from 'react'
 import { withReact, Slate } from 'slate-react'
 import { createEditor } from 'slate'
 import { withHistory } from 'slate-history'
-import { useSelector, useDispatch } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useMutation, useApolloClient } from '@apollo/client'
 
 import Editor from './Editor'
 import EditorToolbar from './EditorToolbar'
 import TagList from '../TagList'
 import PaneTrigger from '../../components/PaneTrigger'
 
-import { createNoteTag, removeNoteTag } from '../../entities/tags/actions'
-import { debouncedSaveNote } from '../../entities/notes/actions'
-
 import { withLinks } from './plugins/withLinks'
 import { withMarkdownShortcuts } from './plugins/withMarkdownShortcuts'
 import { withChecklists } from './plugins/withChecklists'
 
 import FloatingToolbar from './FloatingToolbar'
-import { debounce } from '../../utils'
-import { updateSearchIndex } from '../../services/search'
 import NoteTitle from './NoteTitle'
 import { withImages } from './plugins/withImages'
+import { updateNoteMutation } from '../../mutations'
+import { serializeToText } from './utils'
+import { noteTitleFragment } from 'queries'
 
-const updateIndexHandler = note => {
-	updateSearchIndex({ ...note, body: JSON.stringify(note.body) })
-}
+// TODO: Reimplement
+let activeNoteTags = []
+const showPaneTrigger = false
 
-const debouncedUpdateSearchIndex = debounce(updateIndexHandler, 300)
-
-const defaultTagsArray = []
-
-const activeNoteSelector = (id, isReadOnly) => state => {
-	if (isReadOnly) {
-		return {
-			activeNote: state.trash.idMap[id]?.note
-		}
-	}
-
-	return {
-		activeNote: state.notes.idMap[id],
-		activeNoteTags: state.tags.byNote[id] || defaultTagsArray
-	}
-}
-
-const collapsedSelector = state => state.bookbag.collapsed > 0
-
-const EditorWindow = ({ isReadOnly }) => {
-	const dispatch = useDispatch()
-	const { noteId } = useParams()
+const EditorWindow = ({ activeNote, isReadOnly }) => {
 	const isFirstChange = React.useRef(true)
-	const showPaneTrigger = useSelector(collapsedSelector)
+	const saveTimer = React.useRef()
+	const [note, setNote] = React.useState(undefined)
+	const apolloClient = useApolloClient()
 
-	const { activeNote, activeNoteTags } = useSelector(activeNoteSelector(noteId, isReadOnly))
+	const [updateNote] = useMutation(updateNoteMutation)
+
+	React.useEffect(() => {
+		const timer = saveTimer.current
+
+		return () => {
+			// Save it!
+			if (timer) {
+				window.clearTimeout(timer)
+			}
+		}
+	}, [saveTimer])
 
 	const editor = React.useMemo(
 		() =>
@@ -62,61 +51,62 @@ const EditorWindow = ({ isReadOnly }) => {
 		[]
 	)
 
-	const [{ note, isLoaded }, setState] = React.useState({
-		isLoaded: false,
-		note: undefined
-	})
-
 	React.useEffect(() => {
-		if (!activeNote?.id) return
-
-		// Set the initial value on load.
-		setState(prev => {
-			// if the note is already set then we don't want to override it... We only wany to set state.note on initial load (get its body, title, etc)
-			if (prev.note?.id === activeNote.id) return prev
-
-			return {
-				isLoaded: true,
-				note: { ...activeNote }
-			}
-		})
+		if (!activeNote) {
+			return setNote(undefined)
+		} else {
+			setNote({
+				...activeNote,
+				body: typeof activeNote.body === 'string' ? JSON.parse(activeNote.body) : activeNote.body,
+			})
+		}
 	}, [activeNote])
 
-	const handleNewTag = name => {
-		dispatch(createNoteTag(noteId, name))
+	const handleNewTag = (name) => {
+		// dispatch(createNoteTag(noteId, name))
 	}
 
-	const handleRemoveTag = tag => {
-		dispatch(removeNoteTag(noteId, tag.id))
+	const handleRemoveTag = (tag) => {
+		// dispatch(removeNoteTag(noteId, tag.id))
 	}
 
-	const handleNoteTitleChange = title => {
-		setState(prev => {
-			return {
-				...prev,
-				note: {
-					...prev.note,
-					title
-				}
+	const saveNote = (changes) => {
+		window.clearTimeout(saveTimer.current)
+
+		saveTimer.current = window.setTimeout(() => {
+			if (!activeNote) return
+
+			if (changes.body) {
+				const snippet = serializeToText(changes.body).slice(0, 150)
+
+				changes.snippet = snippet
+				changes.body = JSON.stringify(changes.body)
 			}
+
+			updateNote({
+				variables: {
+					id: activeNote.id,
+					input: changes,
+				},
+			})
+		}, 250)
+	}
+
+	const handleNoteTitleChange = (title) => {
+		setNote((prev) => ({ ...prev, title }))
+
+		apolloClient.writeFragment({
+			id: activeNote.id,
+			fragment: noteTitleFragment,
+			data: {
+				title,
+			},
 		})
 
-		const updatedNote = {
-			...note,
-			title
-		}
-
-		debouncedUpdateSearchIndex(updatedNote)
-
-		debouncedSaveNote(
-			{
-				note: updatedNote
-			},
-			dispatch
-		)
+		saveNote({ title })
 	}
 
-	const handleNoteBodyChange = body => {
+	const handleNoteBodyChange = (body) => {
 		// Hack to get around this handler being called when focusing on the editor.
 		// No changes have been made so there's no reason to save the note.
 		if (isFirstChange.current) {
@@ -124,35 +114,13 @@ const EditorWindow = ({ isReadOnly }) => {
 			return
 		}
 
-		setState(prev => {
-			return {
-				...prev,
-				note: {
-					...prev.note,
-					body
-				}
-			}
-		})
-
-		const updatedNote = {
-			...note,
-			body
+		if (body !== note.body) {
+			setNote((prev) => ({ ...prev, body }))
+			saveNote({ body })
 		}
-
-		debouncedUpdateSearchIndex(updatedNote)
-
-		debouncedSaveNote(
-			{
-				note: {
-					...note,
-					body
-				}
-			},
-			dispatch
-		)
 	}
 
-	if (!isLoaded || !note) return null
+	if (!note) return null
 
 	return (
 		<Slate editor={editor} value={note.body} onChange={handleNoteBodyChange}>

@@ -1,29 +1,32 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import { useMutation } from '@apollo/client'
 import { useDrop } from 'react-dnd'
 import { FiDelete } from 'react-icons/fi'
 
 import { ItemTypes } from '../constants'
+import { updateNoteMutation } from 'mutations'
 
-import { sendToTrash } from '../../../entities/trash/actions'
+const TrashLink = ({ totalNotes }) => {
+	const [updateNote] = useMutation(updateNoteMutation)
 
-const trashSelector = state => state.trash.ids
-
-const TrashLink = () => {
-	const trashIds = useSelector(trashSelector)
-
-	const dispatch = useDispatch()
 	const [dropProps, dropRef] = useDrop({
 		accept: ItemTypes.NOTE,
 		drop: ({ note }) => {
-			dispatch(sendToTrash({ noteId: note.id }))
+			updateNote({
+				variables: {
+					id: note.id,
+					input: {
+						trashed: true,
+					},
+				},
+			})
 		},
-		collect: monitor => {
+		collect: (monitor) => {
 			return {
-				isOver: monitor.isOver() && monitor.canDrop()
+				isOver: monitor.isOver() && monitor.canDrop(),
 			}
-		}
+		},
 	})
 
 	return (
@@ -37,12 +40,9 @@ const TrashLink = () => {
 			<div className="flex items-center">
 				<FiDelete />
 				<span className="ml-3">Trash</span>
-      </div>
-      
-      
-			{trashIds.length > 0 && (
-				<span className="text-xs font-bold text-gray-600">{trashIds.length}</span>
-			)}
+			</div>
+
+			{totalNotes > 0 && <span className="text-xs font-bold text-gray-600">{totalNotes}</span>}
 		</NavLink>
 	)
 }
