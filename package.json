@@ -19,7 +19,7 @@
 		"is-hotkey": "^0.1.6",
 		"is-url": "^1.2.4",
 		"localforage": "^1.7.3",
-		"lodash": "^4.17.15",
+		"lodash": "^4.17.19",
 		"nanoid": "^2.1.10",
 		"postcss-preset-env": "^6.7.0",
 		"react": "^16.12.0",
