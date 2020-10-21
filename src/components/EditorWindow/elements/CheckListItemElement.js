@@ -9,7 +9,7 @@ export const CheckListItemElement = ({ attributes, children, element }) => {
 	const { checked } = element
 
 	return (
-		<div className={`flex mb-2 items-center`} {...attributes}>
+		<div className="flex mb-2 items-center" {...attributes}>
 			<span className="mr-2" style={{ userSelect: 'none' }} contentEditable={false}>
 				<div
 					className="rounded text-gray-700 bg-gray-200 w-6 h-6 flex items-center justify-center cursor-pointer"

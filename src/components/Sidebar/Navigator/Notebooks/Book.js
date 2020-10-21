@@ -5,17 +5,17 @@ import { NavLink, useParams, useHistory } from 'react-router-dom'
 import { useDrop } from 'react-dnd'
 
 import ContextMenu, { Menu, MenuItem } from 'components/ContextMenu'
-import { deleteNoteBookMutation, updateNoteBookMutation } from 'mutations'
+import { deleteNoteBookMutation, updateNoteBookMutation, addNoteToBookMutation } from 'mutations'
 import { ItemTypes } from '../../constants'
 import produce from 'immer'
-import { bookbagQuery } from 'queries'
+import { bookbagQuery, notebookQuery, bookNotesFragment } from 'queries'
 
 const Book = ({ book }) => {
-	const { notebookId } = useParams()
+	const { notebookId, noteId } = useParams()
 	const history = useHistory()
 	const [deleteNoteBook] = useMutation(deleteNoteBookMutation)
 	const [updateNoteBook] = useMutation(updateNoteBookMutation)
-
+	const [addNoteToBook] = useMutation(addNoteToBookMutation)
 	const [rename, setRename] = React.useState({ visible: false, name: book.name })
 
 	const totalNotes = React.useMemo(() => {
@@ -24,13 +24,49 @@ const Book = ({ book }) => {
 
 	const [dropProps, dropRef] = useDrop({
 		accept: ItemTypes.NOTE,
-
-		canDrop: (item) => {
-			return item.note.notebookId !== book.id
+		canDrop: ({ note }) => {
+			return !book.notes.find((n) => n.id === note.id)
 		},
-		drop: ({ note }) => {
-			// TODO: Add this note to the notebook
-			// dispatch(addNoteToNotebook(book.id, note))
+		drop: ({ note }, monitor) => {
+			console.log(monitor.getDropResult())
+			addNoteToBook({
+				variables: {
+					noteId: note.id,
+					bookId: book.id,
+				},
+				update: (client) => {
+					try {
+						// Update the Notebook if it exists in the query.
+
+						const notebookData = client.readQuery({
+							query: notebookQuery,
+							variables: {
+								id: notebookId,
+							},
+						})
+
+						// remove the note from the original
+						client.writeQuery({
+							query: notebookQuery,
+							data: produce(notebookData, (draft) => {
+								draft.notebook.notes = draft.notebook.notes.filter((n) => n.id !== note.id)
+							}),
+						})
+					} catch (e) {}
+
+					// add it to the new book
+					client.writeFragment({
+						fragment: bookNotesFragment,
+						fragmentName: 'BookNotes',
+						id: book.id,
+						data: {
+							notes: produce(book.notes, (draft) => {
+								draft.push(note)
+							}),
+						},
+					})
+				},
+			})
 		},
 		collect: (monitor) => {
 			return {
@@ -133,7 +169,7 @@ const Book = ({ book }) => {
 				}`}
 				to={`/notebook/${book.id}`}
 			>
-				<div className="ml-8 flex-1 truncate">{rename.name}</div>
+				<div className="ml-8 text-sm flex-1 truncate">{rename.name}</div>
 				{totalNotes > 0 && (
 					<span className="text-xs font-bold ml-1 text-gray-600">{totalNotes}</span>
 				)}

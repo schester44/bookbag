@@ -1,12 +1,11 @@
 import React from 'react'
-import { useHistory } from 'react-router-dom'
 import { PrimaryButton } from '../components/Button'
 
 import { useMutation } from '@apollo/client'
 import { loginMutation } from '../mutations'
+import { userQuery } from 'queries'
 
 const Login = () => {
-	const history = useHistory()
 	const [login] = useMutation(loginMutation)
 
 	const [state, setState] = React.useState({
@@ -20,11 +19,10 @@ const Login = () => {
 	const handleLogin = async () => {
 		await login({
 			variables: state.values,
+			refetchQueries: [{ query: userQuery }],
 		})
 
 		localStorage.setItem('logged-in', true)
-
-		window.location.href = '/'
 	}
 
 	const setValues = (key, value) => {

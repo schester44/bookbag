@@ -1,5 +1,6 @@
 import React from 'react'
 import { useSlate } from 'slate-react'
+import cn from 'classnames'
 
 import { isMarkActive, toggleMark } from './utils'
 
@@ -9,8 +10,11 @@ const MarkButton = ({ format, icon, inverted }) => {
 
 	return (
 		<div
-			className={`toolbar-btn ${isActive ? 'toolbar-btn--active' : ''} ${inverted ? 'toolbar-btn--inverted' : ''}`}
-			onMouseDown={event => {
+			className={cn('toolbar-btn', {
+				'toolbar-btn--active': isActive,
+				'toolbar-btn--inverted': inverted,
+			})}
+			onMouseDown={(event) => {
 				event.preventDefault()
 				toggleMark(editor, format)
 			}}

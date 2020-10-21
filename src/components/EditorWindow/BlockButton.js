@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSlate } from 'slate-react'
-
+import cn from 'classnames'
 import { isBlockActive, toggleBlock } from './utils'
 
 const BlockButton = ({ format, icon, inverted = false }) => {
@@ -9,8 +9,11 @@ const BlockButton = ({ format, icon, inverted = false }) => {
 
 	return (
 		<div
-			className={`toolbar-btn ${isActive ? 'toolbar-btn--active' : ''} ${inverted ? 'toolbar-btn--inverted' : ''}`}
-			onMouseDown={event => {
+			className={cn('toolbar-btn', {
+				'toolbar-btn--active': isActive,
+				'toolbar-btn--inverted': inverted,
+			})}
+			onMouseDown={(event) => {
 				event.preventDefault()
 				toggleBlock(editor, format)
 			}}

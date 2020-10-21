@@ -1,4 +1,5 @@
 import React from 'react'
+import cn from 'classnames'
 
 const NoteTitle = ({ title, onChange, isReadOnly }) => {
 	const ref = React.useRef()
@@ -12,7 +13,13 @@ const NoteTitle = ({ title, onChange, isReadOnly }) => {
 	return (
 		<input
 			ref={ref}
-			className={`border-0 leading-none w-full text-gray-800 placeholder-gray-300 outline-none text-3xl font-semibold bg-transparent my-4 ${isReadOnly ? 'cursor-default' : ''} ${title.length === 0 ? 'italic' : ''} `}
+			className={cn(
+				'border-0 leading-none w-full text-gray-800 placeholder-gray-300 outline-none text-3xl font-semibold bg-transparent my-4',
+				{
+					'cursor-default': isReadOnly,
+					italic: title.length === 0,
+				}
+			)}
 			placeholder="Untitled Note"
 			value={title}
 			readOnly={isReadOnly}

@@ -3,15 +3,16 @@ import React from 'react'
 import Tag from './Tag'
 import useOutsideClick from '@rooks/use-outside-click'
 
-const tagSelector = (state) => state.tags.idMap
-
 const TagMenuDropdown = ({ selectedTags, ids, onSelect, onClose }) => {
 	const ref = React.useRef()
 	const [highlight, setHighlight] = React.useState(0)
 
-	// TODO: Reimplement tags
-	// const tags = useSelector(tagSelector)
-	const tags = {}
+	const tags = {
+		1: {
+			id: 1,
+			name: 'tag',
+		},
+	}
 
 	useOutsideClick(ref, onClose)
 

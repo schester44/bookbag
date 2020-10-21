@@ -6,13 +6,22 @@ import Sidebar from 'components/Sidebar'
 import EditorWindow from 'components/EditorWindow'
 import { bookbagQuery, noteQuery } from 'queries'
 import useNewNote from 'hooks/useNewNote'
+import { searchIndex } from 'utils/search'
 
 const BookBag = ({ user }) => {
 	const { notebookId, noteId } = useParams()
 	const [createNewNote] = useNewNote({ notebookId })
 	const history = useHistory()
+	const activeNote = React.useRef()
 
 	const { loading } = useQuery(bookbagQuery, {
+		onCompleted: ({ notes }) => {
+			searchIndex.clear()
+			notes.forEach((note) => {
+				searchIndex.add(note.id, note.title)
+				searchIndex.add(note.id, note.body)
+			})
+		},
 		returnPartialData: true,
 		variables: {
 			id: noteId,
@@ -26,7 +35,10 @@ const BookBag = ({ user }) => {
 		},
 	})
 
-	const activeNote = noteQueryData?.note
+	// Store the note in a ref so the activeNote persists when changing the route. Without this, the active note would disappear when you change notebooks.
+	if (noteQueryData?.note) {
+		activeNote.current = noteQueryData?.note
+	}
 
 	React.useEffect(() => {
 		async function hotKeyListener(event) {
@@ -56,12 +68,9 @@ const BookBag = ({ user }) => {
 	if (loading) return <div>loading...</div>
 
 	return (
-		<div className="flex w-full h-full">
+		<div className="lg:flex w-full h-full">
 			<Sidebar user={user} />
-			<EditorWindow
-				activeNote={activeNote}
-				// isReadOnly={match.path === '/trash/:noteId'}
-			/>
+			<EditorWindow activeNote={activeNote.current} isReadOnly={activeNote.current?.trashed} />
 		</div>
 	)
 }

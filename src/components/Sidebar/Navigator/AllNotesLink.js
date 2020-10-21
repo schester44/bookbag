@@ -12,6 +12,8 @@ const AllNotesLink = ({ totalNotes }) => {
 		canDrop: (item) => !!item.note.notebookId,
 		// Dropping on 'All Notebooks' deletes the notebookId from a note
 		drop: ({ note }) => {
+
+			console.log(note);
 			// TODO: Remove the note from the notebook
 			// dispatch(removeNoteFromNotebook(note))
 		},
@@ -32,8 +34,7 @@ const AllNotesLink = ({ totalNotes }) => {
 			}`}
 		>
 			<div className="flex items-center">
-				<IoIosPaper />
-				<span className="ml-3">All Notes</span>
+				<IoIosPaper /><span className="ml-2 text-sm font-bold">All Notes</span>
 			</div>
 
 			{totalNotes > 0 && <span className="text-xs font-bold text-gray-600">{totalNotes}</span>}

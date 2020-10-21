@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 .toolbar-btn {
-	@apply p-1 px-2 mx-1 text-gray-600 cursor-pointer rounded;
+	@apply p-1 px-2 mx-1 text-gray-600 cursor-pointer rounded-full;
 }
 
 .toolbar-btn:hover,

@@ -8,10 +8,16 @@ import Note from './Note'
 
 import { bookbagQuery, notebookQuery } from 'queries'
 import useNewNote from 'hooks/useNewNote'
+import { searchIndex } from 'utils/search'
+import { encrypt, SECRET } from 'utils/encryption'
 
 const NotesList = () => {
 	const { notebookId, noteId } = useParams()
 	const [createNote] = useNewNote({ notebookId })
+	const [search, setSearch] = React.useState({
+		term: '',
+		results: [],
+	})
 
 	const { data } = useQuery(bookbagQuery, {
 		variables: {
@@ -28,11 +34,13 @@ const NotesList = () => {
 
 	const notebook = notebookData?.notebook
 
+	const notebookNotes = data?.notes
+
 	const notes = React.useMemo(() => {
-		const notes = notebook?.notes || data.notes
+		const notes = notebook?.notes || notebookNotes
 
 		return notes ? notes.filter((note) => !note.trashed) : []
-	}, [notebook, data.notes])
+	}, [notebook, notebookNotes])
 
 	const history = useHistory()
 	const match = useRouteMatch()
@@ -40,9 +48,6 @@ const NotesList = () => {
 	const handleNoteSelection = (note) => {
 		// this note is already selected
 		if (note.id === noteId) return
-
-		// TODO: get note tags
-		// dispatch(fetchNoteTags(note.id))
 
 		let pathname = `/note/${note.id}`
 
@@ -59,7 +64,22 @@ const NotesList = () => {
 	}
 
 	const handleNewNote = async () => {
-		const { data } = await createNote({ variables: { notebookId } })
+		const { data } = await createNote({
+			variables: {
+				input: {
+					notebookId,
+					body: encrypt(
+						JSON.stringify([
+							{
+								type: 'paragraph',
+								children: [{ text: '' }],
+							},
+						]),
+						SECRET
+					),
+				},
+			},
+		})
 
 		const note = data.createNote
 
@@ -71,11 +91,26 @@ const NotesList = () => {
 		})
 	}
 
+	const handleSearch = async (term) => {
+		const results = await searchIndex.search(term)
+
+		// TODO: Move this somewhere better. doesn't need ran every search
+		const notesById = notes.reduce((acc, note) => {
+			acc[note.id] = note
+
+			return acc
+		}, {})
+
+		setSearch({ term, results: results.map((id) => notesById[id]) })
+	}
+
+	const isSearching = search.term.length > 0
+
 	return (
-		<div>
+		<div className="h-full flex flex-col">
 			<div className="mb-2 px-2 w-full pb-2 pt-1 flex">
 				<div style={{ width: 'calc(100% - 40px)' }}>
-					<SearchBar value={''} onSearch={console.log} onTagChange={console.log} />
+					<SearchBar value={search.term} onSearch={handleSearch} onTagChange={console.log} />
 				</div>
 				<div>
 					<div
@@ -88,27 +123,29 @@ const NotesList = () => {
 			</div>
 
 			<p className="px-4 mb-2 font-semibold text-gray-700">
-				{notebook ? notebook.name : 'All Notes'}
+				{isSearching ? 'Search Results' : notebook ? notebook.name : 'All Notes'}
 			</p>
 
-			{notes.map((note) => {
-				return (
-					<Note
-						key={note.id}
-						note={note}
-						isSelected={noteId === note.id}
-						onSelect={handleNoteSelection}
-					/>
-				)
-			})}
+			<div className="flex-1 overflow-auto">
+				{(isSearching ? search.results : notes).map((note) => {
+					return (
+						<Note
+							key={note.id}
+							note={note}
+							isSelected={noteId === note.id}
+							onSelect={handleNoteSelection}
+						/>
+					)
+				})}
 
-			{notebook && notes.length === 0 && (
-				<p className="m-4 text-center text-sm text-gray-400">This notebook is empty</p>
-			)}
+				{notebook && notes.length === 0 && (
+					<p className="m-4 text-center text-sm text-gray-400">This notebook is empty</p>
+				)}
 
-			<p className="m-4 text-center text-sm text-gray-400">
-				<span className="font-bold">control + n</span> for a new note
-			</p>
+				{isSearching && search.results.length === 0 && (
+					<p className="m-4 text-center text-sm text-gray-400">No results found</p>
+				)}
+			</div>
 		</div>
 	)
 }

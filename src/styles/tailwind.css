@@ -4980,6 +4980,10 @@ video {
   margin-left: -1px;
 }
 
+.max-h-half {
+  max-height: 50%;
+}
+
 .max-h-full {
   max-height: 100%;
 }
@@ -8354,7 +8358,7 @@ video {
   margin-right: 0.25rem;
   color: #718096;
   cursor: pointer;
-  border-radius: 0.25rem;
+  border-radius: 9999px;
 }
 
 .toolbar-btn:hover,
@@ -12786,6 +12790,10 @@ video {
 
   .sm\:-ml-px {
     margin-left: -1px;
+  }
+
+  .sm\:max-h-half {
+    max-height: 50%;
   }
 
   .sm\:max-h-full {
@@ -20526,6 +20534,10 @@ video {
     margin-left: -1px;
   }
 
+  .md\:max-h-half {
+    max-height: 50%;
+  }
+
   .md\:max-h-full {
     max-height: 100%;
   }
@@ -28264,6 +28276,10 @@ video {
     margin-left: -1px;
   }
 
+  .lg\:max-h-half {
+    max-height: 50%;
+  }
+
   .lg\:max-h-full {
     max-height: 100%;
   }
@@ -36000,6 +36016,10 @@ video {
 
   .xl\:-ml-px {
     margin-left: -1px;
+  }
+
+  .xl\:max-h-half {
+    max-height: 50%;
   }
 
   .xl\:max-h-full {

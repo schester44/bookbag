@@ -5,7 +5,7 @@ import TagMenuDropdown from '../TagMenuDropdown'
 import Tag from '../SearchBar/Tag'
 import omit from 'lodash/omit'
 
-const tags = { ids: [], idMap: {} }
+const tags = { ids: [1], idMap: { 1: { id: 1, name: 'tag' } } }
 
 const SearchBar = ({ value, onTagChange, onSearch }) => {
 	const inputRef = React.useRef()

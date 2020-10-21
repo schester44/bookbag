@@ -18,6 +18,16 @@ export const NoteParts = gql`
 	}
 `
 
+export const bookNotesFragment = gql`
+	fragment BookNotes on NoteBook {
+		notes {
+			...NoteParts
+		}
+	}
+
+	${NoteParts}
+`
+
 export const userQuery = gql`
 	{
 		me {

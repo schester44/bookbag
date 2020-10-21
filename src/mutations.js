@@ -21,8 +21,8 @@ export const updateNoteMutation = gql`
 `
 
 export const createNoteMutation = gql`
-	mutation createNote($notebookId: String) {
-		createNote(notebookId: $notebookId) {
+	mutation createNote($input: CreateNoteInput!) {
+		createNote(input: $input) {
 			...NoteParts
 		}
 	}
@@ -57,5 +57,11 @@ export const updateNoteBookMutation = gql`
 			id
 			name
 		}
+	}
+`
+
+export const addNoteToBookMutation = gql`
+	mutation addNoteToBook($bookId: String!, $noteId: String!) {
+		addNoteToBook(bookId: $bookId, noteId: $noteId)
 	}
 `

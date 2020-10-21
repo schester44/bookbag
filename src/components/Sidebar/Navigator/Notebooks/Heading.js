@@ -39,7 +39,7 @@ const Heading = () => {
 				cache.writeQuery({
 					query: bookbagQuery,
 					data: produce(data, (draft) => {
-						draft.notebooks.push(createNoteBook)
+						draft.notebooks.push({ ...createNoteBook, notes: [] })
 					}),
 				})
 			},
@@ -55,7 +55,7 @@ const Heading = () => {
 	return (
 		<div>
 			<div className="navigator-navitem flex items-center justify-between">
-				<div className="flex items-center">
+				<div className="flex text-sm font-bold items-center">
 					<FaBook />
 					<span className="ml-3">Notebooks</span>
 				</div>

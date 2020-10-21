@@ -3,10 +3,11 @@ import { withReact, Slate } from 'slate-react'
 import { createEditor } from 'slate'
 import { withHistory } from 'slate-history'
 import { useMutation, useApolloClient } from '@apollo/client'
+import Helmet from 'react-helmet'
+import { SECRET, encrypt } from 'utils/encryption'
 
 import Editor from './Editor'
 import EditorToolbar from './EditorToolbar'
-import TagList from '../TagList'
 import PaneTrigger from '../../components/PaneTrigger'
 
 import { withLinks } from './plugins/withLinks'
@@ -20,8 +21,6 @@ import { updateNoteMutation } from '../../mutations'
 import { serializeToText } from './utils'
 import { noteTitleFragment } from 'queries'
 
-// TODO: Reimplement
-let activeNoteTags = []
 const showPaneTrigger = false
 
 const EditorWindow = ({ activeNote, isReadOnly }) => {
@@ -52,23 +51,8 @@ const EditorWindow = ({ activeNote, isReadOnly }) => {
 	)
 
 	React.useEffect(() => {
-		if (!activeNote) {
-			return setNote(undefined)
-		} else {
-			setNote({
-				...activeNote,
-				body: typeof activeNote.body === 'string' ? JSON.parse(activeNote.body) : activeNote.body,
-			})
-		}
+		setNote(activeNote)
 	}, [activeNote])
-
-	const handleNewTag = (name) => {
-		// dispatch(createNoteTag(noteId, name))
-	}
-
-	const handleRemoveTag = (tag) => {
-		// dispatch(removeNoteTag(noteId, tag.id))
-	}
 
 	const saveNote = (changes) => {
 		window.clearTimeout(saveTimer.current)
@@ -79,8 +63,12 @@ const EditorWindow = ({ activeNote, isReadOnly }) => {
 			if (changes.body) {
 				const snippet = serializeToText(changes.body).slice(0, 150)
 
-				changes.snippet = snippet
-				changes.body = JSON.stringify(changes.body)
+				changes.snippet = encrypt(snippet, SECRET)
+				changes.body = encrypt(JSON.stringify(changes.body), SECRET)
+			}
+
+			if (changes.title) {
+				changes.title = encrypt(changes.title, SECRET)
 			}
 
 			updateNote({
@@ -95,11 +83,12 @@ const EditorWindow = ({ activeNote, isReadOnly }) => {
 	const handleNoteTitleChange = (title) => {
 		setNote((prev) => ({ ...prev, title }))
 
+		// Setting the cached value
 		apolloClient.writeFragment({
 			id: activeNote.id,
 			fragment: noteTitleFragment,
 			data: {
-				title,
+				title: encrypt(title, SECRET),
 			},
 		})
 
@@ -124,8 +113,15 @@ const EditorWindow = ({ activeNote, isReadOnly }) => {
 
 	return (
 		<Slate editor={editor} value={note.body} onChange={handleNoteBodyChange}>
+			<Helmet>
+				<title>
+					{note.trashed ? '(trashed) ' : ''}
+					{note.title || 'Untitled Note'}
+				</title>
+			</Helmet>
+
 			<FloatingToolbar />
-			<div className="flex-1 shadow pb-8 bg-white flex flex-col h-full relative">
+			<div className="flex-1 shadow pb-8 bg-white flex flex-col h-full max-h-half lg:max-h-full relative overflow-auto">
 				{!isReadOnly && (
 					<div className="flex justify-center p-2 border-b border-gray-200 mb-2 items-center">
 						<EditorToolbar activeNote={activeNote} editor={editor} />
@@ -134,16 +130,6 @@ const EditorWindow = ({ activeNote, isReadOnly }) => {
 
 				<div className="px-8 pb-3">
 					<NoteTitle isReadOnly={isReadOnly} title={note.title} onChange={handleNoteTitleChange} />
-
-					{!isReadOnly && (
-						<div className="pb-4">
-							<TagList
-								ids={activeNoteTags}
-								onTagCreate={handleNewTag}
-								onRemoveTag={handleRemoveTag}
-							/>
-						</div>
-					)}
 
 					<Editor editor={editor} isReadOnly={isReadOnly} />
 				</div>

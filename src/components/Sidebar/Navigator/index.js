@@ -1,18 +1,22 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
 import { useQuery } from '@apollo/client'
-import { FiSettings } from 'react-icons/fi'
+import { FiUser } from 'react-icons/fi'
 
 import Notebooks from './Notebooks'
 import AllNotes from './AllNotesLink'
 import Trash from './TrashLink'
 
 import { bookbagQuery } from 'queries'
+import Dropdown from 'components/Dropdown'
+import { DropdownMenu } from 'components/DropdownMenu'
+import { MenuItem } from 'components/ContextMenu'
 
 const Navigator = ({ user }) => {
-	const { data } = useQuery(bookbagQuery)
+	const { data, loading } = useQuery(bookbagQuery)
 
 	const { totalNotes, totalNotebooks, totalTrash } = React.useMemo(() => {
+		if (loading || !data) return {}
+
 		const totalTrash = data.notes.filter((note) => note.trashed)
 
 		return {
@@ -20,7 +24,9 @@ const Navigator = ({ user }) => {
 			totalTrash: totalTrash.length,
 			totalNotebooks: data?.notebooks.length || 0,
 		}
-	}, [data])
+	}, [data, loading])
+
+	if (loading || !data) return null
 
 	return (
 		<div className="h-full flex flex-col justify-between">
@@ -30,14 +36,20 @@ const Navigator = ({ user }) => {
 				<Trash totalNotes={totalTrash} />
 			</div>
 			<div>
-				{user && <div className="px-2 py-4 text-white text-sm">Logged in as {user.username}</div>}
-
-				<NavLink to="/settings" className={'navigator-link flex items-center justify-between'}>
-					<div className="flex items-center">
-						<FiSettings />
-						<span className="ml-3">Settings</span>
-					</div>
-				</NavLink>
+				{user && (
+					<Dropdown
+						placement="bottomRight"
+						content={
+							<DropdownMenu>
+								<MenuItem>Logout</MenuItem>
+							</DropdownMenu>
+						}
+					>
+						<div className="flex items-center px-2 py-4 text-white text-sm ml-3">
+							<FiUser className="text-xl mr-2" /> {user.username}
+						</div>
+					</Dropdown>
+				)}
 			</div>
 		</div>
 	)

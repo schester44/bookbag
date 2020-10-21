@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client'
 import { produce } from 'immer'
 import { deleteNoteMutation } from '../mutations'
-import { bookbagQuery } from '../queries'
+import { bookbagQuery, notebookQuery } from '../queries'
 
 export default function useDeleteNote({ id, notebookId }) {
 	return useMutation(deleteNoteMutation, {
@@ -15,7 +15,21 @@ export default function useDeleteNote({ id, notebookId }) {
 				query: bookbagQuery,
 			})
 
-			// TODO: Clean up parent Notebook, or evict/expire or whatever
+			if (notebookId) {
+				const notebookData = client.readQuery({
+					query: notebookQuery,
+					variables: { id: notebookId },
+				})
+
+				client.writeQuery({
+					query: notebookQuery,
+					variables: { id: notebookId },
+					data: produce(notebookData, (draft) => {
+						draft.notebook.notes = draft.notebook.notes.filter((note) => note.id !== id)
+					}),
+				})
+			}
+
 			client.writeQuery({
 				query: bookbagQuery,
 				data: produce(data, (draft) => {
