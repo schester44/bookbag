@@ -1,0 +1,49 @@
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+.toolbar-btn {
+	@apply p-1 px-2 mx-1 text-gray-600 cursor-pointer rounded-full;
+}
+
+.toolbar-btn:hover,
+.toolbar-btn.toolbar-btn--active {
+	@apply bg-gray-100 text-gray-800;
+}
+
+.toolbar-btn--inverted {
+	@apply text-gray-400;
+}
+
+.toolbar-btn.toolbar-btn--inverted:hover,
+.toolbar-btn--inverted.toolbar-btn--active {
+	@apply bg-gray-700 text-white;
+}
+
+.sidebar-note:hover .delete-btn {
+	@apply opacity-100;
+}
+
+.navigator-navitem {
+	@apply px-4 py-2 flex items-center text-gray-400;
+}
+
+.navigator-link {
+	@apply px-4 py-2 flex items-center text-gray-400 cursor-pointer border-l-2 border-transparent;
+}
+
+.navigator-link:hover {
+	@apply bg-gray-800;
+}
+
+.navigator-link.active {
+	@apply text-white bg-gray-800 cursor-default border-indigo-500;
+}
+
+.truncate {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
