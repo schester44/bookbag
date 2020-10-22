@@ -20,6 +20,8 @@ const Editor = ({ editor, isReadOnly }) => {
 
 	const handleKeyDown = (event) => {
 		const shouldOpenNewTab = isHotkey('mod+n', event)
+
+		// TODO: we need to add the inputs here
 		if (shouldOpenNewTab) {
 			return createNote({ variables: { notebookId } })
 		}

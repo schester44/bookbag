@@ -1,7 +1,7 @@
 import React from 'react'
 import { FiList, FiCheckSquare } from 'react-icons/fi'
 import { MdFormatListNumbered } from 'react-icons/md'
-import { FaQuoteRight } from 'react-icons/fa'
+import { FaQuoteRight, FaCode } from 'react-icons/fa'
 
 import BlockButton from './BlockButton'
 import InsertImageButton from './EditorToolbar/InsertImageButton'
@@ -11,6 +11,7 @@ const EditorToolbar = ({ editor }) => {
 		<div className="flex justify-between items-center w-full">
 			<div className="flex">
 				<BlockButton format="block-quote" icon={<FaQuoteRight />} />
+				<BlockButton format="code" icon={<FaCode />} />
 				<BlockButton format="numbered-list" icon={<MdFormatListNumbered />} />
 				<BlockButton format="bulleted-list" icon={<FiList />} />
 				<BlockButton format="checklist-item" icon={<FiCheckSquare />} />

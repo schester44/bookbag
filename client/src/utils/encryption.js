@@ -9,4 +9,4 @@ export function decrypt(ciphertext, key) {
 }
 
 // FIXME: Make this configurable per user
-export const SECRET = 'MY-SECRET'
+export const SECRET = localStorage.getItem('encryptionKey')

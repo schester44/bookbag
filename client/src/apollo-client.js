@@ -12,14 +12,15 @@ const cache = new InMemoryCache({
 				title: {
 					merge(_, incoming) {
 						try {
-							return decrypt(incoming, SECRET)
+							const decrypted = JSON.parse(decrypt(incoming, SECRET))
+
+							return decrypted.value
 						} catch {
 							return incoming
 						}
 					},
 				},
 				body: {
-					// FIXME: How to get a different secret per note / user?
 					merge(_, incoming) {
 						if (Array.isArray(incoming)) return incoming
 
@@ -31,7 +32,9 @@ const cache = new InMemoryCache({
 				snippet: {
 					merge(_, incoming) {
 						try {
-							return decrypt(incoming, SECRET)
+							const decrypted = JSON.parse(decrypt(incoming, SECRET))
+
+							return decrypted.value
 						} catch {
 							return incoming
 						}

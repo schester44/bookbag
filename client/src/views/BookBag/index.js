@@ -4,15 +4,17 @@ import { useParams, useHistory } from 'react-router-dom'
 import { useQuery } from '@apollo/client'
 import Sidebar from 'components/Sidebar'
 import EditorWindow from 'components/EditorWindow'
-import { bookbagQuery, noteQuery } from 'queries'
+import { bookbagQuery, notebookQuery, noteQuery } from 'queries'
 import useNewNote from 'hooks/useNewNote'
 import { searchIndex } from 'utils/search'
+import { encrypt, SECRET } from 'utils/encryption'
+import { Helmet } from 'react-helmet'
+import { GoNote } from 'react-icons/go'
 
 const BookBag = ({ user }) => {
 	const { notebookId, noteId } = useParams()
 	const [createNewNote] = useNewNote({ notebookId })
 	const history = useHistory()
-	const activeNote = React.useRef()
 
 	const { loading } = useQuery(bookbagQuery, {
 		onCompleted: ({ notes }) => {
@@ -28,6 +30,13 @@ const BookBag = ({ user }) => {
 		},
 	})
 
+	const { data: notebookData } = useQuery(notebookQuery, {
+		skip: !notebookId,
+		variables: {
+			id: notebookId,
+		},
+	})
+
 	const { data: noteQueryData } = useQuery(noteQuery, {
 		skip: !noteId,
 		variables: {
@@ -35,17 +44,29 @@ const BookBag = ({ user }) => {
 		},
 	})
 
-	// Store the note in a ref so the activeNote persists when changing the route. Without this, the active note would disappear when you change notebooks.
-	if (noteQueryData?.note) {
-		activeNote.current = noteQueryData?.note
-	}
-
 	React.useEffect(() => {
 		async function hotKeyListener(event) {
 			// TODO: Why doesn't isHotKey work here
 			// TODO: does this work on Windows?
 			if (event.ctrlKey && event.key === 'n') {
-				const { data } = await createNewNote({ variables: { notebookId } })
+				const { data } = await createNewNote({
+					variables: {
+						input: {
+							notebookId,
+							title: encrypt(JSON.stringify({ value: '' }), SECRET),
+							snippet: encrypt(JSON.stringify({ value: '' }), SECRET),
+							body: encrypt(
+								JSON.stringify([
+									{
+										type: 'paragraph',
+										children: [{ text: '' }],
+									},
+								]),
+								SECRET
+							),
+						},
+					},
+				})
 
 				const pathname = notebookId
 					? `/notebook/${notebookId}/${data.createNote.id}`
@@ -65,12 +86,18 @@ const BookBag = ({ user }) => {
 		return () => document.removeEventListener('keypress', hotKeyListener)
 	}, [notebookId, history, createNewNote])
 
-	if (loading) return <div>loading...</div>
+	if (loading)
+		return (
+			<div className="w-full h-full flex items-center justify-center">
+				<GoNote className=" text-indigo-500" style={{ fontSize: 150 }} />
+			</div>
+		)
 
 	return (
 		<div className="lg:flex w-full h-full">
+			<Helmet>{notebookData && <title>{notebookData?.notebook.name} Notes</title>}</Helmet>
 			<Sidebar user={user} />
-			<EditorWindow activeNote={activeNote.current} isReadOnly={activeNote.current?.trashed} />
+			<EditorWindow activeNote={noteQueryData?.note} isReadOnly={noteQueryData?.note?.trashed} />
 		</div>
 	)
 }

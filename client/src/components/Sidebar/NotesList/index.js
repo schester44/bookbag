@@ -68,6 +68,8 @@ const NotesList = () => {
 			variables: {
 				input: {
 					notebookId,
+					title: encrypt(JSON.stringify({ value: '' }), SECRET),
+					snippet: encrypt(JSON.stringify({ value: '' }), SECRET),
 					body: encrypt(
 						JSON.stringify([
 							{

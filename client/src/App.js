@@ -2,11 +2,12 @@ import React from 'react'
 import { Switch, Route } from 'react-router-dom'
 import { useQuery } from '@apollo/client'
 
-import Bookbag from 'views/BookBag'
 import { userQuery } from './queries'
 import { SidebarProvider } from 'hooks/useSidebar'
 
 const Login = React.lazy(() => import('views/Login'))
+const Settings = React.lazy(() => import('views/Settings'))
+const BookBag = React.lazy(() => import('views/BookBag'))
 
 const bookBagRoutes = [
 	'/',
@@ -47,7 +48,11 @@ function App() {
 				<React.Suspense fallback={null}>
 					<Switch>
 						<Route exact path={bookBagRoutes}>
-							<Bookbag user={user} />
+							<BookBag user={user} />
+						</Route>
+
+						<Route path="/settings">
+							<Settings user={user} />
 						</Route>
 					</Switch>
 				</React.Suspense>

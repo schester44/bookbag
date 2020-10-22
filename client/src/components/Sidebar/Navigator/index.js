@@ -10,9 +10,11 @@ import { bookbagQuery } from 'queries'
 import Dropdown from 'components/Dropdown'
 import { DropdownMenu } from 'components/DropdownMenu'
 import { MenuItem } from 'components/ContextMenu'
+import { useHistory } from 'react-router'
 
 const Navigator = ({ user }) => {
 	const { data, loading } = useQuery(bookbagQuery)
+	const history = useHistory()
 
 	const { totalNotes, totalNotebooks, totalTrash } = React.useMemo(() => {
 		if (loading || !data) return {}
@@ -41,6 +43,13 @@ const Navigator = ({ user }) => {
 						placement="bottomRight"
 						content={
 							<DropdownMenu>
+								<MenuItem
+									onClick={(x) => {
+										history.push('/settings')
+									}}
+								>
+									Settings
+								</MenuItem>
 								<MenuItem>Logout</MenuItem>
 							</DropdownMenu>
 						}

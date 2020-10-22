@@ -10,6 +10,7 @@ import PaneTrigger from '../../components/PaneTrigger'
 
 import { useRouteMatch, useParams } from 'react-router-dom'
 import { useSidebar } from 'hooks/useSidebar'
+import { useWindowSize } from 'hooks/useWindowSize'
 
 const TrashList = React.lazy(() => import('./TrashList'))
 
@@ -17,12 +18,17 @@ const Sidebar = ({ user }) => {
 	const match = useRouteMatch()
 	const { noteId } = useParams()
 	const { depth } = useSidebar()
+	const { width } = useWindowSize()
 
 	const navRef = React.useRef()
 	const listRef = React.useRef()
 
 	const listBox = listRef.current?.getBoundingClientRect()
 	const navBox = navRef.current?.getBoundingClientRect()
+
+	if (width < 1024) {
+		return <div>HELLO</div>
+	}
 
 	return (
 		<DndProvider backend={Backend}>
@@ -36,9 +42,9 @@ const Sidebar = ({ user }) => {
 					transition: 'margin .2s ease-in-out',
 					marginLeft:
 						depth === 1
-							? -(navBox.width || 0)
+							? -(navBox?.width || 0)
 							: depth === 0
-							? -((navBox.width || 0) + (listBox.width || 0))
+							? -((navBox?.width || 0) + (listBox?.width || 0))
 							: 0,
 				}}
 			>

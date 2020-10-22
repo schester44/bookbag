@@ -1,6 +1,6 @@
 import React from 'react'
 import { withReact, Slate } from 'slate-react'
-import { createEditor } from 'slate'
+import { Transforms, createEditor } from 'slate'
 import { withHistory } from 'slate-history'
 import { useMutation, useApolloClient } from '@apollo/client'
 import Helmet from 'react-helmet'
@@ -50,9 +50,22 @@ const EditorWindow = ({ activeNote, isReadOnly }) => {
 		[]
 	)
 
+	const _activeNodeId = React.useRef(activeNote?.id)
+
+	// Clear the selection when changing notes.
 	React.useEffect(() => {
-		setNote(activeNote)
-	}, [activeNote])
+		if (_activeNodeId.current !== activeNote?.id) {
+			_activeNodeId.current = activeNote?.id
+			Transforms.deselect(editor)
+		}
+	}, [activeNote, editor])
+
+	React.useEffect(() => {
+		// Only set the note once
+		if (activeNote?.id !== note?.id) {
+			setNote(activeNote)
+		}
+	}, [activeNote, note])
 
 	const saveNote = (changes) => {
 		window.clearTimeout(saveTimer.current)
@@ -63,12 +76,12 @@ const EditorWindow = ({ activeNote, isReadOnly }) => {
 			if (changes.body) {
 				const snippet = serializeToText(changes.body).slice(0, 150)
 
-				changes.snippet = encrypt(snippet, SECRET)
+				changes.snippet = encrypt(JSON.stringify({ value: snippet }), SECRET)
 				changes.body = encrypt(JSON.stringify(changes.body), SECRET)
 			}
 
 			if (changes.title) {
-				changes.title = encrypt(changes.title, SECRET)
+				changes.title = encrypt(JSON.stringify({ value: changes.title }), SECRET)
 			}
 
 			updateNote({
@@ -88,7 +101,7 @@ const EditorWindow = ({ activeNote, isReadOnly }) => {
 			id: activeNote.id,
 			fragment: noteTitleFragment,
 			data: {
-				title: encrypt(title, SECRET),
+				title: encrypt(JSON.stringify({ value: title }), SECRET),
 			},
 		})
 
@@ -128,7 +141,7 @@ const EditorWindow = ({ activeNote, isReadOnly }) => {
 					</div>
 				)}
 
-				<div className="px-8 pb-3">
+				<div className="px-8 pb-3 flex-1">
 					<NoteTitle isReadOnly={isReadOnly} title={note.title} onChange={handleNoteTitleChange} />
 
 					<Editor editor={editor} isReadOnly={isReadOnly} />
