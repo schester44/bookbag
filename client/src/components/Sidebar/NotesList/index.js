@@ -70,15 +70,7 @@ const NotesList = () => {
 					notebookId,
 					title: encrypt(JSON.stringify({ value: '' }), SECRET),
 					snippet: encrypt(JSON.stringify({ value: '' }), SECRET),
-					body: encrypt(
-						JSON.stringify([
-							{
-								type: 'paragraph',
-								children: [{ text: '' }],
-							},
-						]),
-						SECRET
-					),
+					body: encrypt(JSON.stringify({ value: '' }), SECRET),
 				},
 			},
 		})

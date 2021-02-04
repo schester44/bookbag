@@ -13,6 +13,7 @@ import { useSidebar } from 'hooks/useSidebar'
 import { useWindowSize } from 'hooks/useWindowSize'
 
 const TrashList = React.lazy(() => import('./TrashList'))
+const MobileNav = React.lazy(() => import('../MobileNav'))
 
 const Sidebar = ({ user }) => {
 	const match = useRouteMatch()
@@ -27,7 +28,11 @@ const Sidebar = ({ user }) => {
 	const navBox = navRef.current?.getBoundingClientRect()
 
 	if (width < 1024) {
-		return <div>HELLO</div>
+		return (
+			<DndProvider backend={Backend}>
+				<MobileNav />
+			</DndProvider>
+		)
 	}
 
 	return (

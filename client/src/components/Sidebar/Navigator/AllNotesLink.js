@@ -34,7 +34,7 @@ const AllNotesLink = ({ totalNotes }) => {
 			}`}
 		>
 			<div className="flex items-center">
-				<IoIosPaper /><span className="ml-2 text-sm font-bold">All Notes</span>
+				<IoIosPaper /><span className="ml-2 text-sm">All Notes</span>
 			</div>
 
 			{totalNotes > 0 && <span className="text-xs font-bold text-gray-600">{totalNotes}</span>}

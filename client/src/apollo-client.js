@@ -22,11 +22,13 @@ const cache = new InMemoryCache({
 				},
 				body: {
 					merge(_, incoming) {
-						if (Array.isArray(incoming)) return incoming
+						try {
+							const decrypted = JSON.parse(decrypt(incoming, SECRET))
 
-						const decryptedBody = decrypt(incoming, SECRET)
-
-						return JSON.parse(decryptedBody)
+							return decrypted.value
+						} catch {
+							return incoming
+						}
 					},
 				},
 				snippet: {

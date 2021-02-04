@@ -34,8 +34,8 @@ const Navigator = ({ user }) => {
 		<div className="h-full flex flex-col justify-between">
 			<div>
 				<AllNotes totalNotes={totalNotes} />
-				<Notebooks notebooks={data.notebooks} totalBooks={totalNotebooks} />
 				<Trash totalNotes={totalTrash} />
+				<Notebooks notebooks={data.notebooks} totalBooks={totalNotebooks} />
 			</div>
 			<div>
 				{user && (

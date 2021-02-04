@@ -4,6 +4,8 @@
 
 @tailwind utilities;
 
+@import './editor.css';
+
 .toolbar-btn {
 	@apply p-1 px-2 mx-1 text-gray-600 cursor-pointer rounded-full;
 }
@@ -27,11 +29,11 @@
 }
 
 .navigator-navitem {
-	@apply px-4 py-2 flex items-center text-gray-400;
+	@apply px-4 py-2 flex items-center text-gray-200;
 }
 
 .navigator-link {
-	@apply px-4 py-2 flex items-center text-gray-400 cursor-pointer border-l-2 border-transparent;
+	@apply px-4 py-2 flex items-center text-gray-200 cursor-pointer border-l-2 border-transparent;
 }
 
 .navigator-link:hover {

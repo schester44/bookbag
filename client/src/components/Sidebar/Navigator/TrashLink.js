@@ -39,7 +39,7 @@ const TrashLink = ({ totalNotes }) => {
 		>
 			<div className="flex items-center">
 				<FiDelete />
-				<span className="ml-2 text-sm font-bold">Trash</span>
+				<span className="ml-2 text-sm">Trash</span>
 			</div>
 
 			{totalNotes > 0 && <span className="text-xs font-bold text-gray-600">{totalNotes}</span>}

@@ -10,3 +10,5 @@ export function decrypt(ciphertext, key) {
 
 // FIXME: Make this configurable per user
 export const SECRET = localStorage.getItem('encryptionKey')
+
+export const valueToDb = (value) => encrypt(JSON.stringify({ value }), SECRET)

@@ -3,20 +3,38 @@ import { FiDelete, FiPlus } from 'react-icons/fi'
 import { useMutation } from '@apollo/client'
 import { NavLink, useParams, useHistory } from 'react-router-dom'
 import { useDrop } from 'react-dnd'
+import { FaBook } from 'react-icons/fa'
+import produce from 'immer'
 
 import ContextMenu, { Menu, MenuItem } from 'components/ContextMenu'
 import { deleteNoteBookMutation, updateNoteBookMutation, addNoteToBookMutation } from 'mutations'
 import { ItemTypes } from '../../constants'
-import produce from 'immer'
 import { bookbagQuery, notebookQuery, bookNotesFragment } from 'queries'
 
+function hashCode(str) {
+	// java String#hashCode
+	var hash = 0
+	for (var i = 0; i < str.length; i++) {
+		hash = str.charCodeAt(i) + ((hash << 5) - hash)
+	}
+	return hash
+}
+
+function intToRGB(i) {
+	var c = (i & 0x00ffffff).toString(16).toUpperCase()
+
+	return '00000'.substring(0, 6 - c.length) + c
+}
+
 const Book = ({ book }) => {
-	const { notebookId, noteId } = useParams()
+	const { notebookId } = useParams()
 	const history = useHistory()
 	const [deleteNoteBook] = useMutation(deleteNoteBookMutation)
 	const [updateNoteBook] = useMutation(updateNoteBookMutation)
 	const [addNoteToBook] = useMutation(addNoteToBookMutation)
 	const [rename, setRename] = React.useState({ visible: false, name: book.name })
+
+	const bookColor = React.useMemo(() => intToRGB(hashCode(book.id)), [book.id])
 
 	const totalNotes = React.useMemo(() => {
 		return book.notes.filter((note) => !note.trashed).length
@@ -169,7 +187,11 @@ const Book = ({ book }) => {
 				}`}
 				to={`/notebook/${book.id}`}
 			>
-				<div className="ml-8 text-sm flex-1 truncate">{rename.name}</div>
+				<div className="flex text-sm items-center truncate flex-1">
+					<FaBook style={{ color: `#${bookColor}` }} />
+					<span className="ml-3">{rename.name}</span>
+				</div>
+
 				{totalNotes > 0 && (
 					<span className="text-xs font-bold ml-1 text-gray-600">{totalNotes}</span>
 				)}

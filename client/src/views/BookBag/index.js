@@ -55,15 +55,7 @@ const BookBag = ({ user }) => {
 							notebookId,
 							title: encrypt(JSON.stringify({ value: '' }), SECRET),
 							snippet: encrypt(JSON.stringify({ value: '' }), SECRET),
-							body: encrypt(
-								JSON.stringify([
-									{
-										type: 'paragraph',
-										children: [{ text: '' }],
-									},
-								]),
-								SECRET
-							),
+							body: encrypt(JSON.stringify({ value: '' }), SECRET),
 						},
 					},
 				})
@@ -94,7 +86,7 @@ const BookBag = ({ user }) => {
 		)
 
 	return (
-		<div className="lg:flex w-full h-full">
+		<div className="flex lg:flex-row flex-col w-full h-full">
 			<Helmet>{notebookData && <title>{notebookData?.notebook.name} Notes</title>}</Helmet>
 			<Sidebar user={user} />
 			<EditorWindow activeNote={noteQueryData?.note} isReadOnly={noteQueryData?.note?.trashed} />

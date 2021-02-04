@@ -8350,6 +8350,8 @@ video {
   z-index: auto;
 }
 
+@import './editor.css';
+
 .toolbar-btn {
   padding: 0.25rem;
   padding-left: 0.5rem;
@@ -8388,7 +8390,7 @@ video {
   padding-bottom: 0.5rem;
   display: flex;
   align-items: center;
-  color: #cbd5e0;
+  color: #edf2f7;
 }
 
 .navigator-link {
@@ -8398,7 +8400,7 @@ video {
   padding-bottom: 0.5rem;
   display: flex;
   align-items: center;
-  color: #cbd5e0;
+  color: #edf2f7;
   cursor: pointer;
   border-left-width: 2px;
   border-color: transparent;

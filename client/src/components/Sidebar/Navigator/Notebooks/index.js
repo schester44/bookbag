@@ -1,18 +1,17 @@
 import React from 'react'
 
-import Heading from './Heading'
 import Book from './Book'
+import AddNewNoteBook from './AddNewNoteBook'
 
 const Notebooks = ({ notebooks }) => {
 	return (
-		<div>
-			<Heading />
+		<div className="navigator-list">
+			<div className="text-gray-600 text-xs font-bold px-4 pt-4 pb-2">NOTEBOOKS</div>
+			{notebooks.map((book) => {
+				return <Book key={book.id} book={book} />
+			})}
 
-			<div className="navigator-list">
-				{notebooks.map((book) => {
-					return <Book key={book.id} book={book} />
-				})}
-			</div>
+			<AddNewNoteBook />
 		</div>
 	)
 }

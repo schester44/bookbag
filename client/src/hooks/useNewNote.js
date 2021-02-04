@@ -21,10 +21,7 @@ export default function useNewNote({ notebookId } = {}) {
 				notes: [createdNote, ...bookbag.notes],
 			}
 
-			client.writeQuery({
-				query: bookbagQuery,
-				data,
-			})
+			client.writeQuery({ query: bookbagQuery, data })
 		},
 	})
 }
