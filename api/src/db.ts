@@ -13,7 +13,8 @@ export const createConnection = () => {
 		username: 'schester',
 		password: '',
 		database: 'notes',
+		port: 5432,
 		entities: [User, NoteBook, Note, NoteUser, BookNote],
-		synchronize: true
+		synchronize: true,
 	})
 }

@@ -8,7 +8,7 @@ export function decrypt(ciphertext, key) {
 	return CryptoJS.AES.decrypt(ciphertext, key).toString(CryptoJS.enc.Utf8)
 }
 
-// FIXME: Make this configurable per user
+// FIXME: Make this configurable per note
 export const SECRET = localStorage.getItem('encryptionKey')
 
 export const valueToDb = (value) => encrypt(JSON.stringify({ value }), SECRET)

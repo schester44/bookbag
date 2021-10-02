@@ -14,8 +14,10 @@ const cache = new InMemoryCache({
 						try {
 							const decrypted = JSON.parse(decrypt(incoming, SECRET))
 
+							console.log('decrpt', decrypted, SECRET);
 							return decrypted.value
-						} catch {
+						} catch (e) {
+							console.log({ e })
 							return incoming
 						}
 					},

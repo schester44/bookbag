@@ -18,7 +18,6 @@ const BookBag = ({ user }) => {
 
 	const { loading } = useQuery(bookbagQuery, {
 		onCompleted: ({ notes }) => {
-			searchIndex.clear()
 			notes.forEach((note) => {
 				searchIndex.add(note.id, note.title)
 				searchIndex.add(note.id, note.body)

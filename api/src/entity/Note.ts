@@ -24,11 +24,11 @@ export class Note extends BaseEntity {
 	id: string
 
 	@Field()
-	@Column({ type: 'varchar', length: 255, nullable: false })
+	@Column({ type: 'text', nullable: false })
 	title: string
 
 	@Field()
-	@Column({ type: 'varchar', length: 255, nullable: true })
+	@Column({ type: 'text', nullable: true })
 	snippet?: string
 
 	@Field()

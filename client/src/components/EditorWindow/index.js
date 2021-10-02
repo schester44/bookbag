@@ -50,6 +50,7 @@ const EditorWindow = ({ activeNote, isReadOnly }) => {
 				const snippet = body.slice(0, 150)
 
 				changes.snippet = encryptValue(snippet)
+
 				changes.body = encryptValue(body)
 			}
 
