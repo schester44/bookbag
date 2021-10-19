@@ -6,7 +6,6 @@ import { produce } from 'immer'
 
 import { bookbagQuery } from 'queries'
 import { createNoteBookMutation, createNoteMutation } from 'mutations'
-import { valueToDb } from 'utils/encryption'
 
 const Heading = () => {
 	const [createNoteBook] = useMutation(createNoteBookMutation)
@@ -51,9 +50,9 @@ const Heading = () => {
 			variables: {
 				input: {
 					notebookId: notebookData.createNoteBook.id,
-					title: valueToDb(''),
-					snippet: valueToDb(''),
-					body: valueToDb(''),
+					title: '',
+					snippet: '',
+					body: '',
 				},
 			},
 			update: (client, { data: { createNote: createdNote } }) => {

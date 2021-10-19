@@ -7,7 +7,6 @@ import EditorWindow from 'components/EditorWindow'
 import { bookbagQuery, notebookQuery, noteQuery } from 'queries'
 import useNewNote from 'hooks/useNewNote'
 import { searchIndex } from 'utils/search'
-import { encrypt, SECRET } from 'utils/encryption'
 import { Helmet } from 'react-helmet'
 import { GoNote } from 'react-icons/go'
 
@@ -23,7 +22,6 @@ const BookBag = ({ user }) => {
 				searchIndex.add(note.id, note.body)
 			})
 		},
-		returnPartialData: true,
 		variables: {
 			id: noteId,
 		},
@@ -52,13 +50,14 @@ const BookBag = ({ user }) => {
 					variables: {
 						input: {
 							notebookId,
-							title: encrypt(JSON.stringify({ value: '' }), SECRET),
-							snippet: encrypt(JSON.stringify({ value: '' }), SECRET),
-							body: encrypt(JSON.stringify({ value: '' }), SECRET),
+							title: '',
+							snippet: '',
+							body: '',
 						},
 					},
 				})
 
+				// TODO: Move these paths to a global file
 				const pathname = notebookId
 					? `/notebook/${notebookId}/${data.createNote.id}`
 					: `/note/${data.createNote.id}`
@@ -77,12 +76,13 @@ const BookBag = ({ user }) => {
 		return () => document.removeEventListener('keypress', hotKeyListener)
 	}, [notebookId, history, createNewNote])
 
-	if (loading)
+	if (loading) {
 		return (
 			<div className="w-full h-full flex items-center justify-center">
 				<GoNote className=" text-indigo-500" style={{ fontSize: 150 }} />
 			</div>
 		)
+	}
 
 	return (
 		<div className="flex lg:flex-row flex-col w-full h-full">

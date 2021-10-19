@@ -1,7 +1,6 @@
 import React from 'react'
 import { useMutation, useApolloClient } from '@apollo/client'
 import Helmet from 'react-helmet'
-import { SECRET, encrypt } from 'utils/encryption'
 import Editor from 'rich-markdown-editor'
 import { formatDistanceToNow } from 'date-fns'
 import PaneTrigger from '../../components/PaneTrigger'
@@ -12,25 +11,21 @@ import { noteTitleFragment } from 'queries'
 
 const showPaneTrigger = false
 
-const encryptValue = (value) => encrypt(JSON.stringify({ value }), SECRET)
-
 const EditorWindow = ({ activeNote, isReadOnly }) => {
 	const saveTimer = React.useRef()
 	const [note, setNote] = React.useState(undefined)
 	const apolloClient = useApolloClient()
 
-	const [updateNote] = useMutation(updateNoteMutation)
+	const [updateNote, { loading }] = useMutation(updateNoteMutation)
 
 	React.useEffect(() => {
-		const timer = saveTimer.current
-
 		return () => {
 			// Save it!
-			if (timer) {
-				window.clearTimeout(timer)
+			if (saveTimer.current) {
+				window.clearTimeout(saveTimer.current)
 			}
 		}
-	}, [saveTimer])
+	}, [])
 
 	React.useEffect(() => {
 		// Only set the note once
@@ -49,13 +44,8 @@ const EditorWindow = ({ activeNote, isReadOnly }) => {
 				const body = changes.body()
 				const snippet = body.slice(0, 150)
 
-				changes.snippet = encryptValue(snippet)
-
-				changes.body = encryptValue(body)
-			}
-
-			if (changes.title) {
-				changes.title = encryptValue(changes.title)
+				changes.snippet = snippet
+				changes.body = body
 			}
 
 			updateNote({
@@ -75,8 +65,8 @@ const EditorWindow = ({ activeNote, isReadOnly }) => {
 			id: activeNote.id,
 			fragment: noteTitleFragment,
 			data: {
+				title,
 				updatedAt: new Date(),
-				title: encrypt(JSON.stringify({ value: title }), SECRET),
 			},
 		})
 
@@ -89,6 +79,7 @@ const EditorWindow = ({ activeNote, isReadOnly }) => {
 		}
 	}
 
+	console.log({ note, activeNote })
 	if (!note || !activeNote) return null
 
 	return (

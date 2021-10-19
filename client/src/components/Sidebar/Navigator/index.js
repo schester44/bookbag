@@ -13,7 +13,11 @@ import { MenuItem } from 'components/ContextMenu'
 import { useHistory } from 'react-router'
 
 const Navigator = ({ user }) => {
-	const { data, loading } = useQuery(bookbagQuery)
+	const { data, loading } = useQuery(bookbagQuery, {
+		onCompleted: () => {
+			console.log('we render a lot')
+		},
+	})
 	const history = useHistory()
 
 	const { totalNotes, totalNotebooks, totalTrash } = React.useMemo(() => {

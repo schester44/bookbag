@@ -9,7 +9,6 @@ import Note from './Note'
 import { bookbagQuery, notebookQuery } from 'queries'
 import useNewNote from 'hooks/useNewNote'
 import { searchIndex } from 'utils/search'
-import { encrypt, SECRET } from 'utils/encryption'
 
 const NotesList = () => {
 	const { notebookId, noteId } = useParams()
@@ -68,9 +67,9 @@ const NotesList = () => {
 			variables: {
 				input: {
 					notebookId,
-					title: encrypt(JSON.stringify({ value: '' }), SECRET),
-					snippet: encrypt(JSON.stringify({ value: '' }), SECRET),
-					body: encrypt(JSON.stringify({ value: '' }), SECRET),
+					title: '',
+					snippet: '',
+					body: '',
 				},
 			},
 		})

@@ -35,6 +35,8 @@ function App() {
 		skip: !localStorage.getItem('logged-in'),
 	})
 
+	console.log({ loading }, 'user')
+
 	if (loading) {
 		return (
 			<div className="w-full h-full flex items-center justify-center">

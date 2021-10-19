@@ -3,7 +3,6 @@ import cn from 'classnames'
 import NotesList from '../Sidebar/NotesList'
 import { useParams, useHistory } from 'react-router-dom'
 import { FiChevronLeft } from 'react-icons/fi'
-import Button from 'components/Button'
 
 const MovbileNav = () => {
 	const { noteId } = useParams()
