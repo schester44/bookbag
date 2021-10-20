@@ -35,6 +35,8 @@ const Sidebar = ({ user }) => {
 		)
 	}
 
+	console.log('side', { user })
+
 	return (
 		<DndProvider backend={Backend}>
 			<div

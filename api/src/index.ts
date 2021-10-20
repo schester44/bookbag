@@ -7,7 +7,6 @@ import express, { Request } from 'express'
 
 import { logger } from './utils/logging'
 import middlewares from './modules/middlewares'
-
 import { buildSchema } from 'type-graphql'
 import { createConnection } from './db'
 import { User } from './entity/User'

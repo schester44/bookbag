@@ -63,7 +63,7 @@ const NotesList = () => {
 	}
 
 	const handleNewNote = async () => {
-		const { data } = await createNote({
+		const { data, errors } = await createNote({
 			variables: {
 				input: {
 					notebookId,
@@ -85,7 +85,6 @@ const NotesList = () => {
 	}
 
 	const handleSearch = async (term) => {
-		console.log({ term })
 		const results = await searchIndex.search(term)
 
 		// TODO: Move this somewhere better. doesn't need ran every search

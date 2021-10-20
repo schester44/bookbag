@@ -5,6 +5,8 @@ import { GoNote } from 'react-icons/go'
 
 import { userQuery } from './queries'
 import { SidebarProvider } from 'hooks/useSidebar'
+import { createDB } from 'db'
+import { uniqueId } from 'lodash'
 
 const Login = React.lazy(() => import('views/Login'))
 const Settings = React.lazy(() => import('views/Settings'))
@@ -35,8 +37,6 @@ function App() {
 		skip: !localStorage.getItem('logged-in'),
 	})
 
-	console.log({ loading }, 'user')
-
 	if (loading) {
 		return (
 			<div className="w-full h-full flex items-center justify-center">
@@ -44,11 +44,8 @@ function App() {
 			</div>
 		)
 	}
-	const user = data?.me
 
-	if (!user) {
-		return <GuestRoutes />
-	}
+	const user = data?.me
 
 	return (
 		<SidebarProvider>

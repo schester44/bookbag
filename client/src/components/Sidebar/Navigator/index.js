@@ -13,15 +13,22 @@ import { MenuItem } from 'components/ContextMenu'
 import { useHistory } from 'react-router'
 
 const Navigator = ({ user }) => {
+	const isLoggedIn = !!user
+
 	const { data, loading } = useQuery(bookbagQuery, {
-		onCompleted: () => {
-			console.log('we render a lot')
-		},
+		skip: !isLoggedIn,
 	})
+
 	const history = useHistory()
 
 	const { totalNotes, totalNotebooks, totalTrash } = React.useMemo(() => {
-		if (loading || !data) return {}
+		if (!isLoggedIn) {
+			// TODO: Fetch these numbers from localStorage
+			// TODO: Which indexDB to use? RxDB?
+			return { totalNotes: 0, totalNotebooks: 0, totalTrash: 0 }
+		}
+
+		if (isLoggedIn && (loading || !data)) return {}
 
 		const totalTrash = data.notes.filter((note) => note.trashed)
 
@@ -30,22 +37,28 @@ const Navigator = ({ user }) => {
 			totalTrash: totalTrash.length,
 			totalNotebooks: data?.notebooks.length || 0,
 		}
-	}, [data, loading])
+	}, [data, loading, isLoggedIn])
 
-	if (loading || !data) return null
+	const notebooks = React.useMemo(() => {
+		if (isLoggedIn) return data?.notebooks || []
+
+		// TODO: Get notebooks from indexDB
+		return []
+	}, [data, isLoggedIn])
+	if (isLoggedIn && (loading || !data)) return null
 
 	return (
 		<div className="h-full flex flex-col justify-between">
 			<div>
 				<AllNotes totalNotes={totalNotes} />
 				<Trash totalNotes={totalTrash} />
-				<Notebooks notebooks={data.notebooks} totalBooks={totalNotebooks} />
+				<Notebooks notebooks={notebooks} totalBooks={totalNotebooks} />
 			</div>
 			<div>
-				{user && (
-					<Dropdown
-						placement="bottomRight"
-						content={
+				<Dropdown
+					placement="bottomRight"
+					content={
+						user ? (
 							<DropdownMenu>
 								<MenuItem
 									onClick={(x) => {
@@ -56,13 +69,17 @@ const Navigator = ({ user }) => {
 								</MenuItem>
 								<MenuItem>Logout</MenuItem>
 							</DropdownMenu>
-						}
-					>
-						<div className="flex items-center px-2 py-4 text-white text-sm ml-3">
-							<FiUser className="text-xl mr-2" /> {user.username}
-						</div>
-					</Dropdown>
-				)}
+						) : (
+							<DropdownMenu>
+								<MenuItem>Create account</MenuItem>
+							</DropdownMenu>
+						)
+					}
+				>
+					<div className="flex items-center px-2 py-4 text-white text-sm ml-3 cursor-pointer">
+						<FiUser className="text-xl mr-2" /> {user?.username || 'Guest'}
+					</div>
+				</Dropdown>
 			</div>
 		</div>
 	)
